@@ -1,0 +1,10 @@
+schema_version: 1
+created_at: ""
+intent: ""
+working_set:
+  decisions: []
+  constraints: []
+  facts: []
+  assumptions: []
+  open_questions: []
+  out_of_scope: []

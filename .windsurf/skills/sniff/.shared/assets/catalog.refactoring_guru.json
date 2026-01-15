@@ -1,0 +1,33 @@
+{
+  "source": "refactoring.guru",
+  "schema_version": 1,
+  "groups": {
+    "bloaters": [
+      "Long Method",
+      "Large Class",
+      "Long Parameter List",
+      "Data Clumps",
+      "Primitive Obsession",
+      "Repeated Switches"
+    ],
+    "couplers": [
+      "Feature Envy",
+      "Inappropriate Intimacy",
+      "Message Chains",
+      "Middle Man"
+    ],
+    "oo_abusers": [
+      "Switch Statements",
+      "Temporary Field",
+      "Refused Bequest",
+      "Alternative Classes with Different Interfaces"
+    ],
+    "preventers": [
+      "Divergent Change",
+      "Shotgun Surgery",
+      "Parallel Inheritance Hierarchies",
+      "Lazy Class",
+      "Speculative Generality"
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+schema_version: 1
+created_at: ""
+expand:
+  id: "EXP-"
+root: "."
+globs: []
+rg_patterns: []
+output_hash: "sha256:"

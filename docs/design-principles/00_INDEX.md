@@ -1,0 +1,24 @@
+# Design Principles Index
+
+These design principles are implementation guidance for building reliable, low-entropy agent workflows. They are tool-agnostic and intended for progressive disclosure.
+
+Normative ASI requirements live in:
+
+- `docs/spec/rfc-0001-asi.md`
+- `docs/spec/rfc-0003-conformance.md`
+
+Read order:
+
+1. `01_DETERMINISTIC_SURFACE.md`
+2. `02_SCHEMAS_AND_TEMPLATES.md`
+3. `03_TIME_AND_CHANGE_DETECTION.md`
+4. `04_SURFACE_REDUCTION.md`
+5. `05_SUBJECTIVITY_ONLY.md`
+6. `06_DISCOVERY_DECISION_MUTATION.md`
+7. `07_MEMORY_ADVISORY.md`
+8. `08_DOMAIN_MAPPING.md`
+9. `09_LANGUAGE_NOT_A_CRUTCH.md`
+10. `10_ABSENCE_AS_DATA.md`
+11. `11_IDEMPOTENT_LIFECYCLE.md`
+12. `12_TOKEN_BUDGET.md`
+

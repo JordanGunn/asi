@@ -1,0 +1,52 @@
+# Changelog validation schema
+# Used by verify command to check structure
+
+type: object
+required:
+  - has_header
+  - has_unreleased
+  - versions_descending
+
+properties:
+  has_header:
+    type: boolean
+    description: File starts with "# Changelog"
+
+  has_kac_reference:
+    type: boolean
+    description: Contains Keep a Changelog reference
+
+  has_unreleased:
+    type: boolean
+    description: Has [Unreleased] section
+
+  versions_descending:
+    type: boolean
+    description: Versions appear newest first
+
+  valid_date_formats:
+    type: boolean
+    description: All dates use YYYY-MM-DD
+
+  valid_categories:
+    type: boolean
+    description: Only uses canonical categories
+
+  has_link_refs:
+    type: boolean
+    description: Has link references at bottom
+
+  no_duplicates:
+    type: boolean
+    description: No duplicate entries (by PR/issue key)
+
+canonical_categories:
+  - Added
+  - Changed
+  - Deprecated
+  - Removed
+  - Fixed
+  - Security
+
+date_pattern: "^\\d{4}-\\d{2}-\\d{2}$"
+version_pattern: "^\\d+\\.\\d+\\.\\d+$"

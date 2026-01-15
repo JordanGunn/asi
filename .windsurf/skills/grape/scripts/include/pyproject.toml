@@ -1,0 +1,10 @@
+[project]
+name = "grape-cli"
+version = "0.1.0"
+description = "CLI for grape deterministic search skill"
+requires-python = ">=3.10"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

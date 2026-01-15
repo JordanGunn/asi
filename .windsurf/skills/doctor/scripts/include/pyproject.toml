@@ -1,0 +1,12 @@
+[project]
+name = "doctor-cli"
+version = "0.1.0"
+description = "CLI for doctor diagnostic skill"
+requires-python = ">=3.10"
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

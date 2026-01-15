@@ -1,0 +1,70 @@
+# Treatment Plan Schema
+# Artifact: .doctor/treatment.md (generated from this schema)
+
+type: object
+required:
+  - diagnosis_summary
+  - confidence
+  - options
+
+properties:
+  diagnosis_summary:
+    type: string
+    description: One-line diagnosis
+
+  confidence:
+    type: integer
+    minimum: 0
+    maximum: 100
+    description: Diagnosis confidence percentage
+
+  root_cause:
+    type: string
+    description: Identified root cause
+
+  options:
+    type: array
+    minItems: 1
+    items:
+      type: object
+      required:
+        - name
+        - description
+        - risk
+      properties:
+        name:
+          type: string
+          description: Short option name
+        description:
+          type: string
+          description: What this option does
+        risk:
+          type: string
+          enum: [low, medium, high]
+        effort:
+          type: string
+          enum: [trivial, small, medium, large]
+        reversible:
+          type: boolean
+        steps:
+          type: array
+          items:
+            type: string
+          description: Ordered implementation steps
+    description: Treatment options (at least one required)
+
+  recommended:
+    type: string
+    description: Name of recommended option
+
+  caveats:
+    type: array
+    items:
+      type: string
+    description: Warnings or considerations
+
+  follow_up:
+    type: array
+    items:
+      type: string
+    description: Suggested follow-up actions

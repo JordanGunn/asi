@@ -1,0 +1,10 @@
+[project]
+name = "md-cli"
+version = "0.1.0"
+description = "CLI for md skillset operations"
+requires-python = ">=3.10"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

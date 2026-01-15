@@ -1,0 +1,10 @@
+[project]
+name = "sniff-couplers"
+version = "0.1.0"
+description = "CLI for sniff-couplers"
+requires-python = ">=3.10"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
