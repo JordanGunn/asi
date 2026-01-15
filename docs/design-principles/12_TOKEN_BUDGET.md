@@ -10,4 +10,4 @@ Token efficiency is a correctness concern, not just an optimization.
 
 ## Why this matters for ASI
 
-ASI relies on bounded surfaces and explicit scope. Treating tokens as an epistemic budget reinforces the same goal: earn context through deterministic reduction rather than ambient full-corpus reading (`docs/spec/rfc-0001-asi.md`).
+ASI relies on bounded surfaces and explicit scope. Treating tokens as an epistemic budget reinforces the same goal: earn context through deterministic reduction rather than ambient full-corpus reading (`docs/spec/rfc-001/.INDEX.md`).

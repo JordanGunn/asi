@@ -10,4 +10,4 @@ This prevents agents from inferring meaning where none was intended and makes va
 
 ## Why this matters for ASI
 
-This aligns with ASI’s focus on explicit structure and validity: when state or artifacts matter, schemas/templates provide the mechanical constraints that make “prove it worked” feasible (`docs/spec/rfc-0001-asi.md`).
+This aligns with ASI’s focus on explicit structure and validity: when state or artifacts matter, schemas/templates provide the mechanical constraints that make “prove it worked” feasible (`docs/spec/rfc-001/.INDEX.md`).

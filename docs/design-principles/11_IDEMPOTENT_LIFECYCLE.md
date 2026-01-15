@@ -9,4 +9,4 @@ Idempotency is not “do nothing twice”; it is “do the right thing twice”.
 
 ## Why this matters for ASI
 
-Replayable, lifecycle-aware operations support auditability and reduce hidden state. They also make failures safer by enabling deterministic retry paths (`docs/spec/rfc-0001-asi.md`).
+Replayable, lifecycle-aware operations support auditability and reduce hidden state. They also make failures safer by enabling deterministic retry paths (`docs/spec/rfc-001/.INDEX.md`).

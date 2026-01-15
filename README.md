@@ -23,22 +23,26 @@ ASI is **not**:
 - MCP (Model Context Protocol) or a replacement for MCP
 - “smart tools” that auto-run in the background
 
-## How to read
+## Recommended reading path
 
-1. `docs/manifesto.md`
-2. `docs/spec/rfc-0001-asi.md`
-3. `docs/spec/rfc-0002-asi-mcp.md`
-4. `docs/spec/rfc-0003-conformance.md`
-5. `docs/design-principles/00_INDEX.md` (implementation guidance)
-6. `docs/examples/` (small illustrations)
+This table of contents is a suggested order for first-time readers.
 
-If you are implementing or auditing an ASI layer, start with `docs/spec/rfc-0003-conformance.md`.
+1. `docs/manifesto/.INDEX.md`
+2. `docs/spec/rfc-001/.INDEX.md`
+3. `docs/spec/rfc-002/.INDEX.md`
+4. `docs/spec/rfc-003/.INDEX.md`
+5. `docs/design-principles/.INDEX.md` (implementation guidance)
+6. `docs/patterns/.INDEX.md` (best-practice patterns)
+7. `docs/examples/` (small illustrations)
+
+If you are implementing or auditing an ASI layer, start with `docs/spec/rfc-003/.INDEX.md`.
 
 ## Implementation guidance
 
 - Skill authoring conventions: `docs/design/specs/.INDEX.md`
 - Copyable templates (RFCs, examples, reference set): `assets/templates/README.md`
 - Deterministic repo checks: `scripts/README.md`
+- Best-practice patterns: `docs/patterns/.INDEX.md`
 
 ## TL;DR
 

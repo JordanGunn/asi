@@ -1,16 +1,12 @@
 # Failure Semantics
 
+Canonical requirement: `docs/spec/rfc-001/05_CORE_REQUIREMENTS.md`.
+
 ## Fail-fast rule
 
 If a skill cannot uphold its declared guarantees, it must fail loudly.
 
-## Forbidden failure modes
+## Non-negotiables
 
-- Silent degradation (“best effort” without saying so).
-- Partial success presented as success.
-- Continuing after validation failure while claiming completion.
-
-## Why
-
-Failure is better than ambiguity. Partial success is corruption with better PR.
-
+- No partial success presented as success.
+- No claiming completion after validation failure.

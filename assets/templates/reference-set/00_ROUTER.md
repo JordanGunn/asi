@@ -48,15 +48,16 @@ Resume after the skill’s primary artifact(s) already exist.
 
 **Ignore:**
 
-1. 02_TRIGGERS.md
-2. 03_NEVER.md
-3. 04_ALWAYS.md
-4. 05_PROCEDURE.md
-5. 06_FAILURES.md
+1. 02_CONTRACTS.md
+2. 03_TRIGGERS.md
+3. 04_NEVER.md
+4. 05_ALWAYS.md
+5. 06_PROCEDURE.md
+6. 07_FAILURES.md
 
 #### Goto
 
-05_PROCEDURE.md#resume
+06_PROCEDURE.md#resume
 
 ### in-progress
 
@@ -69,17 +70,18 @@ Resume mid-work when a session artifact exists.
 **Read:**
 
 1. 01_SUMMARY.md
-2. 03_NEVER.md
-3. 04_ALWAYS.md
-4. 05_PROCEDURE.md
+2. 02_CONTRACTS.md
+3. 04_NEVER.md
+4. 05_ALWAYS.md
+5. 06_PROCEDURE.md
 
 **Ignore:**
 
-1. 02_TRIGGERS.md
+1. 03_TRIGGERS.md
 
 #### Goto
 
-05_PROCEDURE.md#resume
+06_PROCEDURE.md#resume
 
 ### default
 
@@ -92,11 +94,12 @@ Fresh invocation. Load all references in order.
 **Read:**
 
 1. 01_SUMMARY.md
-2. 02_TRIGGERS.md
-3. 03_NEVER.md
-4. 04_ALWAYS.md
-5. 05_PROCEDURE.md
-6. 06_FAILURES.md
+2. 02_CONTRACTS.md
+3. 03_TRIGGERS.md
+4. 04_NEVER.md
+5. 05_ALWAYS.md
+6. 06_PROCEDURE.md
+7. 07_FAILURES.md
 
 **Ignore:**
 
@@ -125,4 +128,3 @@ Routing should make it easy to report:
 - what was read: router, executed checks, and loaded references
 - what was written or changed: typically nothing (routing should be read-only)
 - validation status: precondition check pass/fail and any declared validations
-

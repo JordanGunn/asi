@@ -10,4 +10,4 @@ Conflicts between old artifacts and current state are signals to investigate, no
 
 ## Why this matters for ASI
 
-ASI prioritizes auditable behavior over implied correctness. Time-awareness and change detection reduce reliance on stale implicit state and make “what was considered” more trustworthy (`docs/spec/rfc-0001-asi.md`, `docs/spec/rfc-0003-conformance.md`).
+ASI prioritizes auditable behavior over implied correctness. Time-awareness and change detection reduce reliance on stale implicit state and make “what was considered” more trustworthy (`docs/spec/rfc-001/.INDEX.md`, `docs/spec/rfc-003/.INDEX.md`).

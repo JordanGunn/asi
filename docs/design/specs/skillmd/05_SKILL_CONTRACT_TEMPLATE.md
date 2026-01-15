@@ -22,6 +22,7 @@ Use the headings below as a starting point when authoring a skill’s reference 
 - Primary argument: a user prompt (natural language).
 - Optional: additional structured parameters provided by the hosting environment (if any). If present, treat them as explicit scope/execution controls and report them.
 - Any derived parameters (scope, filters, patterns, targets) that determine execution.
+- If parameters are derived to drive deterministic mechanisms (scripts, queries, routers), require a reasoning contract asset that defines schema, allowed values, defaults, and derivation rules, with explicit reporting of derived parameters.
 - Defaults (if any) and how they affect derived scope.
 - What conditions widen scope, and how that widening is reported.
 - If frontmatter is used, how `metadata.references`, `metadata.scripts`, `metadata.assets`, and `metadata.artifacts` relate to these inputs.

@@ -1,31 +1,10 @@
 # Conformance Checklist
 
-## Entry points
+Canonical checklist: `docs/spec/rfc-003/05_CONFORMANCE_CHECKLIST.md`.
 
-- [ ] Capability that can change state is accessed only through skills.
-- [ ] Skills define explicit inputs, guarantees, prohibitions, and failure semantics.
-- [ ] Skill invocation uses a single user prompt as the primary argument (preferred).
+Use this file only as a short reminder:
 
-## Determinism before reasoning
-
-- [ ] Discovery defines the complete input universe deterministically.
-- [ ] Narrowing reduces scope deterministically and read-only.
-- [ ] Reasoning is constrained to the deterministically surfaced scope.
-
-## Passive behavior
-
-- [ ] Observe/report is allowed without intent.
-- [ ] No background mutation or auto-repair occurs.
-
-## Validation and artifacts
-
-- [ ] Declared artifacts exist on success.
-- [ ] Validation is a hard gate when artifacts/invariants are declared.
-- [ ] Declared schemas/templates are validated when state is written.
-
-## Observability
-
-- [ ] Effective scope is reported (what was considered in-bounds).
-- [ ] What was read is auditable.
-- [ ] What was written or changed is auditable.
-- [ ] Validation status is reported.
+- Entry points are skill-gated and explicit.
+- Determinism precedes reasoning; scope is bounded and reported.
+- Passive means passive; no background mutation.
+- Validation and observability are non-negotiable.

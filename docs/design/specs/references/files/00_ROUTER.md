@@ -122,15 +122,16 @@ Resume after treatment has been written.
 
 **Ignore:**
 
-1. 02_TRIGGERS.md
-2. 03_NEVER.md
-3. 04_ALWAYS.md
-4. 05_PROCEDURE.md
-5. 06_FAILURES.md
+1. 02_CONTRACTS.md
+2. 03_TRIGGERS.md
+3. 04_NEVER.md
+4. 05_ALWAYS.md
+5. 06_PROCEDURE.md
+6. 07_FAILURES.md
 
 #### Goto
 
-05_PROCEDURE.md#verify-treatment
+06_PROCEDURE.md#verify-treatment
 
 ---
 
@@ -146,17 +147,18 @@ Resume mid-session diagnostic work.
 **Read:**
 
 1. 01_SUMMARY.md
-2. 04_ALWAYS.md
-3. 05_PROCEDURE.md
+2. 02_CONTRACTS.md
+3. 05_ALWAYS.md
+4. 06_PROCEDURE.md
 
 **Ignore:**
 
-1. 02_TRIGGERS.md
-2. 03_NEVER.md
+1. 03_TRIGGERS.md
+2. 04_NEVER.md
 
 #### Goto
 
-05_PROCEDURE.md#resume-session
+06_PROCEDURE.md#resume-session
 
 ---
 
@@ -171,11 +173,12 @@ Fresh invocation — read all references in order.
 **Read:**
 
 1. 01_SUMMARY.md
-2. 02_TRIGGERS.md
-3. 03_NEVER.md
-4. 04_ALWAYS.md
-5. 05_PROCEDURE.md
-6. 06_FAILURES.md
+2. 02_CONTRACTS.md
+3. 03_TRIGGERS.md
+4. 04_NEVER.md
+5. 05_ALWAYS.md
+6. 06_PROCEDURE.md
+7. 07_FAILURES.md
 
 **Ignore:**
 

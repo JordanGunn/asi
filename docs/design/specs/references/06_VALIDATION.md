@@ -8,9 +8,10 @@
 - [ ] Canonical file structure:
   - [ ] 00_ROUTER.md
   - [ ] 01_SUMMARY.md
-  - [ ] 02_TRIGGERS.md
-  - [ ] 03_NEVER.md
-  - [ ] 04_ALWAYS.md
-  - [ ] 05_PROCEDURE.md
-  - [ ] 06_FAILURES.md
+  - [ ] 02_CONTRACTS.md
+  - [ ] 03_TRIGGERS.md
+  - [ ] 04_NEVER.md
+  - [ ] 05_ALWAYS.md
+  - [ ] 06_PROCEDURE.md
+  - [ ] 07_FAILURES.md
 - [ ] **Routing observability**: routes and preconditions make it easy to report effective scope, what was read, and precondition validation status.

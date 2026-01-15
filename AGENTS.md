@@ -1,19 +1,18 @@
 # AGENTS INSTRUCTIONS
 
+This repository contains the ASI (Agent Skill Interface) specification and supporting guidance for deterministic, auditable agent behavior.
+
 ## Special files
 
-The following files are specially included for agent consumption:
+- `.INDEX.md`: Directory indices for local navigation.
+- `llms.txt`: Fetching entrypoints for LLMs/crawlers.
 
-- `.INDEX.md`: Directory indices throughout the repository. Use for fast information discovery and content lookup.
-- `.SUMMARY.md`: High-level summaries of directories. Use for quick overview.
+## References
 
-## Information Lookup
-
-Use the index files to navigate documentation:
-
-- [Documentation entrypoint](./docs/.INDEX.md)
+- Documentation entrypoints: `docs/spec/.INDEX.md`, `docs/design-principles/.INDEX.md`, `docs/patterns/.INDEX.md`, `docs/design/specs/.INDEX.md`
+- Fetching entrypoints: `llms.txt`
 
 ## Rules
 
 - Do not modify this file unless explicitly asked.
-- Skills creation must strictly follow all specifications within `docs/design/specs`
+- Skills creation must strictly follow all specifications within `docs/design/specs`.

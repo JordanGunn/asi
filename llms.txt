@@ -1,0 +1,14 @@
+# ASI (Agent Skill Interface)
+
+> ASI is a behavioral contract for agentic systems that defines determinism-before-reasoning, strict passivity, explicit failure semantics, and auditable scope.
+
+Use the links below as the recommended progressive disclosure entrypoints.
+
+## Entry Points
+
+- [README](README.md): Overview and recommended reading path.
+- [Manifesto](docs/manifesto/.INDEX.md): Narrative framing for ASI.
+- [Specifications](docs/spec/.INDEX.md): RFC index and normative requirements.
+- [Design Principles](docs/design-principles/.INDEX.md): Implementation guidance.
+- [Patterns](docs/patterns/.INDEX.md): Best-practice patterns.
+- [Skill Authoring Specs](docs/design/specs/.INDEX.md): Canonical authoring requirements.

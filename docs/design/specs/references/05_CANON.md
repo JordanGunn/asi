@@ -6,11 +6,12 @@ Repositories that adopt this convention typically maintain a minimal reference f
 references/
 ├── 00_ROUTER.md
 ├── 01_SUMMARY.md
-├── 02_TRIGGERS.md
-├── 03_NEVER.md
-├── 04_ALWAYS.md
-├── 05_PROCEDURE.md
-└── 06_FAILURES.md
+├── 02_CONTRACTS.md
+├── 03_TRIGGERS.md
+├── 04_NEVER.md
+├── 05_ALWAYS.md
+├── 06_PROCEDURE.md
+└── 07_FAILURES.md
 ```
 
 ## File Specifications

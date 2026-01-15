@@ -10,4 +10,4 @@ This prevents agents from inventing activity where none occurred.
 
 ## Why this matters for ASI
 
-ASI prefers loud, explicit outcomes over ambiguous silence. Treating absence as data supports clear failure semantics and trustworthy reporting when “nothing happened” is the correct result (`docs/spec/rfc-0001-asi.md`, `docs/spec/rfc-0003-conformance.md`).
+ASI prefers loud, explicit outcomes over ambiguous silence. Treating absence as data supports clear failure semantics and trustworthy reporting when “nothing happened” is the correct result (`docs/spec/rfc-001/.INDEX.md`, `docs/spec/rfc-003/.INDEX.md`).

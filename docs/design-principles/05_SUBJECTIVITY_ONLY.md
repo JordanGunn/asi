@@ -13,4 +13,4 @@ Avoid using agents to invent structure, discover reality, or substitute reasonin
 
 ## Why this matters for ASI
 
-ASI draws a line between capability and behavior. Reserving judgment for irreducible subjectivity prevents “explaining around” missing deterministic outputs and helps keep failure semantics honest (`docs/spec/rfc-0001-asi.md`, `docs/spec/rfc-0003-conformance.md`).
+ASI draws a line between capability and behavior. Reserving judgment for irreducible subjectivity prevents “explaining around” missing deterministic outputs and helps keep failure semantics honest (`docs/spec/rfc-001/.INDEX.md`, `docs/spec/rfc-003/.INDEX.md`).

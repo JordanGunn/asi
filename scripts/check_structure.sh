@@ -54,18 +54,21 @@ require_dir "references"
 require_dir "scripts"
 require_dir "assets/templates"
 
-require_file "docs/manifesto.md"
-require_file "docs/spec/rfc-0001-asi.md"
-require_file "docs/spec/rfc-0002-asi-mcp.md"
-require_file "docs/spec/rfc-0003-conformance.md"
+require_file "docs/manifesto/.INDEX.md"
+require_file "docs/spec/.INDEX.md"
+require_file "docs/spec/rfc-001/.INDEX.md"
+require_file "docs/spec/rfc-002/.INDEX.md"
+require_file "docs/spec/rfc-003/.INDEX.md"
 require_file "docs/glossary.md"
 require_file "docs/faq.md"
 require_file "docs/changelog.md"
 require_file "docs/examples/example-01-surface-reduction.md"
 require_file "docs/examples/example-02-passive-behavior.md"
 require_file "docs/examples/example-03-failure-semantics.md"
+require_file "docs/patterns/.INDEX.md"
+require_file "docs/patterns/skill-contract/.INDEX.md"
 
-require_file "references/00_INDEX.md"
+require_file "references/.INDEX.md"
 require_file "references/01_SUMMARY.md"
 require_file "references/02_INVARIANTS.md"
 require_file "references/03_NON_GOALS.md"
@@ -83,16 +86,15 @@ require_file "scripts/README.md"
 require_file "assets/templates/rfc-template.md"
 require_file "assets/templates/example-template.md"
 
-bad_refs="$(find "$root_dir/references" -maxdepth 1 -type f -name '*.md' ! -regex '.*/[0-9][0-9]_[^/].*\.md' -print || true)"
+bad_refs="$(find "$root_dir/references" -maxdepth 1 -type f -name '*.md' ! -name '.INDEX.md' ! -regex '.*/[0-9][0-9]_[^/].*\.md' -print || true)"
 if [ -n "$bad_refs" ]; then
   echo "Reference files must match NN_*.md naming:" >&2
   echo "$bad_refs" >&2
   exit 1
 fi
 
-ref_numbers="$(find "$root_dir/references" -maxdepth 1 -type f -name '*.md' -print | while IFS= read -r f; do basename "$f"; done | cut -c1-2 | sort -u)"
-expected_numbers="00
-01
+ref_numbers="$(find "$root_dir/references" -maxdepth 1 -type f -name '*.md' ! -name '.INDEX.md' -print | while IFS= read -r f; do basename "$f"; done | cut -c1-2 | sort -u)"
+expected_numbers="01
 02
 03
 04
@@ -103,7 +105,7 @@ expected_numbers="00
 09
 10"
 if [ "$ref_numbers" != "$expected_numbers" ]; then
-  echo "Reference files must cover 00..10 exactly (no gaps/dupes)." >&2
+  echo "Reference files must cover 01..10 exactly (no gaps/dupes)." >&2
   echo "Found:" >&2
   printf '%s\n' "$ref_numbers" >&2
   exit 1

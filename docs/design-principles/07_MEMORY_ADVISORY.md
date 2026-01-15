@@ -10,4 +10,4 @@ This prevents acting correctly on information that is no longer correct.
 
 ## Why this matters for ASI
 
-ASI treats “memory” and available state as capability, not proof of awareness or correctness. Revalidation and drift detection keep invocation and reasoning grounded in current state (`docs/spec/rfc-0001-asi.md`).
+ASI treats “memory” and available state as capability, not proof of awareness or correctness. Revalidation and drift detection keep invocation and reasoning grounded in current state (`docs/spec/rfc-001/.INDEX.md`).
