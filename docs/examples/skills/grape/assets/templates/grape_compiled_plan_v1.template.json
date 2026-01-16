@@ -1,0 +1,34 @@
+{
+  "schema": "grape_compiled_plan_v1",
+  "intent": {
+    "schema": "grape_intent_v1",
+    "prompt": "<user prompt>"
+  },
+  "intent_hash": "sha256:<sha256 of normalized intent json>",
+  "grep": {
+    "root": ".",
+    "pattern": [
+      "<term>"
+    ],
+    "glob": [],
+    "exclude": [],
+    "mode": "fixed",
+    "case": "smart",
+    "context": 0,
+    "format": "auto",
+    "max_lines": 500,
+    "strategy": "single",
+    "max_probes": 8,
+    "max_derived": 12,
+    "snapshot_max_files": 20000,
+    "policy": {
+      "hidden": false,
+      "follow": false,
+      "ignore": {
+        "no_ignore": false,
+        "no_ignore_vcs": false,
+        "no_ignore_global": false
+      }
+    }
+  }
+}

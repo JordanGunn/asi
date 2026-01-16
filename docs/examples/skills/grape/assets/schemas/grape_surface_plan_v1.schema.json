@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "grape_surface_plan_v1.schema.json",
+  "title": "grape_surface_plan_v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "root", "include_globs", "exclude_globs", "snapshot_max_files", "policy"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "grape_surface_plan_v1",
+      "description": "Document discriminator for a surface scan plan."
+    },
+    "root": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Root directory for surface scan."
+    },
+    "include_globs": {
+      "type": "array",
+      "description": "Include globs for surface scan (rg -g).",
+      "items": { "type": "string", "minLength": 1 },
+      "maxItems": 64
+    },
+    "exclude_globs": {
+      "type": "array",
+      "description": "Exclude globs for surface scan (rg -g '!pat').",
+      "items": { "type": "string", "minLength": 1 },
+      "maxItems": 128
+    },
+    "snapshot_max_files": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 200000,
+      "default": 20000
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hidden", "follow", "ignore"],
+      "properties": {
+        "hidden": { "type": "boolean", "default": false },
+        "follow": { "type": "boolean", "default": false },
+        "ignore": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["no_ignore", "no_ignore_vcs", "no_ignore_global"],
+          "properties": {
+            "no_ignore": { "type": "boolean", "default": false },
+            "no_ignore_vcs": { "type": "boolean", "default": false },
+            "no_ignore_global": { "type": "boolean", "default": false }
+          }
+        }
+      }
+    }
+  }
+}

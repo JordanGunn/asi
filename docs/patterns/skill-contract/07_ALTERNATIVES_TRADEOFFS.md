@@ -1,18 +1,7 @@
 # Alternatives and tradeoffs
 
-**Alternatives:**
+Portability, bootstrap placement, and consent rules are consolidated in:
 
-- PEX/zipapp bundling
-- System Python with pinned versions
-- Prebuilt binaries
+- `docs/design-principles/13_PORTABILITY.md`
 
-**Tradeoffs of venv-based bootstrap:**
-
-- extra disk usage
-- first-run latency
-- more moving parts to validate
-
-**When to choose auto-bootstrap vs explicit consent:**
-
-- Prefer explicit consent when the environment may change or when installs are non-trivial.
-- Auto-bootstrap is only reasonable in fully sandboxed, disposable environments with prior user agreement.
+Keep this file focused on non-portability tradeoffs; avoid duplicating portability guidance here.

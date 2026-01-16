@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "grape_compiled_plan_v1.schema.json",
+  "title": "grape_compiled_plan_v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "intent", "intent_hash", "grep"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "grape_compiled_plan_v1",
+      "description": "Document discriminator for a compiled grape plan."
+    },
+    "intent": {
+      "description": "The original intent document that was compiled into grep parameters.",
+      "$ref": "grape_intent_v1.schema.json"
+    },
+    "intent_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "sha256 of a normalized intent JSON encoding (stable keys, no whitespace)."
+    },
+    "grep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root", "pattern", "glob", "exclude", "mode", "case", "context", "format", "max_lines", "strategy", "max_probes", "max_derived", "snapshot_max_files", "policy"],
+      "properties": {
+        "root": { "type": "string", "minLength": 1, "description": "Root directory for the scan (explicit every run)." },
+        "pattern": {
+          "type": "array",
+          "description": "Repeatable search patterns; compilation must cap expansions and keep ordering stable.",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "glob": {
+          "type": "array",
+          "description": "Repeatable include globs (maps to `--glob`).",
+          "items": { "type": "string", "minLength": 1 },
+          "maxItems": 64
+        },
+        "exclude": {
+          "type": "array",
+          "description": "Repeatable exclude globs (maps to `--exclude`, canonical excludes are applied by the engine).",
+          "items": { "type": "string", "minLength": 1 },
+          "maxItems": 128
+        },
+        "mode": { "type": "string", "enum": ["fixed", "regex"], "default": "fixed" },
+        "case": { "type": "string", "enum": ["sensitive", "insensitive", "smart"], "default": "smart" },
+        "context": { "type": "integer", "minimum": 0, "maximum": 10, "default": 0 },
+        "format": { "type": "string", "enum": ["auto", "human", "jsonl"], "default": "auto" },
+        "max_lines": { "type": "integer", "minimum": 0, "maximum": 5000, "default": 500 },
+        "strategy": { "type": "string", "enum": ["single", "parallel", "cascade"], "default": "single" },
+        "max_probes": { "type": "integer", "minimum": 1, "maximum": 32, "default": 8 },
+        "max_derived": { "type": "integer", "minimum": 0, "maximum": 64, "default": 12 },
+        "snapshot_max_files": { "type": "integer", "minimum": 1000, "maximum": 200000, "default": 20000 },
+        "policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["hidden", "follow", "ignore"],
+          "properties": {
+            "hidden": { "type": "boolean", "default": false },
+            "follow": { "type": "boolean", "default": false },
+            "ignore": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["no_ignore", "no_ignore_vcs", "no_ignore_global"],
+              "properties": {
+                "no_ignore": { "type": "boolean", "default": false },
+                "no_ignore_vcs": { "type": "boolean", "default": false },
+                "no_ignore_global": { "type": "boolean", "default": false }
+              }
+            }
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Optional: small, auditable rationale for qualitative choices (no repo-claims).",
+      "properties": {
+        "strategy_reason": { "type": "string", "minLength": 1 },
+        "scope_reason": { "type": "string", "minLength": 1 },
+        "term_reason": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

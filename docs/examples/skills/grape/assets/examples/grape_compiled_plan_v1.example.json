@@ -1,0 +1,44 @@
+{
+  "schema": "grape_compiled_plan_v1",
+  "intent": {
+    "schema": "grape_intent_v1",
+    "prompt": "Locate grape compiler contract",
+    "hints": {
+      "include_globs": [
+        "skills/grape/**"
+      ]
+    }
+  },
+  "intent_hash": "sha256:74ce6e94fc0ae8f92c27e8af41c2764fa5724a09856ecdeeb3b0b5151bec4356",
+  "grep": {
+    "root": ".",
+    "pattern": [
+      "grape_compiled_plan_v1"
+    ],
+    "glob": [
+      "skills/grape/**"
+    ],
+    "exclude": [],
+    "mode": "fixed",
+    "case": "smart",
+    "context": 0,
+    "format": "jsonl",
+    "max_lines": 20,
+    "strategy": "single",
+    "max_probes": 8,
+    "max_derived": 12,
+    "snapshot_max_files": 20000,
+    "policy": {
+      "hidden": false,
+      "follow": false,
+      "ignore": {
+        "no_ignore": false,
+        "no_ignore_vcs": false,
+        "no_ignore_global": false
+      }
+    }
+  },
+  "notes": {
+    "scope_reason": "Limit to grape skill assets and references"
+  }
+}

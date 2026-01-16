@@ -43,6 +43,7 @@ If you are implementing or auditing an ASI layer, start with `docs/spec/rfc-003/
 - Copyable templates (RFCs, examples, reference set): `assets/templates/README.md`
 - Deterministic repo checks: `scripts/README.md`
 - Best-practice patterns: `docs/patterns/.INDEX.md`
+- Portability (scripts, bootstrap, consent): `docs/design-principles/13_PORTABILITY.md`
 
 ## TL;DR
 

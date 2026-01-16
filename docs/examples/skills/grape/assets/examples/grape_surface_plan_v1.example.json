@@ -1,0 +1,18 @@
+{
+  "schema": "grape_surface_plan_v1",
+  "root": ".",
+  "include_globs": [
+    "skills/grape/**"
+  ],
+  "exclude_globs": [],
+  "snapshot_max_files": 20000,
+  "policy": {
+    "hidden": false,
+    "follow": false,
+    "ignore": {
+      "no_ignore": false,
+      "no_ignore_vcs": false,
+      "no_ignore_global": false
+    }
+  }
+}
