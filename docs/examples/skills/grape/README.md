@@ -81,11 +81,17 @@ It only reveals **where to look next**.
 
 The intelligence is in **parameter choice**, not execution.
 
-When invoked as `/grape <prompt>`, the agent compiles the prompt into schema-shaped receipts:
-`grape_surface_plan_v1` (scan), then `grape_intent_v1` + `grape_compiled_plan_v1` (search).
-The scan uses `scripts/scan.sh`/`scripts/scan.ps1` to deterministically bound scope before the
-search plan is finalized. Agents enforce the contract by running `scripts/plan.sh`/`scripts/plan.ps1 --stdin`,
-which validates the plan, echoes the compiled receipt, and executes exactly the declared arguments.
+When invoked (`/grape <prompt>`), the agent:
+1. compiles the prompt into schema-shaped receipts:
+   a. scan: `grape_surface_plan_v1`, then
+   b. search: `grape_intent_v1` + `grape_compiled_plan_v1`
+2. The scan uses `scripts/scan.sh`/`scripts/scan.ps1` to deterministically bound scope before the
+search plan is finalized.
+3. Agents enforce the contract by running `scripts/plan.sh`/`scripts/plan.ps1 --stdin`, which:
+   a. validates the plan,
+   b. echoes the compiled receipt, and
+   c. executes exactly the declared arguments.
+
 These scripts are **agent‑only** enforcement tools; the user interface remains `/grape <prompt>`.
 
 If the skill dependencies are missing, the agent should stop and ask the user for permission to
@@ -164,7 +170,8 @@ What changed is that we now have agents capable of:
 
 `grape` is grep with judgment.
 
-It forces surface discovery before depth,
-keeps search deterministic and auditable,
-and lets AI choose parameters humans are bad at choosing —
+- It forces surface discovery before depth,
+- keeps search deterministic and auditable,
+- and lets AI choose parameters humans are bad at choosing,
+
 nothing more.
