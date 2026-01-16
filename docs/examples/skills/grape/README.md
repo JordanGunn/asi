@@ -83,19 +83,22 @@ The intelligence is in **parameter choice**, not execution.
 
 When invoked (`/grape <prompt>`), the agent:
 1. compiles the prompt into schema-shaped receipts:
-   a. scan: `grape_surface_plan_v1`, then
-   b. search: `grape_intent_v1` + `grape_compiled_plan_v1`
-2. The scan uses `scripts/scan.sh`/`scripts/scan.ps1` to deterministically bound scope before the
+ a. scan: `grape_surface_plan_v1`, then
+ b. search: `grape_intent_v1` + `grape_compiled_plan_v1`
+2. The scan uses `scripts/scan.{sh,ps1}` to deterministically bound scope before the
 search plan is finalized.
-3. Agents enforce the contract by running `scripts/plan.sh`/`scripts/plan.ps1 --stdin`, which:
-   a. validates the plan,
-   b. echoes the compiled receipt, and
-   c. executes exactly the declared arguments.
+3. Agents enforce the contract by running `scripts/plan.{sh,ps1}`, which:
+ a. validates the plan,
+ b. echoes the compiled receipt, and
+ c. executes exactly the declared arguments.
 
 These scripts are **agent‑only** enforcement tools; the user interface remains `/grape <prompt>`.
 
-If the skill dependencies are missing, the agent should stop and ask the user for permission to
-run `bootstrap.sh`/`bootstrap.ps1`, which creates a local, skill-scoped virtual environment.
+If the skill dependencies are missing:
+1. The agent must stop and
+2. ask the user for permission to run `bootstrap.{sh,ps1}`,
+
+which creates a local, skill-scoped virtual environment.
 
 ---
 
