@@ -83,15 +83,17 @@ The intelligence is in **parameter choice**, not execution.
 
 When invoked (`/grape <prompt>`), the agent:
 
-1. compiles the prompt into schema-shaped receipts:
-   a. scan: `grape_surface_plan_v1`, then
-   b. search: `grape_intent_v1` + `grape_compiled_plan_v1`
+1.) compiles the prompt into schema-shaped receipts:  
+    a.) scan: `grape_surface_plan_v1`, then  
+    b.) search: `grape_intent_v1` + `grape_compiled_plan_v1`
+
 2. The scan uses `scripts/scan.{sh,ps1}` to deterministically bound scope before the
    search plan is finalized.
-3. Agents enforce the contract by running `scripts/plan.{sh,ps1}`, which:
-   a. validates the plan,
-   b. echoes the compiled receipt, and
-   c. executes exactly the declared arguments.
+
+3.) Agents enforce the contract by running `scripts/plan.{sh,ps1}`, which:  
+   a.) validates the plan,  
+   b.) echoes the compiled receipt, and  
+   c.) executes exactly the declared arguments.
 
 These scripts are **agent‑only** enforcement tools; the user interface remains `/grape <prompt>`.
 
