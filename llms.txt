@@ -8,7 +8,5 @@ Use the links below as the recommended progressive disclosure entrypoints.
 
 - [README](README.md): Overview and recommended reading path.
 - [Manifesto](docs/manifesto/.INDEX.md): Narrative framing for ASI.
-- [Specifications](docs/spec/.INDEX.md): RFC index and normative requirements.
-- [Design Principles](docs/design-principles/.INDEX.md): Implementation guidance.
-- [Patterns](docs/patterns/.INDEX.md): Best-practice patterns.
-- [Skill Authoring Specs](docs/design/specs/.INDEX.md): Canonical authoring requirements.
+- [Design Documentation](docs/design/.INDEX.md): Implementation guidance.
+
