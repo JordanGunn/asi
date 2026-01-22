@@ -1,0 +1,9 @@
+[project]
+name = "aux-glob"
+version = "0.1.0"
+description = "Agent-assisted file enumeration CLI"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.uv]
+dev-dependencies = []

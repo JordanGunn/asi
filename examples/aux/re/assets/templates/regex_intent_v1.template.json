@@ -1,0 +1,10 @@
+{
+  "schema": "regex_intent_v1",
+  "prompt": "",
+  "assumptions": [],
+  "hints": {
+    "examples": [],
+    "non_examples": [],
+    "capture_names": []
+  }
+}

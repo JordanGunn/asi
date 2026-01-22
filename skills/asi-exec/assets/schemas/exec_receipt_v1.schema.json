@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Exec Receipt Schema",
+  "description": "Schema for execution receipt after task completion",
+  "type": "object",
+  "required": ["task_id", "status", "timestamp"],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Task ID that was executed"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["success", "failed", "skipped", "blocked", "rollback"],
+      "description": "Execution outcome"
+    },
+    "blocked_reason": {
+      "type": "string",
+      "description": "Why the task is blocked (if status is blocked)"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 completion timestamp"
+    },
+    "artifacts_created": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Files created during execution"
+    },
+    "artifacts_modified": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Files modified during execution"
+    },
+    "error": {
+      "type": "string",
+      "description": "Error message if failed"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Execution notes or observations"
+    }
+  },
+  "additionalProperties": false
+}

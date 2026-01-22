@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TODO Artifact Schema",
+  "description": "Schema for TODO.md task structure",
+  "type": "object",
+  "required": ["description", "timestamp", "status", "source_plan", "tasks"],
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "One-line summary of the TODO list"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 creation timestamp"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "review", "approved", "rejected"],
+      "description": "Artifact lifecycle status"
+    },
+    "source_plan": {
+      "type": "string",
+      "description": "Path to source PLAN.md"
+    },
+    "source_plan_hash": {
+      "type": "string",
+      "description": "SHA-256 hash of source PLAN.md for change detection",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "tasks": {
+      "type": "array",
+      "description": "Ordered list of tasks",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "status"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique task identifier (e.g., T001)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Task description"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "in_progress", "done"],
+            "description": "Task completion status"
+          },
+          "depends_on": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Task IDs this task depends on"
+          },
+          "source_section": {
+            "type": "string",
+            "description": "KICKOFF.md section this task traces to"
+          }
+        }
+      }
+    }
+  }
+}

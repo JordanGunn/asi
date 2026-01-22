@@ -21,4 +21,4 @@ This keeps natural language as the input while preventing hidden or ad hoc reaso
 
 ## Why this matters for ASI
 
-ASI treats natural language as the interface while insisting that behavior is governed by explicit constraints. This principle protects determinism-before-reasoning from being replaced by “prompt-only” governance (`docs/spec/rfc-001/.INDEX.md`).
+ASI treats natural language as the interface while insisting that behavior is governed by explicit constraints. This principle protects determinism-before-reasoning from being replaced by "prompt-only" governance.

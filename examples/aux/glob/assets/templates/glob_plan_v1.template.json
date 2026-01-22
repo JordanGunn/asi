@@ -1,0 +1,29 @@
+{
+  "schema": "glob_plan_v1",
+  "intent": {
+    "schema": "glob_intent_v1",
+    "prompt": "",
+    "assumptions": [],
+    "hints": {}
+  },
+  "intent_hash": "sha256:",
+  "find": {
+    "root": ".",
+    "pattern": [],
+    "extension": [],
+    "exclude": [],
+    "type": "file",
+    "max_depth": null,
+    "max_results": 1000,
+    "format": "auto",
+    "policy": {
+      "hidden": false,
+      "follow": false,
+      "no_ignore": false
+    }
+  },
+  "notes": {
+    "strategy": "",
+    "scope": ""
+  }
+}

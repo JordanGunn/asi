@@ -1,0 +1,13 @@
+[project]
+name = "prompt-exec-cli"
+version = "0.1.0"
+description = "Deterministic CLI for prompt-exec skill in nunchuck"
+requires-python = ">=3.10"
+dependencies = [
+    "pyyaml>=6.0",
+    "jsonschema>=4.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

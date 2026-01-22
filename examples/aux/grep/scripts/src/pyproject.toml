@@ -1,0 +1,9 @@
+[project]
+name = "aux-grep"
+version = "0.1.0"
+description = "Agent-assisted text search CLI"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.uv]
+dev-dependencies = []

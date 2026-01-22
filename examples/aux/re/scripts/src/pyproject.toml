@@ -1,0 +1,9 @@
+[project]
+name = "aux-regex"
+version = "0.1.0"
+description = "Agent-assisted regex pattern matching CLI"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.uv]
+dev-dependencies = []

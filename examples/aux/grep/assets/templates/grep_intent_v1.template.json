@@ -1,0 +1,11 @@
+{
+  "schema": "grep_intent_v1",
+  "prompt": "",
+  "assumptions": [],
+  "hints": {
+    "roots": [],
+    "include_globs": [],
+    "exclude_globs": [],
+    "terms": []
+  }
+}

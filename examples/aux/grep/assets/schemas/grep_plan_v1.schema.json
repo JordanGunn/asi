@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "grep_plan_v1.schema.json",
+  "title": "grep_plan_v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "intent", "intent_hash", "search"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "grep_plan_v1",
+      "description": "Document discriminator for a compiled grep plan."
+    },
+    "intent": {
+      "description": "The original intent document.",
+      "$ref": "grep_intent_v1.schema.json"
+    },
+    "intent_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "SHA256 hash of normalized intent JSON."
+    },
+    "search": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root", "pattern", "glob", "exclude", "mode", "case", "context", "format", "max_lines", "max_files", "max_matches", "parallelism", "policy"],
+      "properties": {
+        "root": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Root directory for the search."
+        },
+        "pattern": {
+          "type": "array",
+          "description": "Search patterns.",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "glob": {
+          "type": "array",
+          "description": "Include globs (file types to search).",
+          "items": { "type": "string", "minLength": 1 },
+          "maxItems": 64
+        },
+        "exclude": {
+          "type": "array",
+          "description": "Exclude globs (directories/files to skip).",
+          "items": { "type": "string", "minLength": 1 },
+          "maxItems": 128
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["fixed", "regex"],
+          "default": "fixed"
+        },
+        "case": {
+          "type": "string",
+          "enum": ["sensitive", "insensitive", "smart"],
+          "default": "smart"
+        },
+        "context": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10,
+          "default": 0,
+          "description": "Lines of context around matches."
+        },
+        "format": {
+          "type": "string",
+          "enum": ["auto", "human", "jsonl"],
+          "default": "auto"
+        },
+        "max_lines": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5000,
+          "default": 500
+        },
+        "max_files": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 10000,
+          "default": null,
+          "description": "Stop after N files with matches."
+        },
+        "max_matches": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 50000,
+          "default": null,
+          "description": "Stop after N total match lines."
+        },
+        "parallelism": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8,
+          "default": 4,
+          "description": "Concurrent rg processes."
+        },
+        "policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["hidden", "follow", "no_ignore"],
+          "properties": {
+            "hidden": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include hidden files."
+            },
+            "follow": {
+              "type": "boolean",
+              "default": false,
+              "description": "Follow symlinks."
+            },
+            "no_ignore": {
+              "type": "boolean",
+              "default": false,
+              "description": "Ignore .gitignore rules."
+            }
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Rationale for parameter choices.",
+      "properties": {
+        "strategy": { "type": "string", "minLength": 1 },
+        "scope": { "type": "string", "minLength": 1 },
+        "terms": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

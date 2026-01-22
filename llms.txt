@@ -4,9 +4,8 @@
 
 Use the links below as the recommended progressive disclosure entrypoints.
 
-## Entry Points
+## Docs
 
-- [README](README.md): Overview and recommended reading path.
-- [Manifesto](docs/manifesto/.INDEX.md): Narrative framing for ASI.
-- [Design Documentation](docs/design/.INDEX.md): Implementation guidance.
-
+- [README](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/README.md): Overview and recommended reading path.
+- [Manifesto](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/docs/manifesto/.INDEX.md): Narrative framing for ASI.
+- [Design Documentation](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/docs/design/.INDEX.md): Implementation guidance.

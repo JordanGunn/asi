@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "glob_plan_v1.schema.json",
+  "title": "glob_plan_v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "intent", "intent_hash", "find"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "glob_plan_v1",
+      "description": "Document discriminator for a compiled glob plan."
+    },
+    "intent": {
+      "description": "The original intent document.",
+      "$ref": "glob_intent_v1.schema.json"
+    },
+    "intent_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "SHA256 hash of normalized intent JSON."
+    },
+    "find": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root", "pattern", "extension", "exclude", "type", "max_depth", "max_results", "format", "policy"],
+      "properties": {
+        "root": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Root directory for the enumeration."
+        },
+        "pattern": {
+          "type": "array",
+          "description": "Glob patterns for file/directory names.",
+          "items": { "type": "string", "minLength": 1 },
+          "maxItems": 32
+        },
+        "extension": {
+          "type": "array",
+          "description": "File extensions to include (without dot).",
+          "items": { "type": "string", "minLength": 1 },
+          "maxItems": 32
+        },
+        "exclude": {
+          "type": "array",
+          "description": "Patterns to exclude.",
+          "items": { "type": "string", "minLength": 1 },
+          "maxItems": 128
+        },
+        "type": {
+          "type": "string",
+          "enum": ["file", "directory", "any"],
+          "default": "file",
+          "description": "Type of entries to return."
+        },
+        "max_depth": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 100,
+          "default": null,
+          "description": "Maximum directory depth."
+        },
+        "max_results": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50000,
+          "default": 1000,
+          "description": "Maximum number of results."
+        },
+        "format": {
+          "type": "string",
+          "enum": ["auto", "human", "jsonl"],
+          "default": "auto"
+        },
+        "policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["hidden", "follow", "no_ignore"],
+          "properties": {
+            "hidden": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include hidden files."
+            },
+            "follow": {
+              "type": "boolean",
+              "default": false,
+              "description": "Follow symlinks."
+            },
+            "no_ignore": {
+              "type": "boolean",
+              "default": false,
+              "description": "Ignore .gitignore rules."
+            }
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Rationale for parameter choices.",
+      "properties": {
+        "strategy": { "type": "string", "minLength": 1 },
+        "scope": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

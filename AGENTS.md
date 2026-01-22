@@ -9,7 +9,7 @@ This repository contains the ASI (Agent Skill Interface) specification and suppo
 
 ## References
 
-- Documentation entrypoints: `docs/spec/.INDEX.md`, `docs/design-principles/.INDEX.md`, `docs/patterns/.INDEX.md`, `docs/design/specs/.INDEX.md`
+- Documentation entrypoints: `docs/manifesto/.INDEX.md`, `docs/design/.INDEX.md`
 - Fetching entrypoints: `llms.txt`
 
 ## Rules

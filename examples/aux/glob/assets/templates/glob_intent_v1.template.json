@@ -1,0 +1,10 @@
+{
+  "schema": "glob_intent_v1",
+  "prompt": "",
+  "assumptions": [],
+  "hints": {
+    "roots": [],
+    "extensions": [],
+    "exclude_patterns": []
+  }
+}
