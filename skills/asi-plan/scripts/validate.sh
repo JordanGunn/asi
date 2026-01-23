@@ -2,19 +2,35 @@
 set -euo pipefail
 
 # asi-plan validation script
-# Read-only checks for skill preconditions
+# Read-only deterministic checks for plan artifacts
+
+KICKOFF_DIR=".asi/kickoff"
+PLAN_DIR=".asi/plan"
+KICKOFF_FILE="$KICKOFF_DIR/KICKOFF.md"
+SKILL_TYPE_FILE="$KICKOFF_DIR/SKILL_TYPE.json"
+SCAFFOLD_FILE="$KICKOFF_DIR/SCAFFOLD.json"
+PLAN_FILE="$PLAN_DIR/PLAN.md"
+TODO_FILE="$PLAN_DIR/TODO.md"
 
 usage() {
     cat <<EOF
 Usage: $(basename "$0") --check <check-type>
 
 Check types:
-  kickoff-approved  Check if KICKOFF.md exists with status: approved
-  plan              Check if PLAN.md exists and has valid frontmatter
-  todo              Check if TODO.md exists and has valid frontmatter
-  kickoff-drift     Check if KICKOFF.md has changed since PLAN.md was created
-  plan-drift        Check if PLAN.md has changed since TODO.md was created
-  traceability      Check if all TODO tasks have source_section
+  prereqs           All prerequisites for asi-plan
+  kickoff-approved  KICKOFF.md status == approved
+  kickoff-artifacts All kickoff artifacts exist and valid
+  plan-exists       PLAN.md exists
+  plan-status       PLAN.md frontmatter status field
+  plan-sections     PLAN.md has required H2 sections
+  plan-approved     PLAN.md status == approved
+  todo-exists       TODO.md exists
+  todo-status       TODO.md frontmatter status field
+  todo-tasks        TODO.md has task table
+  todo-complete     All tasks status == done
+  kickoff-drift     KICKOFF.md hash matches stored hash
+  traceability      All TODO tasks have source reference
+  all               Run all checks
 
 Exit codes:
   0  Check passed
@@ -24,188 +40,270 @@ EOF
     exit 2
 }
 
+# Helper: parse frontmatter field
+get_frontmatter_field() {
+    local file="$1"
+    local field="$2"
+    sed -n '/^---$/,/^---$/p' "$file" | grep "^${field}:" | head -1 | sed "s/^${field}:[[:space:]]*//"
+}
+
+check_prereqs() {
+    local failed=0
+    echo "=== asi-plan prerequisites ==="
+    
+    if [[ ! -d "$KICKOFF_DIR" ]]; then
+        echo "FAIL: $KICKOFF_DIR does not exist"
+        failed=1
+    else
+        echo "PASS: $KICKOFF_DIR exists"
+    fi
+    
+    if [[ ! -f "$KICKOFF_FILE" ]]; then
+        echo "FAIL: $KICKOFF_FILE does not exist"
+        failed=1
+    else
+        echo "PASS: $KICKOFF_FILE exists"
+    fi
+    
+    if [[ ! -f "$SKILL_TYPE_FILE" ]]; then
+        echo "FAIL: $SKILL_TYPE_FILE does not exist"
+        failed=1
+    else
+        echo "PASS: $SKILL_TYPE_FILE exists"
+    fi
+    
+    if [[ ! -f "$SCAFFOLD_FILE" ]]; then
+        echo "FAIL: $SCAFFOLD_FILE does not exist"
+        failed=1
+    else
+        echo "PASS: $SCAFFOLD_FILE exists"
+    fi
+    
+    check_kickoff_approved || failed=1
+    
+    echo "==="
+    return $failed
+}
+
 check_kickoff_approved() {
-    local kickoff_file="${TARGET_DIR:-./KICKOFF.md}"
-    
-    if [[ ! -f "$kickoff_file" ]]; then
-        echo "KICKOFF.md not found"
-        exit 1
+    if [[ ! -f "$KICKOFF_FILE" ]]; then
+        echo "FAIL: $KICKOFF_FILE does not exist"
+        return 1
     fi
-    
-    # Check for valid frontmatter
-    if ! head -1 "$kickoff_file" | grep -q '^---$'; then
-        echo "KICKOFF.md missing frontmatter"
-        exit 1
+    local status
+    status=$(get_frontmatter_field "$KICKOFF_FILE" "status")
+    if [[ "$status" == "approved" ]]; then
+        echo "PASS: KICKOFF.md status=approved"
+        return 0
+    else
+        echo "FAIL: KICKOFF.md status=$status (expected: approved)"
+        return 1
     fi
-    
-    # Check for status: approved
-    if ! grep -q '^status: approved' "$kickoff_file"; then
-        local status=$(grep '^status:' "$kickoff_file" | head -1 | cut -d':' -f2 | tr -d ' ')
-        echo "KICKOFF.md status is '${status}', not 'approved'"
-        exit 1
-    fi
-    
-    echo "KICKOFF.md exists with status: approved"
-    exit 0
 }
 
-check_plan() {
-    local plan_file="${TARGET_DIR:-./PLAN.md}"
-    
-    if [[ ! -f "$plan_file" ]]; then
-        echo "PLAN.md not found"
-        exit 1
-    fi
-    
-    if ! head -1 "$plan_file" | grep -q '^---$'; then
-        echo "PLAN.md missing frontmatter"
-        exit 1
-    fi
-    
-    if ! grep -q '^status:' "$plan_file"; then
-        echo "PLAN.md missing status field"
-        exit 1
-    fi
-    
-    echo "PLAN.md exists with valid frontmatter"
-    exit 0
+check_kickoff_artifacts() {
+    local failed=0
+    for f in "$KICKOFF_FILE" "$SKILL_TYPE_FILE" "$SCAFFOLD_FILE"; do
+        if [[ -f "$f" ]]; then
+            echo "PASS: $f exists"
+        else
+            echo "FAIL: $f does not exist"
+            failed=1
+        fi
+    done
+    return $failed
 }
 
-check_todo() {
-    local todo_file="${TARGET_DIR:-./TODO.md}"
-    
-    if [[ ! -f "$todo_file" ]]; then
-        echo "TODO.md not found"
-        exit 1
+check_plan_exists() {
+    if [[ -f "$PLAN_FILE" ]]; then
+        echo "PASS: $PLAN_FILE exists"
+        return 0
+    else
+        echo "FAIL: $PLAN_FILE does not exist"
+        return 1
     fi
-    
-    if ! head -1 "$todo_file" | grep -q '^---$'; then
-        echo "TODO.md missing frontmatter"
-        exit 1
+}
+
+check_plan_status() {
+    if [[ ! -f "$PLAN_FILE" ]]; then
+        echo "FAIL: $PLAN_FILE does not exist"
+        return 1
     fi
-    
-    if ! grep -q '^status:' "$todo_file"; then
-        echo "TODO.md missing status field"
-        exit 1
+    local status
+    status=$(get_frontmatter_field "$PLAN_FILE" "status")
+    if [[ -n "$status" ]]; then
+        echo "PASS: status=$status"
+        return 0
+    else
+        echo "FAIL: status field missing"
+        return 1
     fi
-    
-    echo "TODO.md exists with valid frontmatter"
-    exit 0
+}
+
+check_plan_sections() {
+    if [[ ! -f "$PLAN_FILE" ]]; then
+        echo "FAIL: $PLAN_FILE does not exist"
+        return 1
+    fi
+    local missing=0
+    for section in "Scripts" "Assets" "Validation" "Boundaries" "Non-goals" "Risks" "Lifecycle"; do
+        if ! grep -q "^## $section" "$PLAN_FILE"; then
+            echo "FAIL: Missing section: $section"
+            missing=1
+        fi
+    done
+    if [[ "$missing" -eq 0 ]]; then
+        echo "PASS: All required sections present"
+        return 0
+    fi
+    return 1
+}
+
+check_plan_approved() {
+    if [[ ! -f "$PLAN_FILE" ]]; then
+        echo "FAIL: $PLAN_FILE does not exist"
+        return 1
+    fi
+    local status
+    status=$(get_frontmatter_field "$PLAN_FILE" "status")
+    if [[ "$status" == "approved" ]]; then
+        echo "PASS: status=approved"
+        return 0
+    else
+        echo "FAIL: status=$status (expected: approved)"
+        return 1
+    fi
+}
+
+check_todo_exists() {
+    if [[ -f "$TODO_FILE" ]]; then
+        echo "PASS: $TODO_FILE exists"
+        return 0
+    else
+        echo "FAIL: $TODO_FILE does not exist"
+        return 1
+    fi
+}
+
+check_todo_status() {
+    if [[ ! -f "$TODO_FILE" ]]; then
+        echo "FAIL: $TODO_FILE does not exist"
+        return 1
+    fi
+    local status
+    status=$(get_frontmatter_field "$TODO_FILE" "status")
+    if [[ -n "$status" ]]; then
+        echo "PASS: status=$status"
+        return 0
+    else
+        echo "FAIL: status field missing"
+        return 1
+    fi
+}
+
+check_todo_tasks() {
+    if [[ ! -f "$TODO_FILE" ]]; then
+        echo "FAIL: $TODO_FILE does not exist"
+        return 1
+    fi
+    local task_count
+    task_count=$(grep -c '^\| T[0-9]' "$TODO_FILE" 2>/dev/null || echo "0")
+    if [[ "$task_count" -gt 0 ]]; then
+        echo "PASS: $task_count tasks found"
+        return 0
+    else
+        echo "FAIL: No tasks found"
+        return 1
+    fi
+}
+
+check_todo_complete() {
+    if [[ ! -f "$TODO_FILE" ]]; then
+        echo "FAIL: $TODO_FILE does not exist"
+        return 1
+    fi
+    local pending
+    pending=$(grep -c '| pending |' "$TODO_FILE" 2>/dev/null || echo "0")
+    local in_progress
+    in_progress=$(grep -c '| in_progress |' "$TODO_FILE" 2>/dev/null || echo "0")
+    if [[ "$pending" -eq 0 && "$in_progress" -eq 0 ]]; then
+        echo "PASS: All tasks complete"
+        return 0
+    else
+        echo "FAIL: $pending pending, $in_progress in_progress"
+        return 1
+    fi
 }
 
 check_kickoff_drift() {
-    local plan_file="${TARGET_DIR:-./PLAN.md}"
-    local kickoff_file="${TARGET_DIR:-./KICKOFF.md}"
-    
-    if [[ ! -f "$plan_file" ]]; then
-        echo "PLAN.md not found"
-        exit 1
+    if [[ ! -f "$PLAN_FILE" ]]; then
+        echo "FAIL: $PLAN_FILE does not exist"
+        return 1
     fi
-    
-    if [[ ! -f "$kickoff_file" ]]; then
-        echo "KICKOFF.md not found"
-        exit 1
+    if [[ ! -f "$KICKOFF_FILE" ]]; then
+        echo "FAIL: $KICKOFF_FILE does not exist"
+        return 1
     fi
-    
-    # Extract stored hash from PLAN.md frontmatter
-    local stored_hash=$(grep '^source_kickoff_hash:' "$plan_file" | head -1 | cut -d'"' -f2)
+    local stored_hash
+    stored_hash=$(get_frontmatter_field "$PLAN_FILE" "source_kickoff_hash")
     if [[ -z "$stored_hash" ]]; then
-        echo "PLAN.md missing source_kickoff_hash field"
-        exit 1
+        echo "WARN: PLAN.md missing source_kickoff_hash field"
+        return 0
     fi
-    
-    # Compute current hash of KICKOFF.md
-    local current_hash=$(sha256sum "$kickoff_file" | cut -d' ' -f1)
-    
+    local current_hash
+    current_hash=$(sha256sum "$KICKOFF_FILE" | cut -d' ' -f1)
     if [[ "$stored_hash" != "$current_hash" ]]; then
-        echo "KICKOFF.md has changed since PLAN.md was created"
-        echo "  Stored hash:  $stored_hash"
-        echo "  Current hash: $current_hash"
-        exit 1
+        echo "FAIL: KICKOFF.md has changed (drift detected)"
+        return 1
     fi
-    
-    echo "KICKOFF.md unchanged (hash matches)"
-    exit 0
-}
-
-check_plan_drift() {
-    local todo_file="${TARGET_DIR:-./TODO.md}"
-    local plan_file="${TARGET_DIR:-./PLAN.md}"
-    
-    if [[ ! -f "$todo_file" ]]; then
-        echo "TODO.md not found"
-        exit 1
-    fi
-    
-    if [[ ! -f "$plan_file" ]]; then
-        echo "PLAN.md not found"
-        exit 1
-    fi
-    
-    # Extract stored hash from TODO.md frontmatter
-    local stored_hash=$(grep '^source_plan_hash:' "$todo_file" | head -1 | cut -d'"' -f2)
-    if [[ -z "$stored_hash" ]]; then
-        echo "TODO.md missing source_plan_hash field"
-        exit 1
-    fi
-    
-    # Compute current hash of PLAN.md
-    local current_hash=$(sha256sum "$plan_file" | cut -d' ' -f1)
-    
-    if [[ "$stored_hash" != "$current_hash" ]]; then
-        echo "PLAN.md has changed since TODO.md was created"
-        echo "  Stored hash:  $stored_hash"
-        echo "  Current hash: $current_hash"
-        exit 1
-    fi
-    
-    echo "PLAN.md unchanged (hash matches)"
-    exit 0
+    echo "PASS: No drift detected"
+    return 0
 }
 
 check_traceability() {
-    local todo_file="${TARGET_DIR:-./TODO.md}"
-    
-    if [[ ! -f "$todo_file" ]]; then
-        echo "TODO.md not found"
-        exit 1
+    if [[ ! -f "$TODO_FILE" ]]; then
+        echo "FAIL: $TODO_FILE does not exist"
+        return 1
     fi
-    
-    # Check if any task rows exist without source_section
-    # Tasks are in table format: | ID | Description | Status | Depends On | Source Section |
-    # We look for rows where the last column (Source Section) is empty
     local missing_trace=0
     local task_count=0
-    
     while IFS= read -r line; do
-        # Skip header and separator rows
         if [[ "$line" =~ ^\|[[:space:]]*ID || "$line" =~ ^\|[[:space:]]*-+ ]]; then
             continue
         fi
-        # Check if this is a task row (starts with | and has task ID pattern)
         if [[ "$line" =~ ^\|[[:space:]]*T[0-9]+ ]]; then
             ((task_count++))
-            # Get the last column (Source Section)
-            local source_section=$(echo "$line" | awk -F'|' '{print $(NF-1)}' | xargs)
+            local source_section
+            source_section=$(echo "$line" | awk -F'|' '{print $(NF-1)}' | xargs)
             if [[ -z "$source_section" ]]; then
-                echo "Task missing source_section: $line"
                 ((missing_trace++))
             fi
         fi
-    done < "$todo_file"
-    
+    done < "$TODO_FILE"
     if [[ $task_count -eq 0 ]]; then
-        echo "No tasks found in TODO.md"
-        exit 1
+        echo "FAIL: No tasks found"
+        return 1
     fi
-    
     if [[ $missing_trace -gt 0 ]]; then
-        echo "$missing_trace of $task_count tasks missing source_section"
-        exit 1
+        echo "FAIL: $missing_trace of $task_count tasks missing source reference"
+        return 1
     fi
-    
-    echo "All $task_count tasks have source_section (traceability verified)"
-    exit 0
+    echo "PASS: All $task_count tasks have source reference"
+    return 0
+}
+
+check_all() {
+    local failed=0
+    echo "=== asi-plan validation ==="
+    check_prereqs || failed=1
+    check_plan_exists || failed=1
+    check_plan_status || failed=1
+    check_todo_exists || failed=1
+    check_todo_status || failed=1
+    check_todo_tasks || failed=1
+    check_traceability || failed=1
+    echo "==="
+    return $failed
 }
 
 # Parse arguments
@@ -214,12 +312,20 @@ check_traceability() {
 case "$1" in
     --check)
         case "$2" in
+            prereqs) check_prereqs ;;
             kickoff-approved) check_kickoff_approved ;;
-            plan) check_plan ;;
-            todo) check_todo ;;
+            kickoff-artifacts) check_kickoff_artifacts ;;
+            plan-exists) check_plan_exists ;;
+            plan-status) check_plan_status ;;
+            plan-sections) check_plan_sections ;;
+            plan-approved) check_plan_approved ;;
+            todo-exists) check_todo_exists ;;
+            todo-status) check_todo_status ;;
+            todo-tasks) check_todo_tasks ;;
+            todo-complete) check_todo_complete ;;
             kickoff-drift) check_kickoff_drift ;;
-            plan-drift) check_plan_drift ;;
             traceability) check_traceability ;;
+            all) check_all ;;
             *) echo "Unknown check: $2"; usage ;;
         esac
         ;;

@@ -24,11 +24,9 @@ metadata:
     - assets/schemas/todo_v1.schema.json
     - assets/templates/PLAN.template.md
     - assets/templates/TODO.template.md
-    - assets/templates/QUESTIONS.template.md
   artifacts:
-    - PLAN.md
-    - TODO.md
-    - QUESTIONS.md
+    - .asi/plan/PLAN.md
+    - .asi/plan/TODO.md
   keywords:
     - plan
     - decomposition

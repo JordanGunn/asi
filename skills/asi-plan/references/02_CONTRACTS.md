@@ -2,11 +2,21 @@
 
 ## Contract declaration
 
-This skill uses a single reasoning contract: the **Plan Intent Contract**.
+This skill uses the **Plan Intent Contract** and ingests kickoff artifacts.
+
+## Input Artifacts (from asi-kickoff)
+
+The skill reads from `.asi/kickoff/`:
+
+| Artifact | Schema | Purpose |
+| -------- | ------ | ------- |
+| `KICKOFF.md` | — | High-level design, must be `status: approved` |
+| `SKILL_TYPE.json` | `skill_type_v1.schema.json` | Single or grouped skill decision |
+| `SCAFFOLD.json` | `*_scaffold_v1.schema.json` | Directory structure to create |
 
 ## Plan Intent Contract
 
-The agent must derive structured intent from the user's request and KICKOFF.md content.
+The agent must derive structured intent from kickoff artifacts.
 
 **Schema:** `assets/schemas/plan_v1.schema.json`
 
@@ -14,14 +24,22 @@ The agent must derive structured intent from the user's request and KICKOFF.md c
 
 | Field | Source | Constraint |
 | ----- | ------ | ---------- |
-| `source_kickoff` | User prompt or context | Must point to approved KICKOFF.md |
-| `target_directory` | User prompt or default | Defaults to KICKOFF.md directory |
+| `kickoff_path` | Fixed | `.asi/kickoff/KICKOFF.md` |
+| `skill_type_path` | Fixed | `.asi/kickoff/SKILL_TYPE.json` |
+| `scaffold_path` | Fixed | `.asi/kickoff/SCAFFOLD.json` |
+
+### Validation before proceeding
+
+- `.asi/kickoff/KICKOFF.md` must exist with `status: approved`
+- `.asi/kickoff/SKILL_TYPE.json` must exist and be valid
+- `.asi/kickoff/SCAFFOLD.json` must exist and be valid
 
 ### Disallowed derivations
 
 - Do not proceed if KICKOFF.md status is not `approved`
-- Do not infer tasks not traceable to KICKOFF.md
+- Do not infer tasks not traceable to KICKOFF.md or SCAFFOLD.json
 - Do not expand scope beyond KICKOFF.md boundaries
+- Do not modify kickoff artifacts
 
 ## Output contracts
 

@@ -21,12 +21,17 @@ metadata:
     - scripts/validate.ps1
   assets:
     - assets/schemas/kickoff_v1.schema.json
+    - assets/schemas/skill_type_v1.schema.json
+    - assets/schemas/single_skill_scaffold_v1.schema.json
+    - assets/schemas/grouped_skill_scaffold_v1.schema.json
     - assets/templates/KICKOFF.template.md
     - assets/templates/QUESTIONS.template.md
     - assets/procedure/
   artifacts:
-    - KICKOFF.md
-    - QUESTIONS.md
+    - .asi/kickoff/KICKOFF.md
+    - .asi/kickoff/QUESTIONS.md
+    - .asi/kickoff/SKILL_TYPE.json
+    - .asi/kickoff/SCAFFOLD.json
   keywords:
     - kickoff
     - planning

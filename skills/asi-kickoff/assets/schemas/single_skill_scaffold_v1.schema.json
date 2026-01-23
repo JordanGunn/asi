@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Single Skill Scaffold",
+  "description": "Scaffolding artifact for a single skill. Produces SCAFFOLD.json artifact.",
+  "type": "object",
+  "required": ["skill_name", "target_directory", "structure", "inference_log"],
+  "properties": {
+    "skill_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Canonical skill identifier"
+    },
+    "target_directory": {
+      "type": "string",
+      "description": "Base directory where skill will be created"
+    },
+    "structure": {
+      "type": "object",
+      "required": ["directories", "files"],
+      "properties": {
+        "directories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Directories to create (relative to target_directory)"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "template"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "File path relative to target_directory"
+              },
+              "template": {
+                "type": "string",
+                "description": "Template identifier or 'empty' for empty file"
+              }
+            },
+            "additionalProperties": false
+          },
+          "description": "Files to create with their template sources"
+        }
+      },
+      "additionalProperties": false
+    },
+    "inference_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["field", "value", "source"],
+        "properties": {
+          "field": {
+            "type": "string",
+            "description": "Which field was inferred"
+          },
+          "value": {
+            "type": "string",
+            "description": "The inferred value"
+          },
+          "source": {
+            "type": "string",
+            "enum": ["user_explicit", "user_implicit", "agent_derived"],
+            "description": "How the value was determined"
+          },
+          "rationale": {
+            "type": "string",
+            "description": "Why this value was chosen (required if agent_derived)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Audit log of all inferred values"
+    }
+  },
+  "additionalProperties": false
+}

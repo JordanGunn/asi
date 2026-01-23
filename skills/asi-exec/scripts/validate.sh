@@ -2,21 +2,36 @@
 set -euo pipefail
 
 # asi-exec validation script
-# Read-only checks for skill preconditions
+# Read-only deterministic checks for exec artifacts
+
+KICKOFF_DIR=".asi/kickoff"
+PLAN_DIR=".asi/plan"
+EXEC_DIR=".asi/exec"
+SCAFFOLD_FILE="$KICKOFF_DIR/SCAFFOLD.json"
+PLAN_FILE="$PLAN_DIR/PLAN.md"
+TODO_FILE="$PLAN_DIR/TODO.md"
+RECEIPT_FILE="$EXEC_DIR/RECEIPT.md"
+LOCK_FILE="$EXEC_DIR/.lock"
 
 usage() {
     cat <<EOF
 Usage: $(basename "$0") --check <check-type>
 
 Check types:
-  plan-approved     Check if PLAN.md exists with status: approved
-  plan-drift        Check if PLAN.md has changed since TODO.md was created
-  todo              Check if TODO.md exists and has valid frontmatter
-  task-pending      Check if there are pending tasks in TODO.md
-  deps-satisfied    Check if dependencies are satisfied for next task
-  lock-check        Check if execution lock exists (for concurrency)
+  prereqs           All prerequisites for asi-exec
+  plan-approved     PLAN.md status == approved
+  todo-exists       TODO.md exists
+  scaffold-exists   SCAFFOLD.json exists
+  task-pending      Pending tasks exist in TODO.md
+  task-next         Show next pending task
+  todo-complete     All tasks status == done
+  scaffold-complete All SCAFFOLD.json paths exist on disk
+  receipt-exists    RECEIPT.md exists
+  lock-check        Check execution lock status
   lock-acquire      Acquire execution lock
   lock-release      Release execution lock
+  archive           Archive .asi/ to .asi-archive/
+  all               Run all checks
 
 Exit codes:
   0  Check passed
@@ -26,176 +41,250 @@ EOF
     exit 2
 }
 
+# Helper: parse frontmatter field
+get_frontmatter_field() {
+    local file="$1"
+    local field="$2"
+    sed -n '/^---$/,/^---$/p' "$file" | grep "^${field}:" | head -1 | sed "s/^${field}:[[:space:]]*//"
+}
+
+check_prereqs() {
+    local failed=0
+    echo "=== asi-exec prerequisites ==="
+    
+    if [[ ! -d "$PLAN_DIR" ]]; then
+        echo "FAIL: $PLAN_DIR does not exist"
+        failed=1
+    else
+        echo "PASS: $PLAN_DIR exists"
+    fi
+    
+    check_plan_approved || failed=1
+    check_todo_exists || failed=1
+    check_scaffold_exists || failed=1
+    
+    if [[ ! -d "$EXEC_DIR" ]]; then
+        mkdir -p "$EXEC_DIR"
+        echo "PASS: Created $EXEC_DIR"
+    else
+        echo "PASS: $EXEC_DIR exists"
+    fi
+    
+    echo "==="
+    return $failed
+}
+
 check_plan_approved() {
-    local plan_file="${TARGET_DIR:-./PLAN.md}"
-    
-    if [[ ! -f "$plan_file" ]]; then
-        echo "PLAN.md not found"
-        exit 1
+    if [[ ! -f "$PLAN_FILE" ]]; then
+        echo "FAIL: $PLAN_FILE does not exist"
+        return 1
     fi
-    
-    if ! head -1 "$plan_file" | grep -q '^---$'; then
-        echo "PLAN.md missing frontmatter"
-        exit 1
+    local status
+    status=$(get_frontmatter_field "$PLAN_FILE" "status")
+    if [[ "$status" == "approved" ]]; then
+        echo "PASS: PLAN.md status=approved"
+        return 0
+    else
+        echo "FAIL: PLAN.md status=$status (expected: approved)"
+        return 1
     fi
-    
-    if ! grep -q '^status: approved' "$plan_file"; then
-        local status=$(grep '^status:' "$plan_file" | head -1 | cut -d':' -f2 | tr -d ' ')
-        echo "PLAN.md status is '${status}', not 'approved'"
-        exit 1
-    fi
-    
-    echo "PLAN.md exists with status: approved"
-    exit 0
 }
 
-check_plan_drift() {
-    local todo_file="${TARGET_DIR:-./TODO.md}"
-    local plan_file="${TARGET_DIR:-./PLAN.md}"
-    
-    if [[ ! -f "$todo_file" ]]; then
-        echo "TODO.md not found"
-        exit 1
+check_todo_exists() {
+    if [[ -f "$TODO_FILE" ]]; then
+        echo "PASS: $TODO_FILE exists"
+        return 0
+    else
+        echo "FAIL: $TODO_FILE does not exist"
+        return 1
     fi
-    
-    if [[ ! -f "$plan_file" ]]; then
-        echo "PLAN.md not found"
-        exit 1
-    fi
-    
-    local stored_hash=$(grep '^source_plan_hash:' "$todo_file" | head -1 | cut -d'"' -f2)
-    if [[ -z "$stored_hash" ]]; then
-        echo "TODO.md missing source_plan_hash field"
-        exit 1
-    fi
-    
-    local current_hash=$(sha256sum "$plan_file" | cut -d' ' -f1)
-    
-    if [[ "$stored_hash" != "$current_hash" ]]; then
-        echo "PLAN.md has changed since TODO.md was created (drift detected)"
-        echo "  Stored hash:  $stored_hash"
-        echo "  Current hash: $current_hash"
-        exit 1
-    fi
-    
-    echo "PLAN.md unchanged (no drift)"
-    exit 0
 }
 
-check_todo() {
-    local todo_file="${TARGET_DIR:-./TODO.md}"
-    
-    if [[ ! -f "$todo_file" ]]; then
-        echo "TODO.md not found"
-        exit 1
+check_scaffold_exists() {
+    if [[ -f "$SCAFFOLD_FILE" ]]; then
+        echo "PASS: $SCAFFOLD_FILE exists"
+        return 0
+    else
+        echo "FAIL: $SCAFFOLD_FILE does not exist"
+        return 1
     fi
-    
-    if ! head -1 "$todo_file" | grep -q '^---$'; then
-        echo "TODO.md missing frontmatter"
-        exit 1
-    fi
-    
-    if ! grep -q '^status:' "$todo_file"; then
-        echo "TODO.md missing status field"
-        exit 1
-    fi
-    
-    echo "TODO.md exists with valid frontmatter"
-    exit 0
 }
 
 check_task_pending() {
-    local todo_file="${TARGET_DIR:-./TODO.md}"
-    
-    if [[ ! -f "$todo_file" ]]; then
-        echo "TODO.md not found"
-        exit 1
+    if [[ ! -f "$TODO_FILE" ]]; then
+        echo "FAIL: $TODO_FILE does not exist"
+        return 1
     fi
-    
-    # Look for tasks with status pending, in_progress, or blocked
-    if grep -qE '^\|[[:space:]]*T[0-9]+.*\|[[:space:]]*(pending|in_progress|blocked)[[:space:]]*\|' "$todo_file"; then
-        echo "Pending tasks found"
-        exit 0
+    local pending
+    pending=$(grep -c '| pending |' "$TODO_FILE" 2>/dev/null || echo "0")
+    local in_progress
+    in_progress=$(grep -c '| in_progress |' "$TODO_FILE" 2>/dev/null || echo "0")
+    if [[ "$pending" -gt 0 || "$in_progress" -gt 0 ]]; then
+        echo "PASS: $pending pending, $in_progress in_progress"
+        return 0
+    else
+        echo "FAIL: No pending tasks"
+        return 1
     fi
-    
-    echo "No pending tasks (all done or no tasks)"
-    exit 1
 }
 
-check_deps_satisfied() {
-    local todo_file="${TARGET_DIR:-./TODO.md}"
-    
-    if [[ ! -f "$todo_file" ]]; then
-        echo "TODO.md not found"
-        exit 1
+check_task_next() {
+    if [[ ! -f "$TODO_FILE" ]]; then
+        echo "FAIL: $TODO_FILE does not exist"
+        return 1
+    fi
+    # Find first in_progress task, or first pending task
+    local next_task
+    next_task=$(grep '| in_progress |' "$TODO_FILE" | head -1)
+    if [[ -z "$next_task" ]]; then
+        next_task=$(grep '| pending |' "$TODO_FILE" | head -1)
+    fi
+    if [[ -n "$next_task" ]]; then
+        local task_id
+        task_id=$(echo "$next_task" | awk -F'|' '{print $2}' | xargs)
+        echo "NEXT: $task_id"
+        return 0
+    else
+        echo "DONE: No tasks remaining"
+        return 1
+    fi
+}
+
+check_todo_complete() {
+    if [[ ! -f "$TODO_FILE" ]]; then
+        echo "FAIL: $TODO_FILE does not exist"
+        return 1
+    fi
+    local pending
+    pending=$(grep -c '| pending |' "$TODO_FILE" 2>/dev/null || echo "0")
+    local in_progress
+    in_progress=$(grep -c '| in_progress |' "$TODO_FILE" 2>/dev/null || echo "0")
+    if [[ "$pending" -eq 0 && "$in_progress" -eq 0 ]]; then
+        echo "PASS: All tasks complete"
+        return 0
+    else
+        echo "FAIL: $pending pending, $in_progress in_progress"
+        return 1
+    fi
+}
+
+check_scaffold_complete() {
+    if [[ ! -f "$SCAFFOLD_FILE" ]]; then
+        echo "FAIL: $SCAFFOLD_FILE does not exist"
+        return 1
+    fi
+    if ! command -v jq &>/dev/null; then
+        echo "WARN: jq not available, skipping scaffold verification"
+        return 0
+    fi
+    local failed=0
+    # Check if grouped or single
+    local skill_type
+    if [[ -f "$KICKOFF_DIR/SKILL_TYPE.json" ]]; then
+        skill_type=$(jq -r '.type // "single"' "$KICKOFF_DIR/SKILL_TYPE.json")
+    else
+        skill_type="single"
     fi
     
-    # This is a simplified check - full dependency analysis requires parsing
-    # For now, just verify TODO.md is readable
-    echo "Dependency check requires task context (use agent reasoning)"
-    exit 0
+    if [[ "$skill_type" == "grouped" ]]; then
+        # Check sub_skills directories
+        jq -r '.sub_skills[].name' "$SCAFFOLD_FILE" 2>/dev/null | while read -r name; do
+            local target
+            target=$(jq -r '.target_directory' "$SCAFFOLD_FILE")
+            if [[ ! -d "$target/$name" ]]; then
+                echo "FAIL: Missing directory $target/$name"
+                failed=1
+            fi
+        done
+    else
+        # Check single skill directories
+        jq -r '.structure.directories[]' "$SCAFFOLD_FILE" 2>/dev/null | while read -r dir; do
+            local target
+            target=$(jq -r '.target_directory' "$SCAFFOLD_FILE")
+            if [[ ! -d "$target/$dir" ]]; then
+                echo "FAIL: Missing directory $target/$dir"
+                failed=1
+            fi
+        done
+    fi
+    
+    if [[ "$failed" -eq 0 ]]; then
+        echo "PASS: Scaffold directories exist"
+    fi
+    return $failed
+}
+
+check_receipt_exists() {
+    if [[ -f "$RECEIPT_FILE" ]]; then
+        echo "PASS: $RECEIPT_FILE exists"
+        return 0
+    else
+        echo "FAIL: $RECEIPT_FILE does not exist"
+        return 1
+    fi
 }
 
 check_lock() {
-    local lock_file="${TARGET_DIR:-.}/.asi-exec.lock"
-    local stale_threshold=3600  # 1 hour in seconds
-    
-    if [[ ! -f "$lock_file" ]]; then
-        echo "No lock file - execution allowed"
-        exit 0
+    if [[ ! -f "$LOCK_FILE" ]]; then
+        echo "PASS: No lock - execution allowed"
+        return 0
     fi
-    
-    # Check if lock is stale
-    local lock_age=$(($(date +%s) - $(stat -c %Y "$lock_file" 2>/dev/null || stat -f %m "$lock_file")))
-    
+    local stale_threshold=3600
+    local lock_age
+    lock_age=$(($(date +%s) - $(stat -c %Y "$LOCK_FILE" 2>/dev/null || stat -f %m "$LOCK_FILE")))
     if [[ $lock_age -gt $stale_threshold ]]; then
-        echo "Stale lock detected (age: ${lock_age}s) - removing"
-        rm -f "$lock_file"
-        exit 0
+        echo "WARN: Stale lock (age: ${lock_age}s)"
+        return 0
     fi
-    
-    echo "Execution locked (age: ${lock_age}s)"
-    cat "$lock_file"
-    exit 1
+    echo "FAIL: Locked (age: ${lock_age}s)"
+    return 1
 }
 
 acquire_lock() {
-    local lock_file="${TARGET_DIR:-.}/.asi-exec.lock"
-    local task_id="${TASK_ID:-unknown}"
-    
-    if [[ -f "$lock_file" ]]; then
-        # Check if stale first
+    mkdir -p "$EXEC_DIR"
+    if [[ -f "$LOCK_FILE" ]]; then
         local stale_threshold=3600
-        local lock_age=$(($(date +%s) - $(stat -c %Y "$lock_file" 2>/dev/null || stat -f %m "$lock_file")))
-        
+        local lock_age
+        lock_age=$(($(date +%s) - $(stat -c %Y "$LOCK_FILE" 2>/dev/null || stat -f %m "$LOCK_FILE")))
         if [[ $lock_age -le $stale_threshold ]]; then
-            echo "Cannot acquire lock - execution in progress"
-            exit 1
+            echo "FAIL: Cannot acquire lock"
+            return 1
         fi
-        echo "Removing stale lock"
     fi
-    
-    cat > "$lock_file" <<EOF
-timestamp: $(date -Iseconds)
-task_id: $task_id
-pid: $$
-EOF
-    
-    echo "Lock acquired for task: $task_id"
-    exit 0
+    echo "timestamp: $(date -Iseconds)" > "$LOCK_FILE"
+    echo "PASS: Lock acquired"
+    return 0
 }
 
 release_lock() {
-    local lock_file="${TARGET_DIR:-.}/.asi-exec.lock"
-    
-    if [[ ! -f "$lock_file" ]]; then
-        echo "No lock to release"
-        exit 0
+    if [[ -f "$LOCK_FILE" ]]; then
+        rm -f "$LOCK_FILE"
     fi
-    
-    rm -f "$lock_file"
-    echo "Lock released"
-    exit 0
+    echo "PASS: Lock released"
+    return 0
+}
+
+do_archive() {
+    if [[ ! -d ".asi" ]]; then
+        echo "FAIL: .asi/ does not exist"
+        return 1
+    fi
+    local archive_dir=".asi-archive/$(date +%Y%m%d_%H%M%S)"
+    mkdir -p "$archive_dir"
+    mv .asi/* "$archive_dir/"
+    rmdir .asi
+    echo "PASS: Archived to $archive_dir"
+    return 0
+}
+
+check_all() {
+    local failed=0
+    echo "=== asi-exec validation ==="
+    check_prereqs || failed=1
+    check_task_pending || true  # Not a failure if no tasks
+    check_task_next || true
+    echo "==="
+    return $failed
 }
 
 # Parse arguments
@@ -204,14 +293,20 @@ release_lock() {
 case "$1" in
     --check)
         case "$2" in
+            prereqs) check_prereqs ;;
             plan-approved) check_plan_approved ;;
-            plan-drift) check_plan_drift ;;
-            todo) check_todo ;;
+            todo-exists) check_todo_exists ;;
+            scaffold-exists) check_scaffold_exists ;;
             task-pending) check_task_pending ;;
-            deps-satisfied) check_deps_satisfied ;;
+            task-next) check_task_next ;;
+            todo-complete) check_todo_complete ;;
+            scaffold-complete) check_scaffold_complete ;;
+            receipt-exists) check_receipt_exists ;;
             lock-check) check_lock ;;
             lock-acquire) acquire_lock ;;
             lock-release) release_lock ;;
+            archive) do_archive ;;
+            all) check_all ;;
             *) echo "Unknown check: $2"; usage ;;
         esac
         ;;

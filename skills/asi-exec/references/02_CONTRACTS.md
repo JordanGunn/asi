@@ -2,14 +2,24 @@
 
 ## Contract declaration
 
-This skill uses two reasoning contracts:
+This skill uses two reasoning contracts and ingests plan artifacts.
 
 1. **Exec Intent Contract** — What execution is requested
 2. **Exec Receipt Contract** — What was executed and the outcome
 
+## Input Artifacts (from asi-plan)
+
+The skill reads from `.asi/plan/` and `.asi/kickoff/`:
+
+| Artifact | Location | Purpose |
+| -------- | -------- | ------- |
+| `PLAN.md` | `.asi/plan/PLAN.md` | Implementation plan, must be `status: approved` |
+| `TODO.md` | `.asi/plan/TODO.md` | Task list with status tracking |
+| `SCAFFOLD.json` | `.asi/kickoff/SCAFFOLD.json` | Directory structure to create |
+
 ## Exec Intent Contract
 
-The agent must derive structured intent from the user's request.
+The agent must derive structured intent from plan artifacts.
 
 **Schema:** `assets/schemas/exec_intent_v1.schema.json`
 
@@ -17,8 +27,9 @@ The agent must derive structured intent from the user's request.
 
 | Field | Source | Constraint |
 | ----- | ------ | ---------- |
-| `source_plan` | Context or user | Must point to approved PLAN.md |
-| `source_todo` | Context or user | Must point to TODO.md |
+| `plan_path` | Fixed | `.asi/plan/PLAN.md` |
+| `todo_path` | Fixed | `.asi/plan/TODO.md` |
+| `scaffold_path` | Fixed | `.asi/kickoff/SCAFFOLD.json` |
 
 ### Optional derivations
 
@@ -29,8 +40,8 @@ The agent must derive structured intent from the user's request.
 
 ### Disallowed derivations
 
-- Do not execute if PLAN.md status is not `approved`
-- Do not execute tasks not in TODO.md
+- Do not execute if `.asi/plan/PLAN.md` status is not `approved`
+- Do not execute tasks not in `.asi/plan/TODO.md`
 - Do not infer tasks from PLAN.md sections directly
 
 ## Exec Receipt Contract

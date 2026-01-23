@@ -23,11 +23,9 @@ metadata:
     - assets/schemas/exec_intent_v1.schema.json
     - assets/schemas/exec_receipt_v1.schema.json
     - assets/templates/RECEIPT.template.md
-    - assets/templates/QUESTIONS.template.md
   artifacts:
-    - RECEIPT.md
-    - QUESTIONS.md
-    - (implementation files as defined in PLAN.md)
+    - .asi/exec/RECEIPT.md
+    - (implementation files as defined in .asi/plan/PLAN.md)
   keywords:
     - exec
     - execute
