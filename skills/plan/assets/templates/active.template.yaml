@@ -1,4 +1,0 @@
-name: "${plan_name}"
-created_at: "${timestamp}"
-status: active
-steps: []
