@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "step_output_v1.schema.json",
+  "title": "Kickoff Step Output Contract",
+  "description": "Schema for per-step reasoning outputs during asi-kickoff",
+  "type": "object",
+  "required": ["step", "output"],
+  "properties": {
+    "step": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6,
+      "description": "Step number being completed"
+    },
+    "output": {
+      "type": "object",
+      "description": "Step-specific output",
+      "oneOf": [
+        { "$ref": "#/$defs/step1_purpose" },
+        { "$ref": "#/$defs/step2_scaffold" },
+        { "$ref": "#/$defs/step3_deterministic" },
+        { "$ref": "#/$defs/step4_judgment" },
+        { "$ref": "#/$defs/step5_schemas" },
+        { "$ref": "#/$defs/step6_questions" }
+      ]
+    },
+    "reasoning_trace": {
+      "type": "string",
+      "description": "Brief explanation of reasoning for audit"
+    }
+  },
+  "$defs": {
+    "step1_purpose": {
+      "type": "object",
+      "required": ["what_it_does", "problem_solved", "non_goals", "asi_principles"],
+      "properties": {
+        "what_it_does": {
+          "type": "string",
+          "minLength": 20,
+          "description": "Primary function of the skill"
+        },
+        "problem_solved": {
+          "type": "string",
+          "minLength": 20,
+          "description": "Problem being addressed"
+        },
+        "non_goals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Explicit non-goals"
+        },
+        "asi_principles": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Applicable ASI principles"
+        }
+      }
+    },
+    "step2_scaffold": {
+      "type": "object",
+      "required": ["skill_type", "reasoning"],
+      "properties": {
+        "skill_type": {
+          "type": "string",
+          "enum": ["single", "grouped"],
+          "description": "Single skill or grouped skills"
+        },
+        "reasoning": {
+          "type": "string",
+          "minLength": 20,
+          "description": "Why this type was chosen"
+        },
+        "sub_skills": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "epistemic_profile"],
+            "properties": {
+              "name": { "type": "string" },
+              "epistemic_profile": {
+                "type": "string",
+                "enum": ["deterministic", "judgment-heavy", "mixed"]
+              }
+            }
+          },
+          "description": "Only required if skill_type is 'grouped'"
+        }
+      }
+    },
+    "step3_deterministic": {
+      "type": "object",
+      "required": ["mechanisms", "observable_signals"],
+      "properties": {
+        "mechanisms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "inputs", "outputs", "failure_conditions", "idempotent"],
+            "properties": {
+              "name": { "type": "string" },
+              "inputs": { "type": "array", "items": { "type": "string" } },
+              "outputs": { "type": "array", "items": { "type": "string" } },
+              "failure_conditions": { "type": "array", "items": { "type": "string" } },
+              "idempotent": { "type": "boolean" }
+            }
+          },
+          "description": "All deterministic mechanisms"
+        },
+        "observable_signals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Exit codes, files, hashes, etc."
+        },
+        "coverage_assessment": {
+          "type": "string",
+          "description": "Assessment of deterministic coverage completeness"
+        }
+      }
+    },
+    "step4_judgment": {
+      "type": "object",
+      "required": ["items"],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["decision", "why_not_deterministic", "category", "blocking_reason"],
+            "properties": {
+              "decision": { "type": "string" },
+              "why_not_deterministic": { "type": "string" },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "subjective_interpretation",
+                  "editorial_review",
+                  "multiple_valid_outcomes",
+                  "heuristic_selection",
+                  "agent_generated_input",
+                  "agent_interpreted_output"
+                ]
+              },
+              "blocking_reason": { "type": "string" }
+            }
+          },
+          "description": "Items requiring judgment"
+        },
+        "disallowed_shortcuts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Shortcuts that must not be taken"
+        }
+      }
+    },
+    "step5_schemas": {
+      "type": "object",
+      "required": ["intent_schema", "execution_plan_schema", "result_schema"],
+      "properties": {
+        "intent_schema": {
+          "type": "object",
+          "description": "Schema shape for intent (no logic)"
+        },
+        "execution_plan_schema": {
+          "type": "object",
+          "description": "Schema shape for execution plan (no logic)"
+        },
+        "result_schema": {
+          "type": "object",
+          "description": "Schema shape for result (no logic)"
+        }
+      }
+    },
+    "step6_questions": {
+      "type": "object",
+      "required": ["questions"],
+      "properties": {
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["question", "context"],
+            "properties": {
+              "question": { "type": "string" },
+              "context": { "type": "string" },
+              "blocking": { "type": "boolean", "default": false }
+            }
+          },
+          "description": "Open questions (capture only, do not answer)"
+        }
+      }
+    }
+  }
+}

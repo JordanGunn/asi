@@ -1,8 +1,7 @@
 # What ASI Is
 
 The **Agent Skill Interface (ASI)** is not a new protocol.
-It does not replace MCP.
-It does not redesign skills.
+It does not redesign skills or replace existing capability layers.
 
 ASI is a **behavioral contract**.
 

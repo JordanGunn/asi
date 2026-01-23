@@ -1,59 +1,86 @@
 # ASI (Agent Skill Interface)
 
-This repository contains a publication-grade, agent-followable specification for **Agent Skill Interface (ASI)**: a governance contract that defines **when reasoning is allowed**, **how scope is constructed**, **what may mutate**, and **how failure must surface**.
+**ASI** is a behavioral governance specification that proposes a concrete, repeatable approach to building auditable, deterministic, and productive agent skills.
 
-## What ASI is
+This repository contains a publication-grade, agent-followable specification that defines **when reasoning is allowed**, **how scope is constructed**, **what may mutate**, and **how failure must surface**.
 
-ASI is a **behavioral contract** (policy / governance layer) for agentic systems.
+---
 
-It defines:
+## Two Paths
 
-- deterministic surface reduction before reasoning
-- skills as the policy-gated entry point to capability
-- skill invocation that favors a single natural-language prompt (with explicit, reportable parameters when structured inputs exist)
-- strict passive behavior (observe/report; no silent action)
-- auditable state changes and explicit failure semantics
+> *"Do you want me to explain, or do you want to have some fun?"*
 
-## What ASI is not
+### 🎮 Just Use It
+
+Skip the theory. Invoke the skills directly:
+
+```text
+/asi-kickoff   → Design a new skill (produces KICKOFF.md)
+/asi-plan      → Plan the work (produces PLAN.md + TODO.md)  
+/asi-exec      → Execute with receipts (produces RECEIPT.md)
+```
+
+Or point your agent at the spec:
+
+```text
+Fetch https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/llms.txt
+```
+
+### 📖 Understand It
+
+Read the [Manifesto](docs/manifesto/.INDEX.md) to understand *why* ASI exists, then the [Design Documentation](docs/design/.INDEX.md) for *how* it works.
+
+---
+
+## Overview
+
+ASI addresses a fundamental problem: agents are powerful but unpredictable. Without governance, they reason over unbounded surfaces, make silent decisions, and produce results that cannot be audited or reproduced.
+
+ASI solves this by enforcing a structured execution flow where **determinism precedes reasoning** and **all discretion is contracted**:
+
+```mermaid
+flowchart TD
+    A[User Intent<br/><small>Natural Language Prompt</small>]
+    B[Reasoning Contract<br/><small>Input Entropy Control</small>]
+    C[Deterministic Execution<br/><small>Tools + Scripts</small>]
+    D[Judgment Contract<br/><small>Output Entropy Control</small>]
+    E[Artifacts & Outcomes<br/><small>Receipts + Results</small>]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+```
+
+| Layer | Purpose |
+|-------|---------|
+| **User Intent** | Natural language prompt—high entropy, incomplete, ambiguous |
+| **Reasoning Contract** | Bounds interpretation; reduces input to a form deterministic mechanisms can consume |
+| **Deterministic Execution** | Mechanical truth-making—reproducible, auditable, scriptable |
+| **Judgment Contract** | Constrains output discretion; governs selection, framing, recommendations |
+| **Artifacts & Outcomes** | Durable records (receipts, indexes) and user-facing results |
+
+## What ASI Defines
+
+- **Deterministic surface reduction** before reasoning begins
+- **Skills** as the policy-gated entry point to capability
+- **Reasoning and judgment contracts** that bound agent discretion
+- **Strict passive behavior** (observe/report; no silent action)
+- **Auditable state changes** and explicit failure semantics
+
+## What ASI is Not
 
 ASI is **not**:
 
 - a protocol or transport
 - a framework or SDK requirement
-- MCP (Model Context Protocol) or a replacement for MCP
-- “smart tools” that auto-run in the background
+- "smart tools" that auto-run in the background
 
-## Skill Design Pipeline
+## Skills
 
-This repository includes a three-stage pipeline for designing ASI-compliant skills:
+This repository includes reference skills that help design, plan, and implement skills using the principles defined in ASI.
 
-```
-asi-kickoff → asi-plan → asi-exec
-     │             │          │
-     ▼             ▼          ▼
-KICKOFF.md    PLAN.md     Implementation
-QUESTIONS.md  TODO.md     RECEIPT.md
-```
-
-### What the pipeline guarantees
-
-| Stage | Artifact | Guarantee |
-| ----- | -------- | --------- |
-| **asi-kickoff** | `KICKOFF.md` | No implementation without explicit design. Deterministic surface mapped. Judgment remainder documented. |
-| **asi-plan** | `PLAN.md`, `TODO.md` | No execution without approved plan. Tasks traceable to kickoff. Cascade invalidation if upstream changes. |
-| **asi-exec** | Implementation | No uncontrolled implementation. Single-task execution. Auditable receipts. Drift detection. |
-
-### Why this matters
-
-Most agent failures stem from premature action—jumping to code before understanding scope, silently drifting from requirements, or making decisions that should have been human-gated.
-
-This pipeline enforces **deliberate progression**:
-
-- **Design before planning** — Surface ambiguity early, not during implementation
-- **Plan before execution** — Decompose work into traceable, reviewable tasks
-- **Execute with receipts** — Every change is logged, every task is checkpointed
-
-The skills live in `skills/` and are themselves ASI-compliant. Use them to build more skills.
+See [docs/SKILLS.md](docs/SKILLS.md) for the skill design pipeline.
 
 ---
 

@@ -6,7 +6,7 @@ description: >
   This skill bridges high-level design to actionable tasks without implementation.
 metadata:
   author: Jordan Godau
-  version: 0.1.0
+  version: 0.2.0
   references:
     - references/00_ROUTER.md
     - references/01_SUMMARY.md
@@ -17,16 +17,25 @@ metadata:
     - references/06_PROCEDURE.md
     - references/07_FAILURES.md
   scripts:
+    - scripts/init.sh
+    - scripts/generate-tasks.sh
+    - scripts/inject.sh
+    - scripts/checkpoint.sh
     - scripts/validate.sh
     - scripts/validate.ps1
   assets:
     - assets/schemas/plan_v1.schema.json
     - assets/schemas/todo_v1.schema.json
+    - assets/schemas/step_output_v1.schema.json
     - assets/templates/PLAN.template.md
     - assets/templates/TODO.template.md
   artifacts:
+    - .asi/plan/KICKOFF_PARSED.json
+    - .asi/plan/tasks_scaffold.json
     - .asi/plan/PLAN.md
     - .asi/plan/TODO.md
+    - .asi/plan/STATE.json
+    - .asi/plan/step_*_output.json
   keywords:
     - plan
     - decomposition
@@ -37,4 +46,6 @@ metadata:
 
 # INSTRUCTIONS
 
-1. Refer to `metadata.references`.
+1. Run `scripts/init.sh` first (validates kickoff, parses artifacts, creates templates).
+2. Run `scripts/generate-tasks.sh` to create scaffold-derived tasks.
+3. Then refer to `metadata.references` for the procedure.

@@ -1,0 +1,22 @@
+{
+  "step": 1,
+  "output": {
+    "what_it_does": "Creates, manages, and tracks structured execution plans for agentic programming sessions. Provides deterministic plan lifecycle management (create, update, execute, archive) with schema-validated artifacts. Enables agents to break complex tasks into ordered steps, track progress, and maintain state across conversation boundaries.",
+    "problem_solved": "Agents currently lack persistent, structured planning mechanisms. Plans are often ad-hoc, lost between sessions, or inconsistently formatted. This skill provides: (1) A canonical plan format with schema validation, (2) Deterministic state management for multi-step tasks, (3) Progress tracking that survives session boundaries, (4) Clear handoff artifacts for resumption.",
+    "non_goals": [
+      "Does NOT implement tasks — only tracks them",
+      "Does NOT make judgment calls about task ordering — user or upstream skill decides",
+      "Does NOT manage dependencies between tasks — flat list only",
+      "Does NOT integrate with external project management tools",
+      "Does NOT provide time estimates or scheduling"
+    ],
+    "asi_principles": [
+      "Determinism first: All plan operations are scripted with predictable outcomes",
+      "Schema-validated artifacts: Plan format is enforced, not suggested",
+      "Minimal judgment: Agent role is constrained to user intent translation",
+      "State persistence: Plan state survives agent restarts and session boundaries",
+      "Auditability: All plan mutations are logged with timestamps"
+    ]
+  },
+  "reasoning_trace": "Designed to fill the gap between ad-hoc task lists and heavyweight project management. Focused on single-agent, single-session planning with persistence for multi-session work. Kept scope narrow to maximize deterministic coverage."
+}

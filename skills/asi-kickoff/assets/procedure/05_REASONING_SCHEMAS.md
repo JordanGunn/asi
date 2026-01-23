@@ -49,7 +49,7 @@ These produce artifacts that `asi-plan` inspects and `asi-exec` ingests.
 * Absence must be representable as data
 * Schemas must be **host-agnostic**
 
-  * no MCP assumptions
+  * no protocol assumptions
   * no IDE assumptions
   * no implicit environment or runtime coupling
 

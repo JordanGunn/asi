@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "plan_intent_v1.schema.json",
+  "title": "Plan Intent",
+  "description": "Schema for agent intent before script execution",
+  "type": "object",
+  "required": ["action"],
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": ["create", "add-step", "update-status", "status", "archive"],
+      "description": "Plan operation to perform"
+    },
+    "plan_name": {
+      "type": "string",
+      "description": "Required for create action"
+    },
+    "step_description": {
+      "type": "string",
+      "description": "Required for add-step action"
+    },
+    "after_step_id": {
+      "type": "string",
+      "pattern": "^S[0-9]{3}$",
+      "description": "Optional: insert after this step"
+    },
+    "step_id": {
+      "type": "string",
+      "pattern": "^S[0-9]{3}$",
+      "description": "Required for update-status action"
+    },
+    "new_status": {
+      "type": "string",
+      "enum": ["pending", "in_progress", "done", "skipped"],
+      "description": "Required for update-status action"
+    },
+    "format": {
+      "type": "string",
+      "enum": ["json", "text"],
+      "default": "text",
+      "description": "Output format for status action"
+    },
+    "force": {
+      "type": "boolean",
+      "default": false,
+      "description": "Force operation (e.g., archive with incomplete steps)"
+    }
+  }
+}

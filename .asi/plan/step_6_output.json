@@ -1,0 +1,10 @@
+{
+  "step": 6,
+  "output": {
+    "risks": [
+      {"risk": "Agent invents steps not requested by user", "severity": "medium", "mitigation": "04_NEVER.md prohibits inferring steps; validation script can flag suspiciously many steps"},
+      {"risk": "Plan file corruption from concurrent access", "severity": "low", "mitigation": "Single-agent design; scripts use atomic write patterns"},
+      {"risk": "Stale plan state after session resumption", "severity": "low", "mitigation": "STATE.json provides full history; status.sh shows current state"}
+    ]
+  }
+}

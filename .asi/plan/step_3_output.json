@@ -1,0 +1,13 @@
+{
+  "step": 3,
+  "output": {
+    "schemas": [
+      {"name": "plan_v1.schema.json", "purpose": "Validates .plan/active.yaml structure"},
+      {"name": "plan_intent_v1.schema.json", "purpose": "Validates agent intent before script execution"},
+      {"name": "plan_result_v1.schema.json", "purpose": "Validates script output receipts"}
+    ],
+    "templates": [
+      {"name": "active.template.yaml", "purpose": "Template for new plan creation"}
+    ]
+  }
+}

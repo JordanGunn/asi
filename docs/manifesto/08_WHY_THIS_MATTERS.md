@@ -16,5 +16,5 @@ With ASI:
 - state is auditable
 - tools are judged fairly
 
-MCP servers stop being blamed for things they were never designed to do.
+Tools stop being blamed for things they were never designed to do.
 Skills stop pretending to be magic.

@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "plan_result_v1.schema.json",
+  "title": "Plan Operation Result",
+  "description": "Schema for script output receipts",
+  "type": "object",
+  "required": ["action", "status", "timestamp"],
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "Operation performed"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["success", "failed", "no_change"],
+      "description": "Operation outcome"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp"
+    },
+    "plan_name": {
+      "type": "string",
+      "description": "Plan name if applicable"
+    },
+    "step_id": {
+      "type": "string",
+      "description": "Step ID if applicable"
+    },
+    "message": {
+      "type": "string",
+      "description": "Human-readable message"
+    },
+    "error": {
+      "type": "string",
+      "description": "Error message if failed"
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "total_steps": { "type": "integer" },
+        "pending": { "type": "integer" },
+        "in_progress": { "type": "integer" },
+        "done": { "type": "integer" },
+        "skipped": { "type": "integer" }
+      },
+      "description": "Plan summary counts"
+    }
+  }
+}

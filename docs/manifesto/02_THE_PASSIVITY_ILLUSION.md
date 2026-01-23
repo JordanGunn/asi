@@ -13,9 +13,9 @@ None of these assumptions are true.
 Agentic systems are **not passive**.
 They do nothing unless invoked—explicitly, correctly, and in the right order.
 
-An MCP server does not “work” in the background.
-A skill does not “kick in” because it seems relevant.
-A tool does not “help” unless it is deliberately used.
+A tool does not "work" in the background.
+A skill does not "kick in" because it seems relevant.
+Nothing "helps" unless it is deliberately invoked.
 
 The system is silent by default.
 

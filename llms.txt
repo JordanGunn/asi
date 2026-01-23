@@ -2,10 +2,30 @@
 
 > ASI is a behavioral contract for agentic systems that defines determinism-before-reasoning, strict passivity, explicit failure semantics, and auditable scope.
 
+---
+
+## Just Use It
+
+Skip the theory. If you're in an environment with ASI skills available, invoke directly:
+
+```text
+/asi-kickoff   → Design a new skill (produces KICKOFF.md)
+/asi-plan      → Plan the work (produces PLAN.md + TODO.md)
+/asi-exec      → Execute with receipts (produces RECEIPT.md)
+```
+
+The skills enforce ASI principles automatically. You don't need to understand the spec to benefit from it.
+
+---
+
+## Understand It
+
 Use the links below as the recommended progressive disclosure entrypoints.
 
-## Docs
+### Docs
 
-- [README](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/README.md): Overview and recommended reading path.
-- [Manifesto](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/docs/manifesto/.INDEX.md): Narrative framing for ASI.
-- [Design Documentation](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/docs/design/.INDEX.md): Implementation guidance.
+- [README](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/README.md): Overview, execution model, and quick start.
+- [Manifesto](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/docs/manifesto/.INDEX.md): Narrative framing—*why* ASI exists.
+- [Design Documentation](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/docs/design/.INDEX.md): Execution model, principles, and specifications.
+- [Skills](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/docs/SKILLS.md): The skill design pipeline.
+- [Glossary](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/docs/GLOSSARY.md): Key terms and definitions.

@@ -1,88 +1,159 @@
 # Procedure
 
-## Prerequisites
-
-1. Confirm `.asi/plan/` directory exists
-2. Confirm `.asi/plan/PLAN.md` exists with `status: approved`
-3. Confirm `.asi/plan/TODO.md` exists
-4. Confirm `.asi/kickoff/SCAFFOLD.json` exists (for scaffolding tasks)
-5. Create `.asi/exec/` directory if it does not exist
-6. Run drift detection (`validate --check plan-drift`)
-7. If drift detected, halt and report
+Execute tasks using the deterministic-first flow below.
 
 ---
 
-## Step 1: Select Task
+## Execution Model
 
-1. Parse `.asi/plan/TODO.md` task list
-2. If `task_filter` provided, select that task
-3. Otherwise, find first task with `status: pending`
-4. If task has `status: in_progress`, resume that task
-5. If no pending tasks, report completion
+```text
+Script (init.sh)           → Validates prereqs, parses plan, creates state
+Script (select-task.sh)    → Deterministically selects next task, validates deps
+Script (update-status.sh)  → Updates TODO.md status (agent never edits TODO)
+Agent (execute)            → Implements task, produces JSON output
+Script (append-receipt.sh) → Appends receipt to RECEIPT.md
+Script (checkpoint.sh)     → Validates state, checks drift
+```
 
-**Output:** Selected task ID and description
-
----
-
-## Step 2: Verify Dependencies
-
-1. Read task's `depends_on` field
-2. For each dependency:
-   - Verify dependency task has `status: done`
-   - If not, halt and report blocked dependencies
-
-**Output:** Dependencies satisfied (or halt)
+The agent implements tasks but **never edits TODO.md directly**. Scripts handle all status updates.
 
 ---
 
-## Step 3: Begin Execution
+## Step 0: Deterministic Preamble (REQUIRED)
 
-1. Update task status to `in_progress` in `.asi/plan/TODO.md`
-2. Log checkpoint: "Starting task {task_id}"
-3. Read `.asi/plan/PLAN.md` section referenced by task's `source_section`
-4. If scaffolding task, read structure from `.asi/kickoff/SCAFFOLD.json`
+**Before any agent reasoning**, run the initialization script:
 
-**Output:** Task marked in progress
+```bash
+scripts/init.sh
+```
 
----
+This:
 
-## Step 4: Execute Task
+- Validates prerequisites (PLAN.md approved, TODO.md exists)
+- Parses plan artifacts into `.asi/exec/PLAN_PARSED.json`
+- Creates STATE.json to track execution progress
+- Creates RECEIPT.md for execution logs
 
-1. Implement the task per PLAN.md specification
-2. For each file to create/modify:
-   - Create/modify the file
-   - Log checkpoint: "Created/modified {file_path}"
-3. Track all artifacts created/modified
-4. Verify implementation matches specification
-
-**Output:** Implementation artifacts (with per-file checkpoints)
+**Do not skip this step. Do not have the agent parse TODO.md directly.**
 
 ---
 
-## Step 5: Complete Task
+## Step 1: Select Task (Deterministic)
 
-1. Verify task requirements are met
-2. Update task status to `done` in `.asi/plan/TODO.md`
-3. Log checkpoint: "Completed task {task_id}"
-4. Produce execution receipt
-5. Append receipt to `.asi/exec/RECEIPT.md`
+Run the task selection script:
 
-**Output:** Task marked done, receipt appended to `.asi/exec/RECEIPT.md`
+```bash
+scripts/select-task.sh [--task T001]
+```
+
+This:
+
+- Finds next task (in_progress > pending)
+- Validates dependencies are satisfied
+- Updates STATE.json with current task
+- Emits task details as JSON
+
+If blocked, the script reports which dependencies are unsatisfied.
 
 ---
 
-## Step 6: Report
+## Step 2: Mark In Progress (Deterministic)
 
-1. Summarize what was executed
-2. List artifacts created/modified
-3. Report any issues or observations
-4. Indicate next pending task (if any)
+Before executing, mark the task in progress:
+
+```bash
+scripts/update-status.sh --task T001 --status in_progress
+```
+
+This updates TODO.md deterministically. The agent does not edit TODO.md.
+
+---
+
+## Step 3: Execute Task (Agent)
+
+The agent:
+
+1. Reads task details from `select-task.sh` output
+2. Reads relevant PLAN.md section (from `source_section`)
+3. Implements the task per specification
+4. Produces JSON output conforming to `task_output_v1.schema.json`
+5. Saves output to `.asi/exec/task_T001_output.json`
+
+```bash
+# Validate with checkpoint
+scripts/checkpoint.sh --check task-ready
+```
+
+---
+
+## Step 4: Mark Done (Deterministic)
+
+After successful execution:
+
+```bash
+scripts/update-status.sh --task T001 --status done
+```
+
+---
+
+## Step 5: Append Receipt (Deterministic)
+
+Agent produces receipt JSON conforming to `exec_receipt_v1.schema.json`:
+
+```bash
+scripts/append-receipt.sh --input .asi/exec/task_T001_receipt.json
+```
+
+This appends the formatted receipt to RECEIPT.md.
+
+---
+
+## Step 6: Verify and Continue
+
+```bash
+scripts/checkpoint.sh --check task-complete
+scripts/checkpoint.sh --check drift
+```
+
+If more tasks remain:
+
+```bash
+scripts/select-task.sh
+# Repeat from Step 2
+```
+
+If all tasks done:
+
+```bash
+scripts/checkpoint.sh --check all-done
+```
 
 ---
 
 ## Completion Criteria (per task)
 
-- [ ] Task status updated to `done`
-- [ ] All specified artifacts exist
-- [ ] Execution receipt produced
+- [ ] `scripts/checkpoint.sh --check task-complete` passes
+- [ ] Task status is `done` in TODO.md
+- [ ] Task output JSON exists (`.asi/exec/task_T001_output.json`)
+- [ ] Receipt appended to RECEIPT.md
+- [ ] No drift detected
+
+---
+
+## Completion Criteria (all tasks)
+
+- [ ] `scripts/checkpoint.sh --check all-done` passes
+- [ ] All tasks in TODO.md have `status: done`
+- [ ] RECEIPT.md contains entry for each task
 - [ ] No errors or errors handled with consent
+
+---
+
+## Why This Flow?
+
+1. **Scripts parse plan** — Agent reasons over structured JSON, not raw markdown
+2. **Task selection is deterministic** — Dependencies validated before execution
+3. **Status updates are scripted** — Agent cannot corrupt TODO.md format
+4. **Receipts are appended by script** — Consistent formatting, audit trail
+5. **Checkpoints gate progression** — Drift and state validated at each step
+6. **Execution is single-task** — One task at a time, fully complete or defer

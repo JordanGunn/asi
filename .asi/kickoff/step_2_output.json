@@ -1,0 +1,8 @@
+{
+  "step": 2,
+  "output": {
+    "skill_type": "single",
+    "reasoning": "This is a focused, single-purpose skill for plan management. It does not contain sub-skills or variations. The plan lifecycle (create, update, execute, archive) is handled by different scripts within one skill, not separate skills."
+  },
+  "reasoning_trace": "Single skill because plan management is a cohesive domain. Sub-commands (create, update, status) are script variations, not separate skills."
+}

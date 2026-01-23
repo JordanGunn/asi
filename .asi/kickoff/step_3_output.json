@@ -1,0 +1,57 @@
+{
+  "step": 3,
+  "output": {
+    "mechanisms": [
+      {
+        "name": "init.sh",
+        "inputs": ["--name <plan-name>"],
+        "outputs": [".plan/active.yaml", ".plan/active/STATE.json"],
+        "failure_conditions": ["Plan already exists without --force", "Invalid plan name"],
+        "idempotent": "yes (with --force)"
+      },
+      {
+        "name": "add-step.sh",
+        "inputs": ["--step <description>", "--after <step-id>"],
+        "outputs": ["Updated .plan/active.yaml"],
+        "failure_conditions": ["No active plan", "Invalid step-id reference"],
+        "idempotent": "no (appends)"
+      },
+      {
+        "name": "update-status.sh",
+        "inputs": ["--step <step-id>", "--status <pending|in_progress|done|skipped>"],
+        "outputs": ["Updated .plan/active.yaml", "Log entry in STATE.json"],
+        "failure_conditions": ["Step not found", "Invalid status transition"],
+        "idempotent": "yes"
+      },
+      {
+        "name": "status.sh",
+        "inputs": ["--format <json|text>"],
+        "outputs": ["Plan status to stdout"],
+        "failure_conditions": ["No active plan"],
+        "idempotent": "yes (read-only)"
+      },
+      {
+        "name": "archive.sh",
+        "inputs": [],
+        "outputs": [".plan/archive/<timestamp>/", "Cleared .plan/active/"],
+        "failure_conditions": ["No active plan", "Incomplete tasks without --force"],
+        "idempotent": "no"
+      },
+      {
+        "name": "validate.sh",
+        "inputs": ["--check <prereqs|schema|steps|all>"],
+        "outputs": ["Validation result to stdout"],
+        "failure_conditions": ["Schema violation", "Missing required fields"],
+        "idempotent": "yes (read-only)"
+      }
+    ],
+    "observable_signals": [
+      "Plan file exists at .plan/active.yaml",
+      "STATE.json contains execution log with timestamps",
+      "Each step has unique ID and status field",
+      "Archive directory contains timestamped plan snapshots"
+    ],
+    "coverage_assessment": "High deterministic coverage. All plan mutations go through scripts. Agent reasoning limited to: (1) translating user intent to step descriptions, (2) deciding when to mark steps complete."
+  },
+  "reasoning_trace": "Designed six core scripts covering full plan lifecycle. Read operations are idempotent. Write operations log to STATE.json for auditability. Archive provides history without cluttering active workspace."
+}

@@ -1,0 +1,17 @@
+{
+  "skill_name": "plan",
+  "source_plan": ".asi/plan/PLAN.md",
+  "source_plan_hash": "e3b29e5f9f741bb513a0bea68ed2dfe15d058da73416155553e8d0aa1d130366",
+  "source_todo": ".asi/plan/TODO.md",
+  "source_todo_hash": "333f3083b414ae23df344c4ecc47feee0c28a59533dd6433bd812c30047f9479",
+  "initialized_at": "2026-01-23T20:38:57Z",
+  "current_task": "T001",
+  "completed_tasks": [],
+  "execution_log": [
+    {
+      "event": "task_selected",
+      "task": "T001",
+      "timestamp": "2026-01-23T20:39:32Z"
+    }
+  ]
+}

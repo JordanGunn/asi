@@ -40,11 +40,18 @@ EOF
     exit 2
 }
 
-# Helper: parse frontmatter field
+# Helper: parse frontmatter field (strips surrounding quotes)
 get_frontmatter_field() {
     local file="$1"
     local field="$2"
-    sed -n '/^---$/,/^---$/p' "$file" | grep "^${field}:" | head -1 | sed "s/^${field}:[[:space:]]*//"
+    local value
+    value=$(sed -n '/^---$/,/^---$/p' "$file" | grep "^${field}:" | head -1 | sed "s/^${field}:[[:space:]]*//")
+    # Strip surrounding quotes if present
+    value="${value#\"}"
+    value="${value%\"}"
+    value="${value#\'}"
+    value="${value%\'}"
+    echo "$value"
 }
 
 check_prereqs() {

@@ -28,7 +28,7 @@ Changes that introduce new mechanisms, new protocols, or implied auto-action are
 - Prefer short sections and bullet lists over long prose.
 - Use **MUST / SHOULD / MUST NOT** only in RFCs and conformance documents.
 - Keep passive behavior strict: no implied background jobs, no silent mutation.
-- Keep backend details out of ASI rules: ASI is governance; MCP is capability; agents interpret.
+- Keep backend details out of ASI rules: ASI is governance; capability layers are separate; agents interpret.
 
 ### Resources
 

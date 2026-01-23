@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "task_output_v1.schema.json",
+  "title": "Task Execution Output Contract",
+  "description": "Schema for per-task execution output during asi-exec",
+  "type": "object",
+  "required": ["task_id", "action", "artifacts"],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "pattern": "^T[0-9]{3}$",
+      "description": "Task ID being executed"
+    },
+    "action": {
+      "type": "string",
+      "enum": ["execute", "skip", "defer"],
+      "description": "Action taken on the task"
+    },
+    "artifacts": {
+      "type": "object",
+      "required": ["created", "modified"],
+      "properties": {
+        "created": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "type"],
+            "properties": {
+              "path": { "type": "string" },
+              "type": { 
+                "type": "string",
+                "enum": ["file", "directory"]
+              },
+              "template": { 
+                "type": "string",
+                "description": "Template used if any"
+              },
+              "source_section": { 
+                "type": "string",
+                "description": "PLAN.md section this traces to"
+              }
+            }
+          },
+          "description": "Artifacts created during execution"
+        },
+        "modified": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "change_type"],
+            "properties": {
+              "path": { "type": "string" },
+              "change_type": { 
+                "type": "string",
+                "enum": ["append", "replace", "patch"]
+              },
+              "source_section": { 
+                "type": "string",
+                "description": "PLAN.md section this traces to"
+              }
+            }
+          },
+          "description": "Artifacts modified during execution"
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "checks_passed": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Verification checks that passed"
+        },
+        "checks_failed": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Verification checks that failed"
+        }
+      },
+      "description": "Verification results"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Execution notes or observations"
+    },
+    "reasoning_trace": {
+      "type": "string",
+      "description": "Brief explanation of execution decisions for audit"
+    }
+  },
+  "if": {
+    "properties": { "action": { "const": "skip" } }
+  },
+  "then": {
+    "required": ["skip_reason"],
+    "properties": {
+      "skip_reason": {
+        "type": "string",
+        "description": "Reason for skipping the task"
+      }
+    }
+  }
+}

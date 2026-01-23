@@ -1,0 +1,176 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# asi-plan task generation script
+# Deterministically generates tasks from SCAFFOLD.json
+# Agent reviews/augments; does not invent from scratch
+
+KICKOFF_DIR=".asi/kickoff"
+PLAN_DIR=".asi/plan"
+SCAFFOLD_FILE="$KICKOFF_DIR/SCAFFOLD.json"
+SKILL_TYPE_FILE="$KICKOFF_DIR/SKILL_TYPE.json"
+TASKS_FILE="$PLAN_DIR/tasks_scaffold.json"
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0")
+
+This script:
+  1. Reads SCAFFOLD.json from kickoff
+  2. Deterministically generates task list for directory/file creation
+  3. Outputs structured JSON to .asi/plan/tasks_scaffold.json
+  4. Agent reviews and augments (does not replace)
+
+Exit codes:
+  0  Task generation complete
+  1  Generation failed
+  2  Invalid arguments
+EOF
+    exit 2
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --help|-h)
+            usage
+            ;;
+        *)
+            echo "Unknown argument: $1" >&2
+            usage
+            ;;
+    esac
+done
+
+# Validate prerequisites
+if [[ ! -f "$SCAFFOLD_FILE" ]]; then
+    echo "ERROR: $SCAFFOLD_FILE does not exist." >&2
+    exit 1
+fi
+
+if [[ ! -d "$PLAN_DIR" ]]; then
+    echo "ERROR: $PLAN_DIR does not exist. Run init.sh first." >&2
+    exit 1
+fi
+
+if ! command -v jq &>/dev/null; then
+    echo "ERROR: jq is required for task generation." >&2
+    exit 1
+fi
+
+TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# Get skill type
+SKILL_TYPE=$(jq -r '.type // "single"' "$SKILL_TYPE_FILE" 2>/dev/null || echo "single")
+
+# Generate tasks from scaffold
+echo "=== Generating tasks from SCAFFOLD.json ===" >&2
+
+# Extract structure from scaffold
+STRUCTURE=$(jq -r '.structure // empty' "$SCAFFOLD_FILE")
+
+if [[ -z "$STRUCTURE" || "$STRUCTURE" == "null" ]]; then
+    echo "WARN: SCAFFOLD.json structure is empty or null" >&2
+    # Create minimal task list
+    cat > "$TASKS_FILE" << EOF
+{
+  "generated_at": "$TIMESTAMP",
+  "source": "$SCAFFOLD_FILE",
+  "skill_type": "$SKILL_TYPE",
+  "tasks": [],
+  "warnings": ["SCAFFOLD.json structure is empty"]
+}
+EOF
+    echo "Created $TASKS_FILE (empty)" >&2
+    exit 0
+fi
+
+# Generate task list based on skill type
+TASK_ID=1
+
+generate_task() {
+    local type="$1"
+    local path="$2"
+    local description="$3"
+    local source="$4"
+    local id
+    id=$(printf "T%03d" $TASK_ID)
+    ((TASK_ID++))
+    
+    cat << EOF
+    {
+      "id": "$id",
+      "type": "$type",
+      "path": "$path",
+      "description": "$description",
+      "status": "pending",
+      "depends_on": [],
+      "source_section": "$source"
+    }
+EOF
+}
+
+# Start building tasks array
+TASKS="["
+
+# Common directories for any skill
+COMMON_DIRS=("references" "scripts" "assets" "assets/schemas" "assets/templates")
+
+for dir in "${COMMON_DIRS[@]}"; do
+    if [[ -n "$TASKS" && "$TASKS" != "[" ]]; then
+        TASKS+=","
+    fi
+    TASKS+=$(generate_task "directory" "$dir" "Create $dir directory" "SCAFFOLD.json")
+done
+
+# Common reference files
+REF_FILES=("00_ROUTER.md" "01_SUMMARY.md" "02_CONTRACTS.md" "03_TRIGGERS.md" "04_NEVER.md" "05_ALWAYS.md" "06_PROCEDURE.md" "07_FAILURES.md")
+
+for file in "${REF_FILES[@]}"; do
+    TASKS+=","
+    TASKS+=$(generate_task "file" "references/$file" "Create references/$file" "SCAFFOLD.json")
+done
+
+# Common script files
+SCRIPT_FILES=("validate.sh" "validate.ps1")
+
+for file in "${SCRIPT_FILES[@]}"; do
+    TASKS+=","
+    TASKS+=$(generate_task "file" "scripts/$file" "Create scripts/$file" "SCAFFOLD.json")
+done
+
+# SKILL.md
+TASKS+=","
+TASKS+=$(generate_task "file" "SKILL.md" "Create SKILL.md manifest" "SCAFFOLD.json")
+
+# README.md
+TASKS+=","
+TASKS+=$(generate_task "file" "README.md" "Create README.md" "SCAFFOLD.json")
+
+TASKS+="]"
+
+# Write tasks file
+cat > "$TASKS_FILE" << EOF
+{
+  "generated_at": "$TIMESTAMP",
+  "source": "$SCAFFOLD_FILE",
+  "skill_type": "$SKILL_TYPE",
+  "task_count": $((TASK_ID - 1)),
+  "tasks": $TASKS
+}
+EOF
+
+echo "Created $TASKS_FILE with $((TASK_ID - 1)) tasks" >&2
+
+# Emit receipt
+cat << EOF
+{
+  "action": "asi-plan-generate-tasks",
+  "status": "complete",
+  "timestamp": "$TIMESTAMP",
+  "source": "$SCAFFOLD_FILE",
+  "output": "$TASKS_FILE",
+  "task_count": $((TASK_ID - 1)),
+  "next_action": "Review tasks_scaffold.json, then fill PLAN.md sections"
+}
+EOF

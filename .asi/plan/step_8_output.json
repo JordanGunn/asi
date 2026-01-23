@@ -1,0 +1,22 @@
+{
+  "step": 8,
+  "output": {
+    "tasks": [
+      {"id": "T001", "description": "Create skill directory structure: skills/plan/{scripts,assets,references}", "status": "pending", "depends_on": "-", "source_section": "SCAFFOLD"},
+      {"id": "T002", "description": "Create SKILL.md manifest with metadata and references", "status": "pending", "depends_on": "T001", "source_section": "SCAFFOLD"},
+      {"id": "T003", "description": "Create assets/schemas/plan_v1.schema.json", "status": "pending", "depends_on": "T001", "source_section": "Schema Designs"},
+      {"id": "T004", "description": "Create assets/schemas/plan_intent_v1.schema.json", "status": "pending", "depends_on": "T001", "source_section": "Schema Designs"},
+      {"id": "T005", "description": "Create assets/schemas/plan_result_v1.schema.json", "status": "pending", "depends_on": "T001", "source_section": "Schema Designs"},
+      {"id": "T006", "description": "Create assets/templates/active.template.yaml", "status": "pending", "depends_on": "T003", "source_section": "Assets"},
+      {"id": "T007", "description": "Create scripts/init.sh for plan creation", "status": "pending", "depends_on": "T003, T006", "source_section": "Scripts"},
+      {"id": "T008", "description": "Create scripts/add-step.sh for adding steps", "status": "pending", "depends_on": "T003", "source_section": "Scripts"},
+      {"id": "T009", "description": "Create scripts/update-status.sh for status updates", "status": "pending", "depends_on": "T003", "source_section": "Scripts"},
+      {"id": "T010", "description": "Create scripts/status.sh for plan display", "status": "pending", "depends_on": "T003", "source_section": "Scripts"},
+      {"id": "T011", "description": "Create scripts/archive.sh for plan archival", "status": "pending", "depends_on": "T003", "source_section": "Scripts"},
+      {"id": "T012", "description": "Create scripts/validate.sh for plan validation", "status": "pending", "depends_on": "T003", "source_section": "Validation"},
+      {"id": "T013", "description": "Create references/00_ROUTER.md through 07_FAILURES.md", "status": "pending", "depends_on": "T002", "source_section": "SCAFFOLD"},
+      {"id": "T014", "description": "Create .windsurf/workflows/plan.md workflow file", "status": "pending", "depends_on": "T002", "source_section": "SCAFFOLD"},
+      {"id": "T015", "description": "Validate complete skill with scripts/validate.sh --check all", "status": "pending", "depends_on": "T007, T008, T009, T010, T011, T012, T013", "source_section": "Validation"}
+    ]
+  }
+}

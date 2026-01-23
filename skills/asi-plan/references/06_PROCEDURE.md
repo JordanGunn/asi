@@ -1,114 +1,124 @@
 # Procedure
 
-## Prerequisites
-
-1. Confirm `.asi/kickoff/` directory exists
-2. Confirm `.asi/kickoff/KICKOFF.md` exists with `status: approved`
-3. Confirm `.asi/kickoff/SKILL_TYPE.json` exists and is valid
-4. Confirm `.asi/kickoff/SCAFFOLD.json` exists and is valid
-5. Create `.asi/plan/` directory if it does not exist
+Execute the planning procedure using the deterministic-first flow below.
 
 ---
 
-## Step 1: Parse Kickoff Artifacts
+## Execution Model
 
-### 1a. Parse KICKOFF.md
+```text
+Script (init.sh)           → Validates prereqs, parses kickoff, creates templates
+Script (generate-tasks.sh) → Scaffold → tasks_scaffold.json (deterministic)
+Agent (per step)           → Produces JSON conforming to step schema
+Script (inject.sh)         → Injects JSON into PLAN.md/TODO.md
+Script (checkpoint.sh)     → Validates step, gates progression
+```
 
-1. Read `.asi/kickoff/KICKOFF.md`
-2. Parse frontmatter and validate required fields
-3. Extract all body sections
-4. Verify all required sections are present:
-   - Purpose
-   - Deterministic Surface
-   - Judgment Remainder
-   - Schema Designs
-
-### 1b. Parse SKILL_TYPE.json
-
-1. Read `.asi/kickoff/SKILL_TYPE.json`
-2. Validate against `skill_type_v1.schema.json`
-3. Extract `type` (single or grouped)
-
-### 1c. Parse SCAFFOLD.json
-
-1. Read `.asi/kickoff/SCAFFOLD.json`
-2. Validate against appropriate schema based on skill type
-3. Extract directory structure and file list
-
-**Output:** Structured representation of all kickoff artifacts
+The agent reasons **only** over parsed kickoff data (`KICKOFF_PARSED.json`). Scripts handle all file I/O.
 
 ---
 
-## Step 2: Decompose into PLAN.md
+## Step 0: Deterministic Preamble (REQUIRED)
 
-For each KICKOFF.md section, derive implementation details:
+**Before any agent reasoning**, run the initialization script:
 
-### From Purpose
+```bash
+scripts/init.sh
+```
 
-- Extract skill boundaries and non-goals
-- Document governing principles
+This:
 
-### From Deterministic Surface
+- Validates prerequisites (KICKOFF.md approved, all artifacts exist)
+- Parses all kickoff artifacts into `.asi/plan/KICKOFF_PARSED.json`
+- Creates PLAN.md and TODO.md templates with known values
+- Computes `source_kickoff_hash` for drift detection
+- Creates STATE.json to track progress
 
-- List scripts to create
-- List assets to produce
-- Define validation mechanisms
-
-### From Judgment Remainder
-
-- Identify risks and their severity
-- Document mitigation approaches
-
-### From Schema Designs
-
-- List schema files to create
-- List template files to create
-
-### From Open Questions
-
-- Document deferred decisions
-- Note blocking questions
-
-**Output:** PLAN.md with all required sections
+**Do not skip this step. Do not have the agent parse kickoff files directly.**
 
 ---
 
-## Step 3: Generate TODO.md from SCAFFOLD.json
+## Step 1: Generate Scaffold Tasks (Deterministic)
 
-1. Parse `SCAFFOLD.json` to extract all directories and files to create
-2. For each directory: create a scaffolding task
-3. For each file: create a file creation task with template reference
-4. Convert PLAN.md sections into additional ordered tasks
-5. Assign unique task IDs (e.g., `T001`, `T002`)
-6. Set all tasks to `status: pending`
-7. Add dependencies where applicable
-8. Reference source (KICKOFF.md section or SCAFFOLD.json) for each task
+Run the task generation script:
 
-**Output:** TODO.md with ordered task list derived from kickoff artifacts
+```bash
+scripts/generate-tasks.sh
+```
+
+This deterministically generates tasks from SCAFFOLD.json → `tasks_scaffold.json`.
+
+The agent reviews this output but does not invent tasks from scratch.
+
+Validate:
+
+```bash
+scripts/checkpoint.sh --step 1 --advance
+```
 
 ---
 
-## Step 4: Produce Artifacts
+## Steps 2-7: Agent Reasoning (Schema-Constrained)
 
-1. Ensure `.asi/plan/` directory exists
-2. Populate PLAN.md frontmatter from template
-3. Populate TODO.md frontmatter from template
-4. Set both to `status: draft`
-5. Set `timestamp` to current ISO 8601
-6. Write `.asi/plan/PLAN.md`
-7. Write `.asi/plan/TODO.md`
-8. Report completion status
+For each step, the agent:
+
+1. Reads `KICKOFF_PARSED.json` (not raw markdown)
+2. Produces JSON conforming to `assets/schemas/step_output_v1.schema.json`
+3. Saves output to `.asi/plan/step_N_output.json`
+
+Then the script injects it:
+
+```bash
+scripts/inject.sh --step N --input .asi/plan/step_N_output.json
+scripts/checkpoint.sh --step N --advance
+```
+
+### Step Sequence
+
+| Step | Section | Source in KICKOFF_PARSED.json |
+|------|---------|-------------------------------|
+| 2 | Scripts | `sections.deterministic_surface` |
+| 3 | Assets | `sections.schema_designs` |
+| 4 | Validation | `sections.deterministic_surface` |
+| 5 | Boundaries | `sections.purpose` |
+| 6 | Risks | `sections.judgment_remainder` |
+| 7 | Lifecycle | derived from all sections |
+
+---
+
+## Step 8: Finalize TODO.md
+
+The agent:
+
+1. Reviews `tasks_scaffold.json` (from Step 1)
+2. Adds additional tasks derived from PLAN.md sections
+3. Ensures all tasks have `source_section` traceability
+4. Produces final task list as JSON
+
+```bash
+scripts/inject.sh --step 8 --input .asi/plan/step_8_output.json
+scripts/checkpoint.sh --step 8 --advance
+```
 
 ---
 
 ## Completion Criteria
 
-- [ ] `.asi/kickoff/KICKOFF.md` was approved before proceeding
-- [ ] `.asi/kickoff/SKILL_TYPE.json` was parsed
-- [ ] `.asi/kickoff/SCAFFOLD.json` was parsed
-- [ ] `.asi/plan/PLAN.md` exists with valid frontmatter
-- [ ] `.asi/plan/PLAN.md` has all required sections
-- [ ] `.asi/plan/TODO.md` exists with valid frontmatter
-- [ ] `.asi/plan/TODO.md` tasks trace to kickoff artifacts
+- [ ] `scripts/validate.sh --check all` passes
+- [ ] STATE.json shows all steps complete
+- [ ] PLAN.md has valid frontmatter and all sections
+- [ ] TODO.md has task table with traceability
+- [ ] All tasks trace to KICKOFF.md sections
 - [ ] No implementation or code was produced
 - [ ] Both artifacts have `status: draft`
+
+---
+
+## Why This Flow?
+
+1. **Scripts parse kickoff** — Agent reasons over structured JSON, not raw markdown
+2. **Scaffold tasks are deterministic** — Generated from SCAFFOLD.json, not invented
+3. **Schemas constrain output** — Agent cannot drift outside declared shape
+4. **Checkpoints gate progression** — Each step validated before next begins
+5. **All I/O is scripted** — Agent produces data, scripts write files
+6. **Drift detection** — Hash comparison catches KICKOFF.md changes

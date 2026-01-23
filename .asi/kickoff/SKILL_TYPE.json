@@ -1,0 +1,7 @@
+{
+  "$schema": "../assets/schemas/skill_type_v1.schema.json",
+  "skill_name": "plan",
+  "type": "single",
+  "reasoning": "This is a focused, single-purpose skill for plan management. It does not contain sub-skills or variations. The plan lifecycle (create, update, execute, archive) is handled by different scripts within one skill, not separate skills.",
+  "timestamp": "2026-01-23T20:29:39Z"
+}

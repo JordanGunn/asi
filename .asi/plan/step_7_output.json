@@ -1,0 +1,15 @@
+{
+  "step": 7,
+  "output": {
+    "artifacts": [
+      ".plan/active.yaml — Active plan definition",
+      ".plan/active/STATE.json — Execution log and state",
+      ".plan/archive/<timestamp>/ — Archived completed plans"
+    ],
+    "status_flow": "active → completed (all steps done/skipped) → archived",
+    "human_gates": [
+      "User approval not required for plan operations",
+      "User consent required for: skipping steps, archiving with incomplete steps"
+    ]
+  }
+}
