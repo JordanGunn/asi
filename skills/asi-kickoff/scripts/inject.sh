@@ -32,13 +32,26 @@ EOF
     exit 2
 }
 
+# Helper: portable in-place sed (GNU + BSD/macOS)
+sed_inplace() {
+    local expr file
+    expr="$1"
+    file="$2"
+
+    if sed --version >/dev/null 2>&1; then
+        sed -i "$expr" "$file"
+    else
+        sed -i '' "$expr" "$file"
+    fi
+}
+
 # Helper: update frontmatter field
 update_frontmatter() {
     local file="$1"
     local field="$2"
     local value="$3"
     
-    sed -i "s/^${field}:.*/${field}: ${value}/" "$file"
+    sed_inplace "s/^${field}:.*/${field}: ${value}/" "$file"
 }
 
 # Helper: replace section content
@@ -47,15 +60,28 @@ replace_section() {
     local section="$2"
     local content="$3"
     local temp_file="${file}.tmp"
+    local content_file
+    content_file="$(mktemp)"
+
+    # Preserve all newlines exactly (avoid awk -v multiline portability issues)
+    printf '%s' "$content" > "$content_file"
     
-    awk -v section="$section" -v content="$content" '
-    BEGIN { in_section = 0; printed = 0 }
+    awk -v section="## " -v name="$section" -v content_file="$content_file" '
+    function print_content(   line) {
+        while ((getline line < content_file) > 0) print line
+        close(content_file)
+    }
+    BEGIN { in_section = 0 }
     /^## / {
-        if (in_section && !printed) {
-            print content
-            printed = 1
+        if (in_section) {
+            print_content()
+            in_section = 0
         }
-        in_section = ($0 ~ "^## " section "$")
+        if ($0 == section name) {
+            print
+            in_section = 1
+            next
+        }
         print
         next
     }
@@ -63,9 +89,11 @@ replace_section() {
         if (!in_section) print
     }
     END {
-        if (in_section && !printed) print content
+        if (in_section) print_content()
     }
     ' "$file" > "$temp_file" && mv "$temp_file" "$file"
+
+    rm -f "$content_file"
 }
 
 # Step 1: Inject Purpose
@@ -73,7 +101,7 @@ inject_step_1() {
     local input="$1"
     
     if ! command -v jq &>/dev/null; then
-        echo "ERROR: jq required for JSON parsing" >&2
+        echo "ERROR: jq required for JSON parsing. Run scripts/bootstrap.sh --check for install guidance." >&2
         return 1
     fi
     
@@ -245,8 +273,7 @@ inject_step_6() {
     
     if [[ -n "$questions" ]]; then
         # Append to QUESTIONS.md
-        echo "" >> "$questions_file"
-        echo "$questions" >> "$questions_file"
+        printf '\n%s\n' "$questions" >> "$questions_file"
         echo "Appended questions to QUESTIONS.md"
     else
         echo "No questions to inject"

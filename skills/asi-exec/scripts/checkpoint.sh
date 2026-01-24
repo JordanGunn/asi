@@ -48,6 +48,25 @@ get_frontmatter_field() {
     echo "$value"
 }
 
+# Helper: portable sha256 hash
+sha256_file() {
+    local file="$1"
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$file" | awk '{print $1}'
+        return 0
+    fi
+    if command -v shasum >/dev/null 2>&1; then
+        shasum -a 256 "$file" | awk '{print $1}'
+        return 0
+    fi
+    if command -v openssl >/dev/null 2>&1; then
+        openssl dgst -sha256 "$file" | awk '{print $NF}'
+        return 0
+    fi
+    echo "ERROR: No sha256 tool found (need sha256sum, shasum, or openssl)" >&2
+    return 1
+}
+
 check_init() {
     echo "=== Checking initialization ===" >&2
     local failed=0
@@ -91,6 +110,7 @@ check_drift() {
     
     if ! command -v jq &>/dev/null; then
         echo "WARN: jq not available, skipping drift check" >&2
+        echo "INFO: Run scripts/bootstrap.sh --check for install guidance." >&2
         return 0
     fi
     
@@ -102,7 +122,7 @@ check_drift() {
     
     if [[ -n "$stored_plan_hash" && -f "$PLAN_FILE" ]]; then
         local current_plan_hash
-        current_plan_hash=$(sha256sum "$PLAN_FILE" | cut -d' ' -f1)
+        current_plan_hash=$(sha256_file "$PLAN_FILE")
         
         if [[ "$stored_plan_hash" != "$current_plan_hash" ]]; then
             echo "FAIL: PLAN.md has changed (drift detected)" >&2
@@ -118,7 +138,7 @@ check_drift() {
     
     if [[ -n "$stored_todo_hash" && -f "$TODO_FILE" ]]; then
         local current_todo_hash
-        current_todo_hash=$(sha256sum "$TODO_FILE" | cut -d' ' -f1)
+        current_todo_hash=$(sha256_file "$TODO_FILE")
         
         # TODO.md will change as we update statuses, so only warn
         if [[ "$stored_todo_hash" != "$current_todo_hash" ]]; then
@@ -144,7 +164,7 @@ check_task_ready() {
     fi
     
     if ! command -v jq &>/dev/null; then
-        echo "ERROR: jq is required" >&2
+        echo "ERROR: jq is required. Run scripts/bootstrap.sh --check for install guidance." >&2
         return 1
     fi
     
@@ -182,7 +202,7 @@ check_task_complete() {
     fi
     
     if ! command -v jq &>/dev/null; then
-        echo "ERROR: jq is required" >&2
+        echo "ERROR: jq is required. Run scripts/bootstrap.sh --check for install guidance." >&2
         return 1
     fi
     

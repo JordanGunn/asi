@@ -60,7 +60,7 @@ if [[ ! -f "$PARSED_FILE" ]]; then
 fi
 
 if ! command -v jq &>/dev/null; then
-    echo "ERROR: jq is required for task selection" >&2
+    echo "ERROR: jq is required for task selection. Run scripts/bootstrap.sh --check for install guidance." >&2
     exit 1
 fi
 

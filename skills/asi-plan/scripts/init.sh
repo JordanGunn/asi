@@ -39,6 +39,25 @@ EOF
     exit 2
 }
 
+# Helper: portable sha256 hash
+sha256_file() {
+    local file="$1"
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$file" | awk '{print $1}'
+        return 0
+    fi
+    if command -v shasum >/dev/null 2>&1; then
+        shasum -a 256 "$file" | awk '{print $1}'
+        return 0
+    fi
+    if command -v openssl >/dev/null 2>&1; then
+        openssl dgst -sha256 "$file" | awk '{print $NF}'
+        return 0
+    fi
+    echo "ERROR: No sha256 tool found (need sha256sum, shasum, or openssl)" >&2
+    return 1
+}
+
 # Helper: parse frontmatter field (strips surrounding quotes)
 get_frontmatter_field() {
     local file="$1"
@@ -57,7 +76,11 @@ get_frontmatter_field() {
 get_section_content() {
     local file="$1"
     local section="$2"
-    sed -n "/^## ${section}$/,/^## /p" "$file" | head -n -1 | tail -n +2
+    awk -v section="$section" '
+    $0 == "## " section { in_section = 1; next }
+    in_section && /^## / { exit }
+    in_section { print }
+    ' "$file"
 }
 
 # Parse arguments
@@ -121,7 +144,7 @@ fi
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Compute kickoff hash for drift detection
-KICKOFF_HASH=$(sha256sum "$KICKOFF_FILE" | cut -d' ' -f1)
+KICKOFF_HASH=$(sha256_file "$KICKOFF_FILE")
 
 # Extract skill name from kickoff
 SKILL_NAME=$(get_frontmatter_field "$KICKOFF_FILE" "skill_name")
@@ -142,6 +165,7 @@ if command -v jq &>/dev/null; then
     SCAFFOLD_CONTENT=$(cat "$SCAFFOLD_FILE")
 else
     echo "WARN: jq not available, using basic parsing" >&2
+    echo "INFO: Run scripts/bootstrap.sh --check for install guidance (required for full asi-plan flow)." >&2
     SKILL_TYPE="unknown"
     SKILL_TYPE_REASONING=""
     SCAFFOLD_CONTENT="{}"

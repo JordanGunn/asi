@@ -23,6 +23,19 @@ EOF
     exit 2
 }
 
+# Helper: portable in-place sed (GNU + BSD/macOS)
+sed_inplace() {
+    local expr file
+    expr="$1"
+    file="$2"
+
+    if sed --version >/dev/null 2>&1; then
+        sed -i "$expr" "$file"
+    else
+        sed -i '' "$expr" "$file"
+    fi
+}
+
 # Helper: parse frontmatter field (strips surrounding quotes)
 get_frontmatter_field() {
     local file="$1"
@@ -88,7 +101,7 @@ do_approve() {
     fi
 
     # Update status in frontmatter
-    if sed -i "s/^status:[[:space:]]*${status}$/status: approved/" "$KICKOFF_FILE"; then
+    if sed_inplace "s/^status:[[:space:]]*${status}$/status: approved/" "$KICKOFF_FILE"; then
         echo "PASS: Updated status from '$status' to 'approved'"
         return 0
     else

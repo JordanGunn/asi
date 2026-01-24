@@ -32,13 +32,45 @@ EOF
     exit 2
 }
 
+# Helper: portable in-place sed (GNU + BSD/macOS)
+sed_inplace() {
+    local expr file
+    expr="$1"
+    file="$2"
+
+    if sed --version >/dev/null 2>&1; then
+        sed -i "$expr" "$file"
+    else
+        sed -i '' "$expr" "$file"
+    fi
+}
+
+# Helper: portable sha256 hash
+sha256_file() {
+    local file="$1"
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$file" | awk '{print $1}'
+        return 0
+    fi
+    if command -v shasum >/dev/null 2>&1; then
+        shasum -a 256 "$file" | awk '{print $1}'
+        return 0
+    fi
+    if command -v openssl >/dev/null 2>&1; then
+        openssl dgst -sha256 "$file" | awk '{print $NF}'
+        return 0
+    fi
+    echo "ERROR: No sha256 tool found (need sha256sum, shasum, or openssl)" >&2
+    return 1
+}
+
 # Helper: update frontmatter field
 update_frontmatter() {
     local file="$1"
     local field="$2"
     local value="$3"
     
-    sed -i "s/^${field}:.*/${field}: ${value}/" "$file"
+    sed_inplace "s/^${field}:.*/${field}: ${value}/" "$file"
 }
 
 # Helper: replace section content
@@ -47,15 +79,28 @@ replace_section() {
     local section="$2"
     local content="$3"
     local temp_file="${file}.tmp"
+    local content_file
+    content_file="$(mktemp)"
+
+    # Preserve all newlines exactly (avoid awk -v multiline portability issues)
+    printf '%s' "$content" > "$content_file"
     
-    awk -v section="$section" -v content="$content" '
-    BEGIN { in_section = 0; printed = 0 }
+    awk -v section="## " -v name="$section" -v content_file="$content_file" '
+    function print_content(   line) {
+        while ((getline line < content_file) > 0) print line
+        close(content_file)
+    }
+    BEGIN { in_section = 0 }
     /^## / {
-        if (in_section && !printed) {
-            print content
-            printed = 1
+        if (in_section) {
+            print_content()
+            in_section = 0
         }
-        in_section = ($0 ~ "^## " section "$")
+        if ($0 == section name) {
+            print
+            in_section = 1
+            next
+        }
         print
         next
     }
@@ -63,9 +108,11 @@ replace_section() {
         if (!in_section) print
     }
     END {
-        if (in_section && !printed) print content
+        if (in_section) print_content()
     }
     ' "$file" > "$temp_file" && mv "$temp_file" "$file"
+
+    rm -f "$content_file"
 }
 
 # Step 2: Inject Scripts section
@@ -264,7 +311,7 @@ EOF
     
     # Update TODO hash of PLAN
     local plan_hash
-    plan_hash=$(sha256sum "$PLAN_FILE" | cut -d' ' -f1)
+    plan_hash=$(sha256_file "$PLAN_FILE")
     update_frontmatter "$TODO_FILE" "source_plan_hash" "$plan_hash"
     
     echo "Injected Tasks into TODO.md"
@@ -321,7 +368,7 @@ if [[ ! -f "$PLAN_FILE" ]]; then
 fi
 
 if ! command -v jq &>/dev/null; then
-    echo "ERROR: jq is required for injection" >&2
+    echo "ERROR: jq is required for injection. Run scripts/bootstrap.sh --check for install guidance." >&2
     exit 1
 fi
 

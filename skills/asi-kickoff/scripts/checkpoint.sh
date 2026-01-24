@@ -36,6 +36,17 @@ EOF
     exit 2
 }
 
+# Helper: extract markdown section body (lines after "## <section>" until next H2)
+extract_section_body() {
+    local file="$1"
+    local section="$2"
+    awk -v section="$section" '
+    $0 == "## " section { in_section = 1; next }
+    in_section && /^## / { exit }
+    in_section { print }
+    ' "$file"
+}
+
 # Helper: check if section has content (not just template comments)
 section_has_content() {
     local file="$1"
@@ -43,7 +54,7 @@ section_has_content() {
     local content
     
     # Extract section content between this H2 and next H2 or end
-    content=$(sed -n "/^## ${section}$/,/^## /p" "$file" | head -n -1 | tail -n +2)
+    content=$(extract_section_body "$file" "$section")
     
     # Check if content exists beyond just HTML comments and empty table rows
     if echo "$content" | grep -qvE '^\s*$|^<!--|^-->|^\| *\|' 2>/dev/null; then
@@ -76,7 +87,8 @@ update_state() {
     timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     
     if ! command -v jq &>/dev/null; then
-        echo "WARN: jq not available, cannot update state file"
+        echo "WARN: jq not available, cannot update state file" >&2
+        echo "INFO: Run scripts/bootstrap.sh --check for install guidance." >&2
         return 0
     fi
     
@@ -114,7 +126,8 @@ validate_step_2() {
     local failed=0
     
     if ! command -v jq &>/dev/null; then
-        echo "WARN: jq not available, skipping JSON validation"
+        echo "WARN: jq not available, skipping JSON validation" >&2
+        echo "INFO: Run scripts/bootstrap.sh --check for install guidance." >&2
         return 0
     fi
     

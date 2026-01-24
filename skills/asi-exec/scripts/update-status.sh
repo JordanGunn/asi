@@ -34,6 +34,33 @@ EOF
     exit 2
 }
 
+# Helper: portable in-place sed (GNU + BSD/macOS)
+sed_inplace() {
+    local extended=false
+    if [[ "${1:-}" == "-E" ]]; then
+        extended=true
+        shift
+    fi
+
+    local expr file
+    expr="$1"
+    file="$2"
+
+    if sed --version >/dev/null 2>&1; then
+        if [[ "$extended" == true ]]; then
+            sed -i -E "$expr" "$file"
+        else
+            sed -i "$expr" "$file"
+        fi
+    else
+        if [[ "$extended" == true ]]; then
+            sed -i '' -E "$expr" "$file"
+        else
+            sed -i '' "$expr" "$file"
+        fi
+    fi
+}
+
 # Parse arguments
 TASK_ID=""
 NEW_STATUS=""
@@ -109,7 +136,7 @@ fi
 # Replace the status in the task line
 # Table format: | ID | Description | Status | Depends On | Source Section |
 # Status is column 3 (0-indexed), we need to replace it
-sed -i -E "s/^(\| ${TASK_ID} \|[^|]+\| )${CURRENT_STATUS}( \|)/\1${NEW_STATUS}\2/" "$TODO_FILE"
+sed_inplace -E "s/^(\| ${TASK_ID} \|[^|]+\| )${CURRENT_STATUS}( \|)/\\1${NEW_STATUS}\\2/" "$TODO_FILE"
 
 # Verify update
 if ! grep -q "| ${TASK_ID} |.*| ${NEW_STATUS} |" "$TODO_FILE"; then

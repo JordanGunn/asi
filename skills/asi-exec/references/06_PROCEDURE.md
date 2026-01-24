@@ -23,6 +23,14 @@ The agent implements tasks but **never edits TODO.md directly**. Scripts handle 
 
 **Before any agent reasoning**, run the initialization script:
 
+Recommended (environment check):
+
+```bash
+scripts/bootstrap.sh --check
+```
+
+Bootstrap is a **user-run** helper. The agent may recommend it, but should not execute it.
+
 ```bash
 scripts/init.sh
 ```

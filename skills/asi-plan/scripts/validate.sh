@@ -54,6 +54,25 @@ get_frontmatter_field() {
     echo "$value"
 }
 
+# Helper: portable sha256 hash
+sha256_file() {
+    local file="$1"
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$file" | awk '{print $1}'
+        return 0
+    fi
+    if command -v shasum >/dev/null 2>&1; then
+        shasum -a 256 "$file" | awk '{print $1}'
+        return 0
+    fi
+    if command -v openssl >/dev/null 2>&1; then
+        openssl dgst -sha256 "$file" | awk '{print $NF}'
+        return 0
+    fi
+    echo "ERROR: No sha256 tool found (need sha256sum, shasum, or openssl)" >&2
+    return 1
+}
+
 check_prereqs() {
     local failed=0
     echo "=== asi-plan prerequisites ==="
@@ -258,7 +277,7 @@ check_kickoff_drift() {
         return 0
     fi
     local current_hash
-    current_hash=$(sha256sum "$KICKOFF_FILE" | cut -d' ' -f1)
+    current_hash=$(sha256_file "$KICKOFF_FILE")
     if [[ "$stored_hash" != "$current_hash" ]]; then
         echo "FAIL: KICKOFF.md has changed (drift detected)"
         return 1

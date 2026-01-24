@@ -37,13 +37,24 @@ EOF
     exit 2
 }
 
+# Helper: extract markdown section body (lines after "## <section>" until next H2)
+extract_section_body() {
+    local file="$1"
+    local section="$2"
+    awk -v section="$section" '
+    $0 == "## " section { in_section = 1; next }
+    in_section && /^## / { exit }
+    in_section { print }
+    ' "$file"
+}
+
 # Helper: check if section has content
 section_has_content() {
     local file="$1"
     local section="$2"
     local content
     
-    content=$(sed -n "/^## ${section}$/,/^## /p" "$file" | head -n -1 | tail -n +2)
+    content=$(extract_section_body "$file" "$section")
     
     if echo "$content" | grep -qvE '^\s*$|^<!--|^-->|^\| *\|' 2>/dev/null; then
         return 0
@@ -73,7 +84,8 @@ update_state() {
     timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     
     if ! command -v jq &>/dev/null; then
-        echo "WARN: jq not available, cannot update state file"
+        echo "WARN: jq not available, cannot update state file" >&2
+        echo "INFO: Run scripts/bootstrap.sh --check for install guidance." >&2
         return 0
     fi
     

@@ -54,7 +54,7 @@ if [[ ! -d "$PLAN_DIR" ]]; then
 fi
 
 if ! command -v jq &>/dev/null; then
-    echo "ERROR: jq is required for task generation." >&2
+    echo "ERROR: jq is required for task generation. Run scripts/bootstrap.sh --check for install guidance." >&2
     exit 1
 fi
 

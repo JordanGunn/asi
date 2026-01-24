@@ -9,6 +9,15 @@
 - Task dependencies not satisfied
 - Execution error occurs
 - User withdraws consent
+- Required dependencies are missing (e.g., `jq`)
+
+## Missing dependencies
+
+If required command-line dependencies are missing (for example, `jq`):
+
+1. Halt and report which command is missing
+2. Suggest the user run `scripts/bootstrap.sh --check` (user-run helper) for install guidance
+3. Do not attempt to install dependencies automatically
 
 ## Plan not approved
 

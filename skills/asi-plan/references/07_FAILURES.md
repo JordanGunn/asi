@@ -8,6 +8,15 @@
 - KICKOFF.md frontmatter is invalid
 - Target directory does not exist or is not writable
 - User withdraws consent during procedure
+- Required dependencies are missing (e.g., `jq`)
+
+## Missing dependencies
+
+If required command-line dependencies are missing (for example, `jq`):
+
+1. Halt and report which command is missing
+2. Suggest the user run `scripts/bootstrap.sh --check` (user-run helper) for install guidance
+3. Do not attempt to install dependencies automatically
 
 ## Kickoff not approved
 

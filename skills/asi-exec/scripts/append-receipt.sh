@@ -61,7 +61,7 @@ if [[ ! -f "$INPUT" ]]; then
 fi
 
 if ! command -v jq &>/dev/null; then
-    echo "ERROR: jq is required" >&2
+    echo "ERROR: jq is required. Run scripts/bootstrap.sh --check for install guidance." >&2
     exit 1
 fi
 

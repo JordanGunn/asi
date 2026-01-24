@@ -163,7 +163,8 @@ check_skill_type_valid() {
         return 1
     fi
     if ! command -v jq &>/dev/null; then
-        echo "WARN: jq not available, skipping JSON validation"
+        echo "WARN: jq not available, skipping JSON validation" >&2
+        echo "INFO: Run scripts/bootstrap.sh --check for install guidance." >&2
         return 0
     fi
     local type_field
@@ -193,7 +194,8 @@ check_scaffold_valid() {
         return 1
     fi
     if ! command -v jq &>/dev/null; then
-        echo "WARN: jq not available, skipping JSON validation"
+        echo "WARN: jq not available, skipping JSON validation" >&2
+        echo "INFO: Run scripts/bootstrap.sh --check for install guidance." >&2
         return 0
     fi
     if jq empty "$SCAFFOLD_FILE" 2>/dev/null; then
