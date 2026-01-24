@@ -47,7 +47,7 @@ Changes that introduce new mechanisms, new protocols, or implied auto-action are
 
 ## License
 
-By contributing to this repository, you agree that your contributions will be licensed under the same license as the project (see [LICENSE](../LICENSE)).
+By contributing to this repository, you agree that your contributions will be licensed under the same license as the project (see `LICENSE`).
 
 ---
 

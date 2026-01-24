@@ -111,3 +111,7 @@ https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/llms.txt
 ## TL;DR
 
 ASI exists to make agentic systems **trustworthy**: determinism before reasoning, skills as policy, passive means passive, and failure is better than ambiguity.
+
+## License
+
+Licensed under the zlib license — see `LICENSE`.
