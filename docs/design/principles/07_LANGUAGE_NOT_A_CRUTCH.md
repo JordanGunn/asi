@@ -7,18 +7,13 @@ Natural language is a powerful interface. It should not compensate for:
 - unbounded discovery
 - ambiguous authority
 
-If a rule matters, encode it structurally. If a decision matters, constrain it explicitly.
+If a rule matters, encode it structurally.   
+If a decision matters, constrain it explicitly.
 
-This is compatible with skills taking a single user prompt as input: the prompt is the interface, but determinism provides the guardrails.
+## Natural Language as an Argument
 
-## Parameterized determinism (best practice)
+Skill endpoints expose natural language as the primary argument to pre-defined agent-orchestrated operations.  While this is extraordinarily powerful, this creates a very large margin for inconsistent results. If entropy is not controlled at the user-intent ingestion boundary, skills are vulnerable to failure before they begin.
 
-When agents provide parameters to deterministic mechanisms (scripts, queries, routers), define a reasoning contract asset.
+This boundary should **always** be guarded by a reasoning contract implemented via a strict schema asset. This contract should declare the parameters, allowed values, defaults, derivation rules and yield explicit reporting of the derived parameters.
 
-That contract should declare the parameter schema, allowed values, defaults, and derivation rules, and it should require explicit reporting of the derived parameters.
-
-This keeps natural language as the input while preventing hidden or ad hoc reasoning from controlling deterministic execution.
-
-## Why this matters for ASI
-
-ASI treats natural language as the interface while insisting that behavior is governed by explicit constraints. This principle protects determinism-before-reasoning from being replaced by "prompt-only" governance.
+This keeps natural language as the input while preventing hidden or ad hoc reasoning for the core intent of the skill execution begins.
