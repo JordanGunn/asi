@@ -206,10 +206,10 @@ Fresh invocation — read all references in order.
 
 The router is a scope-control tool. It should make it easy to report, at minimum:
 
-- effective scope: which route matched, and which reference files were treated as in-bounds
-- what was read: the router itself, executed precondition checks, and the reference files loaded for the route
-- what was written or changed: typically “nothing” during routing (routing should be read-only)
-- validation status: whether precondition checks passed/failed, and whether any declared validations were satisfied
+- **effective scope:** which route matched, and which reference files were treated as in-bounds
+- **what was read:** the router itself, executed precondition checks, and the reference files loaded for the route
+- **what was written or changed:** typically “nothing” during routing (routing should be read-only)
+- **validation status:** whether precondition checks passed/failed, and whether any declared validations were satisfied
 
 ---
 
