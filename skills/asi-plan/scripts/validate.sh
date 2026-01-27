@@ -4,6 +4,16 @@ set -euo pipefail
 # asi-plan validation script
 # Read-only deterministic checks for plan artifacts
 
+ TARGET_DIR="${TARGET_DIR:-}"
+ if [[ -z "${TARGET_DIR}" ]]; then
+     if TARGET_DIR=$(git rev-parse --show-toplevel 2>/dev/null); then
+         :
+     else
+         TARGET_DIR="."
+     fi
+ fi
+ cd "$TARGET_DIR"
+
 KICKOFF_DIR=".asi/kickoff"
 PLAN_DIR=".asi/plan"
 KICKOFF_FILE="$KICKOFF_DIR/KICKOFF.md"
@@ -233,7 +243,7 @@ check_todo_tasks() {
         return 1
     fi
     local task_count
-    task_count=$(grep -c '^\| T[0-9]' "$TODO_FILE" 2>/dev/null || echo "0")
+    task_count=$(grep -cE '^\|[[:space:]]*T[0-9]+' "$TODO_FILE" 2>/dev/null || echo "0")
     if [[ "$task_count" -gt 0 ]]; then
         echo "PASS: $task_count tasks found"
         return 0

@@ -5,6 +5,16 @@ set -euo pipefail
 # Deterministic preamble: validates prerequisites, parses kickoff artifacts, creates structure
 # Agent work happens AFTER this script completes
 
+ TARGET_DIR="${TARGET_DIR:-}"
+ if [[ -z "${TARGET_DIR}" ]]; then
+     if TARGET_DIR=$(git rev-parse --show-toplevel 2>/dev/null); then
+         :
+     else
+         TARGET_DIR="."
+     fi
+ fi
+ cd "$TARGET_DIR"
+
 KICKOFF_DIR=".asi/kickoff"
 PLAN_DIR=".asi/plan"
 KICKOFF_FILE="$KICKOFF_DIR/KICKOFF.md"

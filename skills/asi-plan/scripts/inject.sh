@@ -5,6 +5,16 @@ set -euo pipefail
 # Deterministically injects structured step output into PLAN.md and TODO.md
 # Separates agent reasoning (produces JSON) from file writing (this script)
 
+ TARGET_DIR="${TARGET_DIR:-}"
+ if [[ -z "${TARGET_DIR}" ]]; then
+     if TARGET_DIR=$(git rev-parse --show-toplevel 2>/dev/null); then
+         :
+     else
+         TARGET_DIR="."
+     fi
+ fi
+ cd "$TARGET_DIR"
+
 PLAN_DIR=".asi/plan"
 PLAN_FILE="$PLAN_DIR/PLAN.md"
 TODO_FILE="$PLAN_DIR/TODO.md"

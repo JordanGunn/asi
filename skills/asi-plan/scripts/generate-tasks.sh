@@ -5,6 +5,16 @@ set -euo pipefail
 # Deterministically generates tasks from SCAFFOLD.json
 # Agent reviews/augments; does not invent from scratch
 
+ TARGET_DIR="${TARGET_DIR:-}"
+ if [[ -z "${TARGET_DIR}" ]]; then
+     if TARGET_DIR=$(git rev-parse --show-toplevel 2>/dev/null); then
+         :
+     else
+         TARGET_DIR="."
+     fi
+ fi
+ cd "$TARGET_DIR"
+
 KICKOFF_DIR=".asi/kickoff"
 PLAN_DIR=".asi/plan"
 SCAFFOLD_FILE="$KICKOFF_DIR/SCAFFOLD.json"
