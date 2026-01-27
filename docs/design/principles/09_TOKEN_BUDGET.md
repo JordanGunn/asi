@@ -6,8 +6,4 @@ Tokens aren’t just cost; they are attention.
 - Smaller surfaces lead to better decisions, not just cheaper ones.
 - Context should be earned, not ambient.
 
-Token efficiency is a correctness concern, not just an optimization.
-
-## Why this matters for ASI
-
-ASI relies on bounded surfaces and explicit scope. Treating tokens as an epistemic budget reinforces the same goal: earn context through deterministic reduction rather than ambient full-corpus reading.
+Token efficiency is a correctness concern, not just an optimization. Treating tokens as an epistemic budget reinforces the same goal: **earn context through deterministic reduction rather than ambient full-corpus reading.**
