@@ -7,6 +7,8 @@ Agent-facing operations should be safe to repeat and explicit about state transi
 
 Idempotency is not “do nothing twice”; it is “do the right thing twice”.
 
-## Why this matters for ASI
+Adhering to this prionciple provides:
 
-Replayable, lifecycle-aware operations support auditability and reduce hidden state. They also make failures safer by enabling deterministic retry paths.
+- replayable, lifecycle-aware operations support auditability
+- reduced hidden state, and,
+- safer failure modes through deterministic retry paths.
