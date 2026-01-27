@@ -17,11 +17,18 @@ metadata:
     - references/06_PROCEDURE.md
     - references/07_FAILURES.md
   scripts:
+    - scripts/bootstrap.sh
+    - scripts/bootstrap.ps1
     - scripts/init.sh
+    - scripts/init.ps1
     - scripts/select-task.sh
+    - scripts/select-task.ps1
     - scripts/update-status.sh
+    - scripts/update-status.ps1
     - scripts/append-receipt.sh
+    - scripts/append-receipt.ps1
     - scripts/checkpoint.sh
+    - scripts/checkpoint.ps1
     - scripts/validate.sh
     - scripts/validate.ps1
   assets:

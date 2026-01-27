@@ -116,19 +116,21 @@ done
 echo "=== Validating prerequisites ===" >&2
 
 if [[ ! -d "$KICKOFF_DIR" ]]; then
-    echo "ERROR: $KICKOFF_DIR does not exist. Run asi-kickoff first." >&2
+    echo "ERROR: $KICKOFF_DIR does not exist." >&2
+    echo "Run the kickoff phase first: scripts/kickoff-init.sh --skill-name \"<name>\" --skill-purpose \"<purpose>\"" >&2
     exit 1
 fi
 
 if [[ ! -f "$KICKOFF_FILE" ]]; then
-    echo "ERROR: $KICKOFF_FILE does not exist. Run asi-kickoff first." >&2
+    echo "ERROR: $KICKOFF_FILE does not exist." >&2
+    echo "Run the kickoff phase first: scripts/kickoff-init.sh --skill-name \"<name>\" --skill-purpose \"<purpose>\"" >&2
     exit 1
 fi
 
 KICKOFF_STATUS=$(get_frontmatter_field "$KICKOFF_FILE" "status")
 if [[ "$KICKOFF_STATUS" != "approved" ]]; then
     echo "ERROR: KICKOFF.md status is '$KICKOFF_STATUS', expected 'approved'." >&2
-    echo "Approve the kickoff before running asi-plan." >&2
+    echo "Complete kickoff + approve it first (see scripts/kickoff-approve.sh), then rerun scripts/init.sh." >&2
     exit 1
 fi
 

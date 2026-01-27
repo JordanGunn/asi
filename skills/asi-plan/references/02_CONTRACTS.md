@@ -4,9 +4,9 @@
 
 This skill uses the **Plan Intent Contract** and ingests kickoff artifacts.
 
-## Input Artifacts (from asi-kickoff)
+## Input Artifacts (kickoff)
 
-The skill reads from `.asi/kickoff/`:
+The skill reads from `.asi/kickoff/` (produced either by `asi-kickoff` or by the kickoff phase within `asi-plan`):
 
 | Artifact | Schema | Purpose |
 | -------- | ------ | ------- |
@@ -36,7 +36,7 @@ The agent must derive structured intent from kickoff artifacts.
 
 ### Disallowed derivations
 
-- Do not proceed if KICKOFF.md status is not `approved`
+- Do not enter the planning phase if KICKOFF.md status is not `approved`
 - Do not infer tasks not traceable to KICKOFF.md or SCAFFOLD.json
 - Do not expand scope beyond KICKOFF.md boundaries
 - Do not modify kickoff artifacts

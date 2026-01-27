@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "step_output_v1.schema.json",
+  "title": "Onboard Step Output Contract",
+  "description": "Schema for per-step onboarding outputs during asi-onboard",
+  "type": "object",
+  "required": ["step", "output"],
+  "properties": {
+    "step": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3,
+      "description": "Step number being completed"
+    },
+    "output": {
+      "type": "object",
+      "required": ["read", "summary"],
+      "properties": {
+        "read": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "why"],
+            "properties": {
+              "path": { "type": "string" },
+              "why": { "type": "string" },
+              "notes": { "type": "string" }
+            }
+          },
+          "description": "Sources read and why they matter"
+        },
+        "summary": {
+          "type": "string",
+          "description": "Concise summary relevant to the topic"
+        },
+        "key_points": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "open_questions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "next_actions": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "reasoning_trace": {
+      "type": "string",
+      "description": "Brief explanation of reasoning for audit"
+    }
+  },
+  "additionalProperties": false
+}

@@ -2,18 +2,15 @@
 
 ## ✅ Invoke when
 
-- User explicitly requests planning for a skill with approved KICKOFF.md
+- User explicitly requests planning for a skill (regardless of whether kickoff exists yet)
 - User wants to decompose a kickoff into tasks
 - User asks to create PLAN.md or TODO.md from KICKOFF.md
-- KICKOFF.md exists with `status: approved`
+- KICKOFF.md exists with `status: approved` (planning phase will run immediately)
 
 ## ❌ Do not invoke when
 
-- KICKOFF.md does not exist (use `asi-kickoff` first)
-- KICKOFF.md status is `draft` or `review` (await approval)
-- KICKOFF.md status is `rejected` (revise kickoff first)
+- User is only trying to build context / read docs (use `asi-onboard`)
 - User wants to execute tasks (use `asi-exec`)
-- User wants to modify KICKOFF.md (use `asi-kickoff`)
 - PLAN.md already exists and user has not requested fresh start
 
 ## 🛑 Stop immediately if

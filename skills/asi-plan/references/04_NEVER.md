@@ -1,6 +1,6 @@
 # Never
 
-- Never proceed without approved KICKOFF.md
+- Never enter the planning phase without approved KICKOFF.md
 - Never implement scripts or code during planning
 - Never create tasks not traceable to KICKOFF.md
 - Never expand scope beyond KICKOFF.md boundaries

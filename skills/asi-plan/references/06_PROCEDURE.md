@@ -7,6 +7,7 @@ Execute the planning procedure using the deterministic-first flow below.
 ## Execution Model
 
 ```text
+Script (kickoff-*.sh)      → (If needed) produce/advance kickoff artifacts
 Script (init.sh)           → Validates prereqs, parses kickoff, creates templates
 Script (generate-tasks.sh) → Scaffold → tasks_scaffold.json (deterministic)
 Agent (per step)           → Produces JSON conforming to step schema
@@ -15,6 +16,35 @@ Script (checkpoint.sh)     → Validates step, gates progression
 ```
 
 The agent reasons **only** over parsed kickoff data (`KICKOFF_PARSED.json`). Scripts handle all file I/O.
+
+---
+
+## Kickoff Phase (if needed)
+
+If KICKOFF.md is missing or not yet approved, complete the kickoff phase first using the kickoff-phase scripts in this skill.
+
+Optional (recommended): if you need to build context before designing/planning, run `asi-onboard` first. `asi-plan` does not require onboarding artifacts.
+
+Recommended (environment check):
+
+```bash
+scripts/kickoff-bootstrap.sh --check
+```
+
+Initialize kickoff artifacts:
+
+```bash
+scripts/kickoff-init.sh --skill-name "<name>" --skill-purpose "<purpose>"
+```
+
+Then follow the kickoff step progression (checkpointing each step) and mark approval:
+
+```bash
+scripts/kickoff-checkpoint.sh --step N --advance
+scripts/kickoff-approve.sh
+```
+
+After KICKOFF.md is `approved`, proceed to Step 0.
 
 ---
 

@@ -1,6 +1,6 @@
 # ASI Skills (`asi-*`)
 
-The `asi-*` skills are the reference implementation of the ASI “design → plan → execute” pipeline.
+The `asi-*` skills are the reference implementation of the ASI “context → design/plan → execute” workflow.
 
 They exist to make agent work reviewable and controllable:
 
@@ -9,6 +9,17 @@ They exist to make agent work reviewable and controllable:
 - **Execution happens under a gate** with traceability and receipts
 
 ## Quick map
+
+- **`asi-onboard/`**
+  - **What it does**
+    - Establishes disk-backed repo context by reading ASI documentation entrypoints and recording a scoped context digest.
+  - **What it’s for**
+    - Building reusable, resumable context without producing planning artifacts.
+  - **What it does not do**
+    - No kickoff, no plan, no implementation.
+  - **Primary outputs**
+    - `.asi/onboard/NOTES.md`
+    - `.asi/onboard/SOURCES.md`
 
 - **`asi-kickoff/`**
   - **What it does**
@@ -22,7 +33,9 @@ They exist to make agent work reviewable and controllable:
 
 - **`asi-plan/`**
   - **What it does**
-    - Converts an **approved** `KICKOFF.md` into `PLAN.md` + `TODO.md`.
+    - Unified kickoff + planning entrypoint.
+      - If kickoff is missing or unapproved: produces/refines `.asi/kickoff/*`
+      - After kickoff approval: produces `.asi/plan/PLAN.md` + `.asi/plan/TODO.md`
   - **What it’s for**
     - Bridging design intent into sequenced, traceable work without writing code.
   - **What it does not do**
@@ -44,27 +57,33 @@ They exist to make agent work reviewable and controllable:
 ## The pipeline (and the gate)
 
 ```text
-asi-kickoff → asi-plan → asi-exec
-     │             │          │
-     ▼             ▼          ▼
-KICKOFF.md    PLAN.md     Implementation
-QUESTIONS.md  TODO.md     RECEIPT.md
+asi-onboard (optional) → asi-plan → asi-exec
+        │                │          │
+        ▼                ▼          ▼
+   NOTES.md          KICKOFF.md  Implementation
+   SOURCES.md        QUESTIONS.md RECEIPT.md
+                         │
+                         ▼
+                      PLAN.md
+                      TODO.md
 ```
 
 The intended invariant is simple:
 
-- **No `asi-plan` without an approved `KICKOFF.md`.**
+- **`asi-plan` must not produce PLAN/TODO without an approved `KICKOFF.md`.**
 - **No `asi-exec` without an approved `PLAN.md`.**
 - **Only `asi-exec` is authorized to implement.**
 
 ## When to use which
+
+- Use `asi-onboard` when you want to build context (docs/spec discovery) without creating planning artifacts (recommended, not required).
 
 - Use `asi-kickoff` when you’re not ready to commit to an approach yet, but you *can* describe:
   - The skill’s purpose
   - What can be made deterministic
   - What requires judgment / human gating
 
-- Use `asi-plan` when the design is agreed on and you want a concrete, reviewable breakdown into tasks.
+- Use `asi-plan` when you want to converge on kickoff + plan artifacts (it will run kickoff first if needed). `asi-plan` does not require onboarding artifacts.
 
 - Use `asi-exec` when you’re ready to implement in a controlled way, with traceability and receipts.
 
@@ -72,15 +91,17 @@ The intended invariant is simple:
 
 In this repo, each skill is also exposed as a Windsurf workflow:
 
+- `.windsurf/workflows/asi-onboard.md`
 - `.windsurf/workflows/asi-kickoff.md`
 - `.windsurf/workflows/asi-plan.md`
 - `.windsurf/workflows/asi-exec.md`
 
 Each workflow delegates to its corresponding manifest:
 
-- `skills/asi/asi-kickoff/SKILL.md`
-- `skills/asi/asi-plan/SKILL.md`
-- `skills/asi/asi-exec/SKILL.md`
+- `skills/asi-onboard/SKILL.md`
+- `skills/asi-kickoff/SKILL.md`
+- `skills/asi-plan/SKILL.md`
+- `skills/asi-exec/SKILL.md`
 
 ## Where the authoritative behavior lives
 

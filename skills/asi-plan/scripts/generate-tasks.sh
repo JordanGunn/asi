@@ -95,19 +95,24 @@ EOF
     exit 0
 fi
 
-# Generate task list based on skill type
+# Generate task list from scaffold
 TASK_ID=1
 
-generate_task() {
+append_task() {
     local type="$1"
     local path="$2"
     local description="$3"
     local source="$4"
     local id
-    id=$(printf "T%03d" $TASK_ID)
-    ((TASK_ID++))
-    
-    cat << EOF
+
+    id=$(printf "T%03d" "$TASK_ID")
+    TASK_ID=$((TASK_ID + 1))
+
+    if [[ "$TASKS" != "[" ]]; then
+        TASKS+="," 
+    fi
+
+    TASKS+=$(cat << EOF
     {
       "id": "$id",
       "type": "$type",
@@ -118,44 +123,23 @@ generate_task() {
       "source_section": "$source"
     }
 EOF
+)
 }
 
 # Start building tasks array
 TASKS="["
 
-# Common directories for any skill
-COMMON_DIRS=("references" "scripts" "assets" "assets/schemas" "assets/templates")
-
-for dir in "${COMMON_DIRS[@]}"; do
-    if [[ -n "$TASKS" && "$TASKS" != "[" ]]; then
-        TASKS+=","
-    fi
-    TASKS+=$(generate_task "directory" "$dir" "Create $dir directory" "SCAFFOLD.json")
+# Directories declared by SCAFFOLD.json (relative to target_directory)
+mapfile -t SCAFFOLD_DIRS < <(jq -r '.structure.directories[]? // empty' "$SCAFFOLD_FILE")
+for dir in "${SCAFFOLD_DIRS[@]}"; do
+    append_task "directory" "$dir" "Create $dir directory" "SCAFFOLD.json"
 done
 
-# Common reference files
-REF_FILES=("00_ROUTER.md" "01_SUMMARY.md" "02_CONTRACTS.md" "03_TRIGGERS.md" "04_NEVER.md" "05_ALWAYS.md" "06_PROCEDURE.md" "07_FAILURES.md")
-
-for file in "${REF_FILES[@]}"; do
-    TASKS+=","
-    TASKS+=$(generate_task "file" "references/$file" "Create references/$file" "SCAFFOLD.json")
+# Files declared by SCAFFOLD.json (relative to target_directory)
+mapfile -t SCAFFOLD_FILES < <(jq -r '.structure.files[]?.path // empty' "$SCAFFOLD_FILE")
+for file in "${SCAFFOLD_FILES[@]}"; do
+    append_task "file" "$file" "Create $file" "SCAFFOLD.json"
 done
-
-# Common script files
-SCRIPT_FILES=("validate.sh" "validate.ps1")
-
-for file in "${SCRIPT_FILES[@]}"; do
-    TASKS+=","
-    TASKS+=$(generate_task "file" "scripts/$file" "Create scripts/$file" "SCAFFOLD.json")
-done
-
-# SKILL.md
-TASKS+=","
-TASKS+=$(generate_task "file" "SKILL.md" "Create SKILL.md manifest" "SCAFFOLD.json")
-
-# README.md
-TASKS+=","
-TASKS+=$(generate_task "file" "README.md" "Create README.md" "SCAFFOLD.json")
 
 TASKS+="]"
 

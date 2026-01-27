@@ -10,22 +10,22 @@
 
 ### Check
 
-- KICKOFF.md must exist and have `status: approved`
-- If user explicitly requests "start fresh", ignore existing PLAN.md/TODO.md
+- If user explicitly requests "start fresh", ignore existing kickoff/plan artifacts.
+- Kickoff must be approved before the planning phase can proceed.
 
 ---
 
 ## Routes
 
-1. kickoff-not-approved
+1. kickoff-phase
 2. plan-exists
 3. default
 
 ---
 
-### kickoff-not-approved
+### kickoff-phase
 
-Halt — cannot plan without approved kickoff.
+Kickoff missing or not yet approved — run the kickoff phase within `asi-plan`.
 
 **When:**
 
@@ -35,7 +35,8 @@ Halt — cannot plan without approved kickoff.
 **Read:**
 
 1. 01_SUMMARY.md
-2. 07_FAILURES.md
+2. 06_PROCEDURE.md
+3. 07_FAILURES.md
 
 **Ignore:**
 
@@ -43,11 +44,10 @@ Halt — cannot plan without approved kickoff.
 2. 03_TRIGGERS.md
 3. 04_NEVER.md
 4. 05_ALWAYS.md
-5. 06_PROCEDURE.md
 
 #### Goto
 
-07_FAILURES.md#kickoff-not-approved
+06_PROCEDURE.md#kickoff-phase-if-needed
 
 ---
 

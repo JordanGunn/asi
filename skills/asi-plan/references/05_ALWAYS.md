@@ -1,6 +1,6 @@
 # Always
 
-- Always verify KICKOFF.md exists and is approved before proceeding
+- Always verify KICKOFF.md exists and is approved before entering the planning phase
 - Always parse KICKOFF.md frontmatter and validate required fields
 - Always trace every task back to a KICKOFF.md section
 - Always include task dependencies when they exist
@@ -14,4 +14,4 @@
 - Always report what was produced and what remains unresolved
 - Always validate task-to-KICKOFF traceability
 - Always flag if source KICKOFF.md has been modified since PLAN.md creation
-- Always recommend user approval if KICKOFF.md status is not `approved`
+- Always require explicit user approval of KICKOFF.md before entering the planning phase

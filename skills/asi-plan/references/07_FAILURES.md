@@ -2,8 +2,6 @@
 
 ## Halt and report failure if
 
-- KICKOFF.md does not exist
-- KICKOFF.md status is not `approved`
 - KICKOFF.md is missing required sections
 - KICKOFF.md frontmatter is invalid
 - Target directory does not exist or is not writable
@@ -18,17 +16,17 @@ If required command-line dependencies are missing (for example, `jq`):
 2. Suggest the user run `scripts/bootstrap.sh --check` (user-run helper) for install guidance
 3. Do not attempt to install dependencies automatically
 
-## Kickoff not approved
+## Kickoff missing / not approved (kickoff phase required)
 
-If KICKOFF.md exists but status is not `approved`:
+If KICKOFF.md does not exist, or exists but status is not `approved`:
 
-1. Report current status
-2. Explain that planning requires approved kickoff
-3. Suggest:
-   - **Review**: If status is `draft`, suggest submitting for review
-   - **Revise**: If status is `rejected`, suggest revising kickoff
-   - **Wait**: If status is `review`, suggest awaiting approval
-4. Do not proceed
+1. Report the current state (missing vs current status)
+2. Explain that `asi-plan` will run the kickoff phase first
+3. Use the kickoff-phase scripts from this skill:
+   - `scripts/kickoff-init.sh --skill-name "<name>" --skill-purpose "<purpose>"`
+   - Progress steps via `scripts/kickoff-checkpoint.sh`
+   - Mark approval via `scripts/kickoff-approve.sh`
+4. After approval, resume the planning phase with `scripts/init.sh`
 
 ## Existing plan
 

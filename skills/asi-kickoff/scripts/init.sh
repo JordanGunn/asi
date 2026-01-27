@@ -14,12 +14,13 @@ STATE_FILE="$ASI_DIR/STATE.json"
 
 usage() {
     cat <<EOF
-Usage: $(basename "$0") --skill-name <name> --skill-purpose <purpose> [--target <dir>]
+Usage: $(basename "$0") --skill-name <name> --skill-purpose <purpose> [--target <dir>] [--force]
 
 Arguments:
   --skill-name     Required. Name of the skill being designed.
   --skill-purpose  Required. One-line purpose of the skill.
   --target         Optional. Target directory. Defaults to current directory.
+  --force          Optional. Remove existing .asi/kickoff/ and reinitialize.
 
 This script:
   1. Creates .asi/kickoff/ directory
@@ -40,6 +41,7 @@ EOF
 SKILL_NAME=""
 SKILL_PURPOSE=""
 TARGET_DIR=""
+FORCE=false
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -54,6 +56,10 @@ while [[ $# -gt 0 ]]; do
         --target)
             TARGET_DIR="$2"
             shift 2
+            ;;
+        --force)
+            FORCE=true
+            shift
             ;;
         --help|-h)
             usage
@@ -90,8 +96,12 @@ cd "$TARGET_DIR" || { echo "ERROR: Cannot access target directory: $TARGET_DIR" 
 
 # Check if already initialized
 if [[ -d "$ASI_DIR" ]]; then
-    echo "ERROR: $ASI_DIR already exists. Use --force to reinitialize or remove manually." >&2
-    exit 1
+    if [[ "$FORCE" == true ]]; then
+        rm -rf "$ASI_DIR"
+    else
+        echo "ERROR: $ASI_DIR already exists. Use --force to reinitialize or remove manually." >&2
+        exit 1
+    fi
 fi
 
 # Generate timestamp

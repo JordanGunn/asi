@@ -15,8 +15,9 @@ This repository contains a publication-grade, agent-followable specification tha
 Skip the theory. Invoke the skills directly:
 
 ```text
+/asi-onboard   → (Optional, recommended) Build repo context (produces NOTES.md + SOURCES.md)
 /asi-kickoff   → Design a new skill (produces KICKOFF.md)
-/asi-plan      → Plan the work (produces PLAN.md + TODO.md)  
+/asi-plan      → Kickoff + plan (produces KICKOFF.md, then PLAN.md + TODO.md)
 /asi-exec      → Execute with receipts (produces RECEIPT.md)
 ```
 

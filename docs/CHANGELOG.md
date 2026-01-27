@@ -2,6 +2,26 @@
 
 All notable changes to this specification will be documented in this file.
 
+## 0.3.0
+
+### Documentation
+
+- Added `asi-onboard` as an optional, disk-backed context/bootstrap skill
+- Updated skill pipeline docs to reflect the unified `asi-plan` kickoff+plan interface
+- Fixed Windsurf workflow skill paths under `.windsurf/workflows/`
+
+### asi-plan (v0.3.0)
+
+- `asi-plan` now serves as the unified kickoff + planning entrypoint:
+  - If kickoff is missing/unapproved: complete kickoff via kickoff-phase scripts
+  - After kickoff approval: generate PLAN.md + TODO.md as before
+- Added `kickoff-*` kickoff-phase scripts so kickoff can be completed without switching skills
+
+### asi-onboard (v0.1.0)
+
+- New skill for scoped doc exploration and disk-backed context capture:
+  - `.asi/onboard/NOTES.md`, `.asi/onboard/SOURCES.md`, `.asi/onboard/STATE.json`
+
 ## 0.2.0
 
 ### Documentation

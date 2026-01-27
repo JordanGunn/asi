@@ -4,6 +4,8 @@
 
 `asi-kickoff` executes the ASI Skill Design Kickoff procedure to produce a high-level planning artifact (`KICKOFF.md`) for a new skill.
 
+Note: `asi-plan` now includes a kickoff phase. Use `asi-kickoff` when you explicitly want kickoff-only behavior, without entering planning.
+
 It guides structured thinking through:
 
 - Purpose definition

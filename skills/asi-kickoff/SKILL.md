@@ -17,12 +17,18 @@ metadata:
     - references/06_PROCEDURE.md
     - references/07_FAILURES.md
   scripts:
+    - scripts/bootstrap.sh
+    - scripts/bootstrap.ps1
     - scripts/init.sh
+    - scripts/init.ps1
     - scripts/inject.sh
+    - scripts/inject.ps1
     - scripts/checkpoint.sh
+    - scripts/checkpoint.ps1
     - scripts/validate.sh
     - scripts/validate.ps1
     - scripts/approve.sh
+    - scripts/approve.ps1
   assets:
     - assets/schemas/kickoff_v1.schema.json
     - assets/schemas/skill_type_v1.schema.json

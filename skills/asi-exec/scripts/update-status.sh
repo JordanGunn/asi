@@ -109,13 +109,13 @@ fi
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Verify task exists in TODO.md
-if ! grep -q "| $TASK_ID |" "$TODO_FILE"; then
+if ! grep -q "^| ${TASK_ID} |" "$TODO_FILE"; then
     echo "ERROR: Task $TASK_ID not found in $TODO_FILE" >&2
     exit 1
 fi
 
 # Get current status
-CURRENT_LINE=$(grep "| $TASK_ID |" "$TODO_FILE")
+CURRENT_LINE=$(grep -m1 "^| ${TASK_ID} |" "$TODO_FILE")
 CURRENT_STATUS=$(echo "$CURRENT_LINE" | awk -F'|' '{print $4}' | xargs)
 
 if [[ "$CURRENT_STATUS" == "$NEW_STATUS" ]]; then
