@@ -39,7 +39,7 @@ EOF
 # Parse arguments
 SKILL_NAME=""
 SKILL_PURPOSE=""
-TARGET_DIR="."
+TARGET_DIR=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -64,6 +64,15 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# Default target: git repo root (if available), otherwise current directory.
+if [[ -z "$TARGET_DIR" ]]; then
+    if TARGET_DIR=$(git rev-parse --show-toplevel 2>/dev/null); then
+        :
+    else
+        TARGET_DIR="."
+    fi
+fi
 
 # Validate required arguments
 if [[ -z "$SKILL_NAME" ]]; then

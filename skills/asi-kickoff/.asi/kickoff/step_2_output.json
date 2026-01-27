@@ -1,0 +1,8 @@
+{
+  "step": 2,
+  "output": {
+    "skill_type": "single",
+    "reasoning": "The user described one cohesive capability under a single interface: a skill named 'papi-research' that iterates research items (R1, R2, ...) sequentially and updates their markdown artifacts. There are no distinct sub-commands with different epistemic profiles; the behavior is uniform across items.",
+    "sub_skills": []
+  }
+}
