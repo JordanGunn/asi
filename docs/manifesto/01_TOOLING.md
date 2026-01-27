@@ -16,8 +16,8 @@ And yet, again and again, people say:
 > 
 > “It looks great on paper, but nothing happens.”
 
-This is not because tools are poorly built.
-It is not because skills are insufficiently clever.
+This is not because tools are poorly built.  
+It is not because skills are insufficiently clever.  
 It is not because the community lacks effort or intelligence.
 
 It’s because **capability has been mistaken for behavior**.
