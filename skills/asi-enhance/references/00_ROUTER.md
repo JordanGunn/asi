@@ -5,6 +5,7 @@
 1. Identify the target skill path.
 2. Run `scripts/init.sh --skill-path "<path>"`.
 3. Run `python3 scripts/scan_skill.py --skill-path "<path>" --out-dir ".asi/enhance"`.
+4. Review `references/09_PARADIGMS.md` so you enter the router with the right paradigms, patterns, and anti-patterns top of mind.
 
 ## Routes
 

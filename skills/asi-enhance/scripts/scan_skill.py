@@ -32,11 +32,12 @@ def parse_frontmatter(lines):
 def main():
     parser = argparse.ArgumentParser(description="Scan a skill directory and produce inventory.")
     parser.add_argument("--skill-path", required=True)
-    parser.add_argument("--out-dir", default=".asi/enhance")
+    parser.add_argument("--out-dir", default=None)
     args = parser.parse_args()
 
     skill_path = os.path.abspath(args.skill_path)
-    out_dir = os.path.abspath(args.out_dir)
+    out_dir = args.out_dir or os.path.join(skill_path, ".asi", "enhance")
+    out_dir = os.path.abspath(out_dir)
 
     if not os.path.isdir(skill_path):
         raise SystemExit(f"Skill path not found: {skill_path}")

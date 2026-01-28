@@ -5,8 +5,11 @@ description: Enhance an existing skill into an ASI-aligned structure with strong
 
 # INSTRUCTIONS
 
-1. Run `scripts/init.sh --skill-path "<path>"` to create `.asi/enhance` artifacts.
-2. Run `python3 scripts/scan_skill.py --skill-path "<path>" --out-dir ".asi/enhance"` to inventory the skill.
-3. Read `references/00_ROUTER.md` and follow the routed procedure.
-4. Record findings and decisions in `.asi/enhance/ENHANCEMENT_REPORT.md` using the template in `assets/templates/ENHANCEMENT_REPORT.template.md`.
-5. Do not implement changes until an enhancement plan is approved; if implementation is requested, hand off to `asi-exec` or explicitly enter an implementation phase with user approval.
+1. Confirm the skill path, run `scripts/init.sh --skill-path "<path>"` (it defaults to `<path>/.asi/enhance`), then run `python3 scripts/scan_skill.py --skill-path "<path>"` so you can review `<path>/.asi/enhance/STATE.json`, `INVENTORY.json`, and `SCAN.md` before moving forward.
+2. Read `references/09_PARADIGMS.md` for the target paradigms, positive patterns, anti-patterns, and supporting references you should bring to every enhancement, then consult `references/00_ROUTER.md` and choose a route.  Already-ASI targets should read `01_SUMMARY.md`, `04_NEVER.md`, `05_ALWAYS.md`, `06_PROCEDURE.md`, and `08_CHECKLISTS.md`; conversions also read `02_CONTRACTS.md`; enhancement-only requests can focus on `01_SUMMARY.md`, `05_ALWAYS.md`, `06_PROCEDURE.md`, and `08_CHECKLISTS.md`.  Capture the chosen route inside `<path>/.asi/enhance/ENHANCEMENT_REPORT.md`.
+3. When documenting remote access guidance for another repo, include instructions that show how to call `/Users/bsmith/.codex/skills/librarian/scripts/<tool>` directly, which `--root`/`--db` flags to use, and which logs (`execution/index.log`, `execution/verify.log`, `execution/purge.log`) capture the actions you just ran.
+4. When working on `developer`, include the explicit commands flagged by `references/command-checklist.md` (validate-plan, check-workspace, check-anti-patterns) so agents always supply `--plan`, `--required`, `--approval-pattern`, and the correct `--root` for their repo before running the script.
+5. Use `<path>/.asi/enhance/ENHANCEMENT_REPORT.md` (template in `assets/templates/ENHANCEMENT_REPORT.template.md`) and `<path>/.asi/enhance/CHANGELOG_ENTRY.md` to document gaps, proposed reliability/performance/security mitigation steps, and acceptance criteria; keep the report in sync as you refine the plan.
+6. Do not edit the target skill until the plan is approved; behavior-driving or destructive changes require explicit user approval or a hand-off to `asi-exec`, and every sensitive operation must be logged in the enhancement report per `references/04_NEVER.md` and `references/02_CONTRACTS.md`.
+7. Use `scripts/phase-helper.sh ensure-plan --definition plans/phase_plan.json --plan WORKPLAN.md --progress execution/phase_progress.json` before running tasks and let the helper emit `execution/next_task_context.json` via `scripts/phase-helper.sh next-task --task <id>` after each completion so the structured context remains current.
+7. After implementing approved changes, rerun `python3 scripts/scan_skill.py --skill-path "<path>"`, refresh the report with validation notes, and confirm the changelog plus checklist entries reflect the updated state before closing the enhancement.

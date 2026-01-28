@@ -17,3 +17,7 @@
 - Add references for non-obvious domain context
 - Add validation steps and safety checks
 - Improve observability of decisions and outputs
+
+## Supporting Guidance
+
+- `references/09_PARADIGMS.md` compiles the paradigms, reliable patterns, anti-patterns, and supporting references that should influence every coding-oriented enhancement.

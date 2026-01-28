@@ -2,7 +2,7 @@
 set -euo pipefail
 
 skill_path=""
-out_dir=".asi/enhance"
+out_dir=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -38,6 +38,11 @@ fi
 if [[ ! -f "$skill_path/SKILL.md" ]]; then
   echo "SKILL.md not found in: $skill_path" >&2
   exit 1
+fi
+
+skill_path="$(cd "$skill_path" && pwd)"
+if [[ -z "$out_dir" ]]; then
+  out_dir="${skill_path}/.asi/enhance"
 fi
 
 mkdir -p "$out_dir"
