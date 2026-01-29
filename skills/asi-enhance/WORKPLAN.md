@@ -5,7 +5,7 @@ Approval pattern: ^Approved:[[:space:]]+yes$
 Required sections: Intent,Goals,Non-Goals,Scope,Constraints,Plan,Commands,Validation,Approval
 Validation policy: explicit commands (guard scripts + scans)
 Plan Source: asi-enhance
-Plan Definition: plans/phase_plan.json
+Plan Definition: plans/workplan.json
 Phase progress file: execution/phase_progress.json
 
 ## Intent
@@ -37,9 +37,9 @@ Describe how asi-enhance now uses the generator/helper/progress tracker before e
   Update README.md, SKILL.md, and references to describe the generator, the
   helper, and the synchronized context files.
   Commands:
-  - rg -n "phase_plan" README.md SKILL.md references/*.md
+  - rg -n "workplan.json" README.md SKILL.md references/*.md
   Verification:
-  - python3 scripts/generate_plan.py --definition plans/phase_plan.json --output WORKPLAN.md --progress execution/phase_progress.json
+  - python3 scripts/ensure_workplan_artifacts.py --definition plans/workplan.json --plan WORKPLAN.md --progress execution/phase_progress.json
 
 ### Phase 2 — Implement the generator/tracker
 Add scripts that render WORKPLAN.md from the definition and update the progress file.
@@ -47,7 +47,7 @@ Add scripts that render WORKPLAN.md from the definition and update the progress 
   Ensure they stay deterministic, include metadata field references, and output
   `execution/next_task_context.json` when returning the next task.
   Commands:
-  - python3 scripts/generate_plan.py --definition plans/phase_plan.json --output WORKPLAN.md --progress execution/phase_progress.json
+  - python3 scripts/ensure_workplan_artifacts.py --definition plans/workplan.json --plan WORKPLAN.md --progress execution/phase_progress.json
   Verification:
   - cat execution/phase_progress.json
 
@@ -62,8 +62,8 @@ Expose scripts/phase-helper.sh so execute-plan runs workplan-like next-task quer
   - ./scripts/phase-helper.sh next-task --plan ./WORKPLAN.md --progress execution/phase_progress.json --task T001 --output execution/next_task_context.json
 
 ## Commands
-- python3 scripts/generate_plan.py --definition plans/phase_plan.json --output WORKPLAN.md --progress execution/phase_progress.json
-- ./scripts/phase-helper.sh ensure-plan --plan ./WORKPLAN.md --progress execution/phase_progress.json
+- python3 scripts/ensure_workplan_artifacts.py --definition plans/workplan.json --plan WORKPLAN.md --progress execution/phase_progress.json
+- ./scripts/phase-helper.sh ensure-plan --definition plans/workplan.json --plan ./WORKPLAN.md --progress execution/phase_progress.json
 
 ## Validation
 - ./scripts/validate-plan.sh --plan ./WORKPLAN.md --required "Intent,Goals,Non-Goals,Scope,Constraints,Plan,Commands,Validation,Approval" --approval-pattern "^Approved:[[:space:]]+yes$"

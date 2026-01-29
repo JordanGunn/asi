@@ -15,7 +15,7 @@
 - Run `python3 scripts/scan_skill.py --skill-path "<path>" --out-dir ".asi/enhance"`.
 - Review the target skill's `.asi/enhance/SCAN.md`, `.asi/enhance/STATE.json`, and `.asi/enhance/INVENTORY.json` for missing directories, TODOs, or issues and capture those findings in the report.
 - Read `references/09_PARADIGMS.md` before selecting a route so you can record the target paradigms, helpful patterns, and anti-patterns that will guide the plan.
-- Run `scripts/generate_plan.py --definition plans/phase_plan.json --output WORKPLAN.md --progress execution/phase_progress.json` and confirm that `execution/phase_progress.json` plus `execution/next_task_context.json` exist before drafting tasks—they are the deterministic artifacts this skill now emits.
+- Run `scripts/ensure_workplan_artifacts.py --definition plans/workplan.json --plan WORKPLAN.md --progress execution/phase_progress.json` and confirm that `execution/phase_progress.json` plus `execution/next_task_context.json` exist before drafting tasks—they are the deterministic artifacts this skill now emits; the guard script keeps the metadata in sync and regenerates the markdown whenever the definition changes.
 
 ## Step 4: Decide route
 

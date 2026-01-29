@@ -6,7 +6,7 @@
 - Deterministic scripts exist for repetitive steps.
 - Validation steps are present and runnable.
 - Review the target skill's `.asi/enhance/STATE.json`, `.asi/enhance/SCAN.md`, and `.asi/enhance/ENHANCEMENT_REPORT.md` before editing and mark which gating steps (plan approval, reruns) will be used.
-- Confirm that `scripts/generate_plan.py --definition plans/phase_plan.json --output WORKPLAN.md --progress execution/phase_progress.json` runs cleanly and that `execution/next_task_context.json` describes the next phase/task before implementation.
+- Confirm that `scripts/ensure_workplan_artifacts.py --definition plans/workplan.json --plan WORKPLAN.md --progress execution/phase_progress.json` runs cleanly and that `execution/next_task_context.json` describes the next phase/task before implementation. The guard script reruns the generator when the definition changes so downstream agents always see the latest metadata.
 - Verify that your plan aligns with at least one target paradigm, one positive pattern, and avoids the listed anti-patterns in `references/09_PARADIGMS.md`.
 
 ## Performance
@@ -22,6 +22,7 @@
 - External access (network, system changes) requires explicit approval.
 - Sensitive data handling is documented and minimized.
 - Sensitive or cross-skill operations must be called out in `.asi/enhance/ENHANCEMENT_REPORT.md` and require plan approval or `asi-exec` hand-off before implementation.
+- When using the `librarian` scripts for remote discovery or access, document the tool invocation, the `--root`/`--db` values, and the associated logs (`execution/index.log`, `execution/verify.log`, `execution/purge.log`) to keep the trace auditable.
 
 ## Structure
 

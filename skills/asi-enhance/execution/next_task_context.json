@@ -1,23 +1,8 @@
 {
-  "next_task": {
-    "id": "T002",
-    "summary": "Create scripts/generate_plan.py and scripts/update_phase_progress.py plus the phase definition.",
-    "description": "Ensure they stay deterministic, include metadata field references, and output `execution/next_task_context.json` when returning the next task.",
-    "commands": [
-      "python3 scripts/generate_plan.py --definition plans/phase_plan.json --output WORKPLAN.md --progress execution/phase_progress.json"
-    ],
-    "verification": [
-      "cat execution/phase_progress.json"
-    ],
-    "phase": "Phase 2 \u2014 Implement the generator/tracker",
-    "phase_summary": "Add scripts that render WORKPLAN.md from the definition and update the progress file.",
-    "phase_index": 1,
-    "task_index": 0
-  },
   "phase_progress": {
-    "plan_definition": "plans/phase_plan.json",
+    "plan_definition": "plans/workplan.json",
     "plan_path": "/Users/bsmith/.codex/skills/asi-enhance/WORKPLAN.md",
-    "phase_index": 1,
+    "phase_index": 0,
     "task_index": 0,
     "phases": [
       {
@@ -29,12 +14,12 @@
             "summary": "Clarify the new README and SKILL guidance to mention the phased plan definition and tracker.",
             "description": "Update README.md, SKILL.md, and references to describe the generator, the helper, and the synchronized context files.",
             "commands": [
-              "rg -n \"phase_plan\" README.md SKILL.md references/*.md"
+              "rg -n \"workplan.json\" README.md SKILL.md references/*.md"
             ],
             "verification": [
-              "python3 scripts/generate_plan.py --definition plans/phase_plan.json --output WORKPLAN.md --progress execution/phase_progress.json"
+              "python3 scripts/ensure_workplan_artifacts.py --definition plans/workplan.json --plan WORKPLAN.md --progress execution/phase_progress.json"
             ],
-            "status": "completed"
+            "status": "current"
           }
         ]
       },
@@ -47,12 +32,12 @@
             "summary": "Create scripts/generate_plan.py and scripts/update_phase_progress.py plus the phase definition.",
             "description": "Ensure they stay deterministic, include metadata field references, and output `execution/next_task_context.json` when returning the next task.",
             "commands": [
-              "python3 scripts/generate_plan.py --definition plans/phase_plan.json --output WORKPLAN.md --progress execution/phase_progress.json"
+              "python3 scripts/ensure_workplan_artifacts.py --definition plans/workplan.json --plan WORKPLAN.md --progress execution/phase_progress.json"
             ],
             "verification": [
               "cat execution/phase_progress.json"
             ],
-            "status": "current"
+            "status": "pending"
           }
         ]
       },
@@ -74,10 +59,21 @@
           }
         ]
       }
+    ]
+  },
+  "current_task": {
+    "id": "T001",
+    "summary": "Clarify the new README and SKILL guidance to mention the phased plan definition and tracker.",
+    "description": "Update README.md, SKILL.md, and references to describe the generator, the helper, and the synchronized context files.",
+    "commands": [
+      "rg -n \"workplan.json\" README.md SKILL.md references/*.md"
     ],
-    "last_completed": {
-      "phase": 0,
-      "task": 0
-    }
+    "verification": [
+      "python3 scripts/ensure_workplan_artifacts.py --definition plans/workplan.json --plan WORKPLAN.md --progress execution/phase_progress.json"
+    ],
+    "phase": "Phase 1 \u2014 Document the pipeline",
+    "phase_summary": "Describe how asi-enhance now uses the generator/helper/progress tracker before enhancing a skill.",
+    "phase_index": 0,
+    "task_index": 0
   }
 }
