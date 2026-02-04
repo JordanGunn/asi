@@ -108,3 +108,4 @@ Refactored to enforce deterministic-first execution and proper plan ingestion:
 ## 0.1.0
 
 - Initial draft of the ASI manifesto and design specifications.
+
