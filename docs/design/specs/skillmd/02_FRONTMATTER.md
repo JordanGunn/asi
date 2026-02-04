@@ -32,13 +32,13 @@ This document defines the canonical `SKILL.md` YAML frontmatter fields
 
 - Type: `string[]`
 - Purpose: List of script entrypoints used by the skill (typically shell + PowerShell variants). Paths are relative to the skill directory.
-- Notes: Scripts often include a read-only validation entrypoint and may include a deterministic demo entrypoint that operates only on bundled assets/fixtures.
+- Notes: Scripts often include a read-only validation entrypoint and may include a deterministic demo entrypoint that operates only on bundled assets/fixtures. In ASI V2, wrapper scripts should expose `help`, `init`, `validate`, `schema`, and `run`.
 
 ### `metadata.assets`
 
 - Type: `string[]`
-- Purpose: List of static supporting files shipped with the skill (examples, fixtures, etc.). Paths are relative to the skill directory.
-- Notes: Assets may include small fixtures intended for deterministic self-checking or demonstration.
+- Purpose: Legacy list of static supporting files shipped with the skill (examples, fixtures, etc.). Paths are relative to the skill directory.
+- Notes: In ASI V2, schemas and templates are CLI-owned. `metadata.assets` should not be used for schemas or templates and is reserved for legacy fixtures only.
 
 ### `metadata.artifacts`
 
@@ -69,13 +69,9 @@ These fields are most useful when they are treated as deterministic inputs to di
 
 ### Using `metadata.assets`
 
-- Treat assets as the skill’s self-contained support surface (fixtures, schemas, templates, examples).
+- Treat assets as legacy, self-contained support surfaces (fixtures and examples).
 - If assets are referenced by procedure/validation, missing assets should cause failure.
-- Prefer assets that reduce entropy and constrain reasoning space:
-  - schemas for inputs/outputs and persistent state
-  - templates for expected artifacts and canonical formats
-  - controlled vocabularies or enums where naming drift matters
-- Use fixtures primarily for deterministic self-checks and demos that do not touch external state.
+- Do not store schemas or templates in assets in ASI V2. Schemas and templates are emitted by the CLI.
 
 ### Using `metadata.artifacts`
 

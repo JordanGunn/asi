@@ -9,29 +9,13 @@ metadata:
   author: Jordan Godau
   version: 0.1.0
   references:
-    - references/00_ROUTER.md
     - references/01_SUMMARY.md
-    - references/02_CONTRACTS.md
-    - references/03_TRIGGERS.md
-    - references/04_NEVER.md
-    - references/05_ALWAYS.md
-    - references/06_PROCEDURE.md
-    - references/07_FAILURES.md
+    - references/02_INTENT.md
+    - references/03_POLICIES.md
+    - references/04_PROCEDURE.md
   scripts:
-    - scripts/bootstrap.sh
-    - scripts/bootstrap.ps1
-    - scripts/init.sh
-    - scripts/init.ps1
-    - scripts/inject.sh
-    - scripts/inject.ps1
-    - scripts/checkpoint.sh
-    - scripts/checkpoint.ps1
-    - scripts/validate.sh
-    - scripts/validate.ps1
-  assets:
-    - assets/schemas/step_output_v1.schema.json
-    - assets/templates/NOTES.template.md
-    - assets/templates/SOURCES.template.md
+    - scripts/skill.sh
+    - scripts/skill.ps1
   artifacts:
     - .asi/onboard/NOTES.md
     - .asi/onboard/SOURCES.md
@@ -46,5 +30,5 @@ metadata:
 
 # INSTRUCTIONS
 
-1. Run `scripts/init.sh` first.
+1. Run `./scripts/skill.sh init` first.
 2. Then refer to `metadata.references` for the procedure.

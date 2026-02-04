@@ -1,7 +1,0 @@
-{
-  "$schema": "../assets/schemas/skill_type_v1.schema.json",
-  "skill_name": "papi-research",
-  "type": "single",
-  "reasoning": "The user described one cohesive capability under a single interface: a skill named 'papi-research' that iterates research items (R1, R2, ...) sequentially and updates their markdown artifacts. There are no distinct sub-commands with different epistemic profiles; the behavior is uniform across items.",
-  "timestamp": "2026-01-26T19:02:18Z"
-}

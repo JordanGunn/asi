@@ -11,20 +11,13 @@ metadata:
   author: Jordan Godau
   version: 0.1.0
   references:
-    - 00_INSTRUCTIONS.md
-    - 01_INTENT.md
-    - 02_PRECONDITIONS.md
-    - 03_SCRIPTS.md
+    - 01_SUMMARY.md
+    - 02_INTENT.md
+    - 03_POLICIES.md
     - 04_PROCEDURE.md
-    - 05_TEMPLATES.md
-    - 06_EDGE_CASES.md
   scripts:
-    - validate.ps1
-    - validate.sh
-    - demo.ps1
-    - demo.sh
-  assets:
-    - assets/fixtures/
+    - scripts/skill.ps1
+    - scripts/skill.sh
   artifacts:
     - docs/planning/
   keywords:

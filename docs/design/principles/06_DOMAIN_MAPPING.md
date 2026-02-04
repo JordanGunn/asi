@@ -4,7 +4,7 @@ Distinguish the domains of information before implementation:
 
 ## Static Information
 
-Guardrails that constrain reasoning: schemas, templates, fixed references.
+Guardrails that constrain reasoning: CLI-owned schemas and templates, fixed references.
 
 ## Quantitative Outcomes
 

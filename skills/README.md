@@ -21,87 +21,51 @@ They exist to make agent work reviewable and controllable:
     - `.asi/onboard/NOTES.md`
     - `.asi/onboard/SOURCES.md`
 
-- **`asi-kickoff/`**
+- **`asi-creator/`**
   - **What it does**
-    - Produces a high-level `KICKOFF.md` (plus `QUESTIONS.md` and scaffold metadata) for a new skill.
+    - Unified kickoff, planning, and controlled execution for ASI skill creation.
   - **What it’s for**
-    - Turning an idea into a *reviewable design artifact* that separates deterministic mechanisms from judgment.
+    - Building ASI-compliant skills with deterministic governance and explicit gates.
   - **What it does not do**
-    - No implementation.
-  - **Primary output**
-    - `.asi/kickoff/KICKOFF.md`
-
-- **`asi-plan/`**
-  - **What it does**
-    - Unified kickoff + planning entrypoint.
-      - If kickoff is missing or unapproved: produces/refines `.asi/kickoff/*`
-      - After kickoff approval: produces `.asi/plan/PLAN.md` + `.asi/plan/TODO.md`
-  - **What it’s for**
-    - Bridging design intent into sequenced, traceable work without writing code.
-  - **What it does not do**
-    - No implementation.
+    - It is not a general project planning skill.
   - **Primary outputs**
-    - `.asi/plan/PLAN.md`
-    - `.asi/plan/TODO.md`
-
-- **`asi-exec/`**
-  - **What it does**
-    - Executes tasks from an **approved** `PLAN.md`, updating `TODO.md` status and producing an execution receipt.
-  - **What it’s for**
-    - Controlled implementation: one task at a time, with drift checks and an auditable trail.
-  - **What it does not do**
-    - No planning, no kickoff.
-  - **Primary output**
-    - `.asi/exec/RECEIPT.md`
+    - `.asi/creator/kickoff/KICKOFF.md`
+    - `.asi/creator/plan/PLAN.md`
+    - `.asi/creator/plan/TODO.md`
+    - `.asi/creator/exec/RECEIPT.md`
 
 ## The pipeline (and the gate)
 
 ```text
-asi-onboard (optional) → asi-plan → asi-exec
+asi-onboard (optional) → asi-creator
         │                │          │
         ▼                ▼          ▼
-   NOTES.md          KICKOFF.md  Implementation
-   SOURCES.md        QUESTIONS.md RECEIPT.md
-                         │
-                         ▼
-                      PLAN.md
-                      TODO.md
+   NOTES.md        KICKOFF.md  PLAN/TODO/RECEIPT
 ```
 
 The intended invariant is simple:
 
-- **`asi-plan` must not produce PLAN/TODO without an approved `KICKOFF.md`.**
-- **No `asi-exec` without an approved `PLAN.md`.**
-- **Only `asi-exec` is authorized to implement.**
+- **`asi-creator` must not produce PLAN/TODO without an approved `KICKOFF.md`.**
+- **`asi-creator` must not execute without an approved `PLAN.md`.**
+- **Only `asi-creator` is authorized to implement.**
 
 ## When to use which
 
 - Use `asi-onboard` when you want to build context (docs/spec discovery) without creating planning artifacts (recommended, not required).
 
-- Use `asi-kickoff` when you’re not ready to commit to an approach yet, but you *can* describe:
-  - The skill’s purpose
-  - What can be made deterministic
-  - What requires judgment / human gating
-
-- Use `asi-plan` when you want to converge on kickoff + plan artifacts (it will run kickoff first if needed). `asi-plan` does not require onboarding artifacts.
-
-- Use `asi-exec` when you’re ready to implement in a controlled way, with traceability and receipts.
+- Use `asi-creator` when you want to create or evolve an ASI-compliant skill. It covers kickoff, planning, and controlled execution behind explicit gates.
 
 ## How to run them
 
 In this repo, each skill is also exposed as a Windsurf workflow:
 
 - `.windsurf/workflows/asi-onboard.md`
-- `.windsurf/workflows/asi-kickoff.md`
-- `.windsurf/workflows/asi-plan.md`
-- `.windsurf/workflows/asi-exec.md`
+- `.windsurf/workflows/asi-creator.md`
 
 Each workflow delegates to its corresponding manifest:
 
 - `skills/asi-onboard/SKILL.md`
-- `skills/asi-kickoff/SKILL.md`
-- `skills/asi-plan/SKILL.md`
-- `skills/asi-exec/SKILL.md`
+- `skills/asi-creator/SKILL.md`
 
 ## Where the authoritative behavior lives
 
@@ -109,6 +73,8 @@ For each skill:
 
 - Start at `SKILL.md` (manifest, artifacts, constraints)
 - Then read `references/01_SUMMARY.md` (plain-English behavior)
-- Then `references/06_PROCEDURE.md` (step-by-step contract)
+- Then `references/04_PROCEDURE.md` (step-by-step contract)
 
 If you’re extending or auditing the skills, treat `references/` as the source of truth for what the skill is allowed to do.
+
+In ASI V2, wrapper scripts must expose `help`, `init`, `validate`, `schema`, and `run`, and delegate execution to the agent-owned CLI.

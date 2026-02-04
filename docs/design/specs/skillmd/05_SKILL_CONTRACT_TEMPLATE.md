@@ -22,10 +22,10 @@ Use the headings below as a starting point when authoring a skill’s reference 
 - Primary argument: a user prompt (natural language).
 - Optional: additional structured parameters provided by the hosting environment (if any). If present, treat them as explicit scope/execution controls and report them.
 - Any derived parameters (scope, filters, patterns, targets) that determine execution.
-- If parameters are derived to drive deterministic mechanisms (scripts, queries, routers), require a reasoning contract asset that defines schema, allowed values, defaults, and derivation rules, with explicit reporting of derived parameters.
+- If parameters are derived to drive deterministic mechanisms (scripts, queries, routers), require a reasoning contract that defines schema, allowed values, defaults, and derivation rules. The schema should be emitted by the CLI (`<cli> <skill> --schema`) and referenced explicitly.
 - Defaults (if any) and how they affect derived scope.
 - What conditions widen scope, and how that widening is reported.
-- If frontmatter is used, how `metadata.references`, `metadata.scripts`, `metadata.assets`, and `metadata.artifacts` relate to these inputs.
+- If frontmatter is used, how `metadata.references`, `metadata.scripts`, and `metadata.artifacts` relate to these inputs.
 
 ### Deterministic surface reduction
 
@@ -38,7 +38,7 @@ Use the headings below as a starting point when authoring a skill’s reference 
 - What artifacts are expected to exist on success (if any).
 - What validation proves completion.
 - What happens if validation fails.
-- Optional: whether the skill includes deterministic self-checks (validation and/or demo) that operate only on bundled assets/fixtures.
+- Optional: whether the skill includes deterministic self-checks (validation and/or demo) that operate on controlled fixtures.
 
 ### Prohibitions
 

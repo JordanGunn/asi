@@ -7,15 +7,15 @@ All notable changes to this specification will be documented in this file.
 ### Documentation
 
 - Added `asi-onboard` as an optional, disk-backed context/bootstrap skill
-- Updated skill pipeline docs to reflect the unified `asi-plan` kickoff+plan interface
+- Updated skill pipeline docs to reflect unified kickoff+plan interface
 - Fixed Windsurf workflow skill paths under `.windsurf/workflows/`
 
 ### asi-plan (v0.3.0)
 
-- `asi-plan` now serves as the unified kickoff + planning entrypoint:
-  - If kickoff is missing/unapproved: complete kickoff via kickoff-phase scripts
+- `asi-plan` now served as the unified kickoff + planning entrypoint (legacy).
+  - If kickoff was missing/unapproved: complete kickoff via kickoff-phase scripts
   - After kickoff approval: generate PLAN.md + TODO.md as before
-- Added `kickoff-*` kickoff-phase scripts so kickoff can be completed without switching skills
+- Added `kickoff-*` kickoff-phase scripts (legacy)
 
 ### asi-onboard (v0.1.0)
 
@@ -46,7 +46,7 @@ All notable changes to this specification will be documented in this file.
   - Skill
   - Subjective reasoning
 
-### asi-kickoff (v0.2.0)
+### asi-kickoff (v0.2.0) [legacy]
 
 Refactored to enforce deterministic-first execution:
 
@@ -55,14 +55,14 @@ Refactored to enforce deterministic-first execution:
   - `inject.sh` — Injects schema-constrained JSON into KICKOFF.md sections
   - `checkpoint.sh` — Per-step validation gates progression
 - **New schemas:**
-  - `step_output_v1.schema.json` — Constrains agent output per procedure step
+  - CLI-emitted step output schema — Constrains agent output per procedure step
 - **Updated procedure:**
   - Scripts handle all file I/O; agent produces data only
   - Per-step validation before progression
   - STATE.json tracks procedure progress
 - **Execution model:** `Script (init) → Agent (JSON) → Script (inject) → Script (checkpoint)`
 
-### asi-plan (v0.2.0)
+### asi-plan (v0.2.0) [legacy]
 
 Refactored to enforce deterministic-first execution and proper kickoff ingestion:
 
@@ -72,7 +72,7 @@ Refactored to enforce deterministic-first execution and proper kickoff ingestion
   - `inject.sh` — Injects schema-constrained JSON into PLAN.md/TODO.md sections
   - `checkpoint.sh` — Per-step validation gates progression
 - **New schemas:**
-  - `step_output_v1.schema.json` — Constrains agent output per procedure step
+  - CLI-emitted step output schema — Constrains agent output per procedure step
 - **New artifacts:**
   - `KICKOFF_PARSED.json` — Structured representation of kickoff (agent reasons over this, not raw markdown)
   - `tasks_scaffold.json` — Deterministically generated task list from scaffold
@@ -82,7 +82,7 @@ Refactored to enforce deterministic-first execution and proper kickoff ingestion
   - Drift detection via source_kickoff_hash
 - **Execution model:** `Script (init) → Script (generate-tasks) → Agent (JSON) → Script (inject) → Script (checkpoint)`
 
-### asi-exec (v0.2.0)
+### asi-exec (v0.2.0) [legacy]
 
 Refactored to enforce deterministic-first execution and proper plan ingestion:
 
@@ -93,7 +93,7 @@ Refactored to enforce deterministic-first execution and proper plan ingestion:
   - `append-receipt.sh` — Appends formatted receipt to RECEIPT.md
   - `checkpoint.sh` — Per-task validation, drift detection, state checks
 - **New schemas:**
-  - `task_output_v1.schema.json` — Constrains agent output per task execution
+  - CLI-emitted task output schema — Constrains agent output per task execution
 - **New artifacts:**
   - `PLAN_PARSED.json` — Structured representation of plan (agent reasons over this)
   - `task_*_output.json` — Per-task execution output

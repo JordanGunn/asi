@@ -1,3 +1,7 @@
 .windsurf/
 .asi/
 .asi-*.lock
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/

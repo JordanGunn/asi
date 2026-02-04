@@ -1,8 +1,8 @@
-# 00_ROUTER.md — Conditional dispatch for skill references
+# 00_ROUTER.md — Optional routing for skill references
 
 **Purpose**:
 
-- First file read in any skill invocation
+- Optional first file read when routing is required
 - Provides deterministic decision logic for which references to load
 - Minimizes token consumption by skipping irrelevant sections
 - Enables idempotent skills to short-circuit on re-invocation
@@ -122,16 +122,13 @@ Resume after treatment has been written.
 
 **Ignore:**
 
-1. 02_CONTRACTS.md
-2. 03_TRIGGERS.md
-3. 04_NEVER.md
-4. 05_ALWAYS.md
-5. 06_PROCEDURE.md
-6. 07_FAILURES.md
+1. 02_INTENT.md
+2. 03_POLICIES.md
+3. 04_PROCEDURE.md
 
 #### Goto
 
-06_PROCEDURE.md#verify-treatment
+04_PROCEDURE.md#verify-treatment
 
 ---
 
@@ -147,18 +144,18 @@ Resume mid-session diagnostic work.
 **Read:**
 
 1. 01_SUMMARY.md
-2. 02_CONTRACTS.md
-3. 05_ALWAYS.md
-4. 06_PROCEDURE.md
+2. 02_INTENT.md
+3. 03_POLICIES.md
+4. 04_PROCEDURE.md
 
 **Ignore:**
 
-1. 03_TRIGGERS.md
-2. 04_NEVER.md
+1. 02_INTENT.md
+2. 03_POLICIES.md
 
 #### Goto
 
-06_PROCEDURE.md#resume-session
+04_PROCEDURE.md#resume-session
 
 ---
 
@@ -173,12 +170,9 @@ Fresh invocation — read all references in order.
 **Read:**
 
 1. 01_SUMMARY.md
-2. 02_CONTRACTS.md
-3. 03_TRIGGERS.md
-4. 04_NEVER.md
-5. 05_ALWAYS.md
-6. 06_PROCEDURE.md
-7. 07_FAILURES.md
+2. 02_INTENT.md
+3. 03_POLICIES.md
+4. 04_PROCEDURE.md
 
 **Ignore:**
 
@@ -189,7 +183,7 @@ Fresh invocation — read all references in order.
 
 ## Agent Contract
 
-1. Read `00_ROUTER.md` first
+1. Read `00_ROUTER.md` first when routing is required
 2. Execute all precondition scripts
 3. Evaluate precondition checks
 4. Match first applicable route (top-to-bottom)
@@ -215,7 +209,7 @@ The router is a scope-control tool. It should make it easy to report, at minimum
 
 ## Validation
 
-- Every skill's `references/` directory should contain `00_ROUTER.md`.
+- `00_ROUTER.md` is optional and only required when routing is necessary.
 - The router should define at least the `default` route.
 - All files referenced in routes should exist in `references/`.
 - **Goto** anchors should match H2 headers in the target file (when an index is maintained).

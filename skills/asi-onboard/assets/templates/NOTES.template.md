@@ -17,9 +17,8 @@ topic: "${topic}"
 
 ## Next Actions
 
-<!-- Usually: run asi-plan. Keep concrete and ordered. -->
+<!-- Usually: run asi-creator. Keep concrete and ordered. -->
 
 ## Log
 
 <!-- Script-injected step logs append below. -->
-

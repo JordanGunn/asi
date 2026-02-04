@@ -1,0 +1,17 @@
+[project]
+name = "asi-cli"
+version = "0.1.0"
+description = "ASI agent-owned CLI (deterministic skills boundary)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+]
+
+[project.scripts]
+asi = "asi.cli:main"
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

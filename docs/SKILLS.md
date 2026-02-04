@@ -8,9 +8,7 @@ This repository includes reference skills that help design, plan, and implement 
 
 ```text
 /asi-onboard   → "(Optional, recommended) Help me build context on this repo/topic"
-/asi-plan      → "Plan the implementation for X" (includes kickoff phase if needed)
-/asi-kickoff   → "I only want to do the kickoff phase for X" (optional/legacy)
-/asi-exec      → "Execute the next task from the plan"
+/asi-creator   → "Create an ASI-compliant skill for X (kickoff + plan + controlled execution)"
 ```
 
 That's it. The skills enforce ASI principles automatically.
@@ -22,7 +20,7 @@ That's it. The skills enforce ASI principles automatically.
 The `asi-*` skills implement a gated workflow:
 
 ```text
-asi-onboard (optional) → asi-plan → asi-exec
+asi-onboard (optional) → asi-creator
         │                │          │
         ▼                ▼          ▼
    NOTES.md          KICKOFF.md  Implementation
@@ -38,9 +36,7 @@ asi-onboard (optional) → asi-plan → asi-exec
 | Stage | Artifact | Guarantee |
 | ----- | -------- | --------- |
 | **asi-onboard** | `NOTES.md`, `SOURCES.md` | Context capture only. No kickoff/plan/exec artifacts. |
-| **asi-kickoff** | `KICKOFF.md` | No implementation without explicit design. Deterministic surface mapped. Judgment remainder documented. |
-| **asi-plan** | `KICKOFF.md`, `PLAN.md`, `TODO.md` | Unified kickoff+plan entrypoint. Must not produce PLAN/TODO until kickoff is approved. Tasks traceable to kickoff. Cascade invalidation if upstream changes. |
-| **asi-exec** | Implementation | No uncontrolled implementation. Single-task execution. Auditable receipts. Drift detection. |
+| **asi-creator** | `KICKOFF.md`, `PLAN.md`, `TODO.md`, `RECEIPT.md` | Unified kickoff+plan+exec entrypoint. Must not produce PLAN/TODO until kickoff is approved. Must not execute until plan is approved. |
 
 ## Why This Matters
 
@@ -61,41 +57,23 @@ Establishes disk-backed repo context by reading ASI documentation entrypoints an
 - **Purpose**: Build reusable, resumable context without creating planning artifacts.
 - **Output**: `.asi/onboard/NOTES.md`, `.asi/onboard/SOURCES.md`
 - **Does not**: Kickoff, plan, or implement.
-- **Required?**: No. `asi-plan` does not require onboarding artifacts.
+- **Required?**: No. `asi-creator` does not require onboarding artifacts.
 
-### asi-kickoff
+### asi-creator
 
-Produces a high-level `KICKOFF.md` (plus `QUESTIONS.md` and scaffold metadata) for a new skill.
+Unified kickoff + planning + controlled execution entrypoint.
 
-- **Purpose**: Turn an idea into a reviewable design artifact that separates deterministic mechanisms from judgment.
-- **Output**: `.asi/kickoff/KICKOFF.md`
-- **Does not**: Implement anything.
-
-### asi-plan
-
-Unified kickoff + planning entrypoint.
-
-- **Purpose**: Converge on kickoff + plan artifacts in a single interface.
-- **Output**: `.asi/plan/PLAN.md`, `.asi/plan/TODO.md`
-- **Does not**: Implement anything.
-
-### asi-exec
-
-Executes tasks from an **approved** `PLAN.md`, updating `TODO.md` status and producing an execution receipt.
-
-- **Purpose**: Controlled implementation—one task at a time, with drift checks and an auditable trail.
-- **Output**: `.asi/exec/RECEIPT.md`
-- **Does not**: Plan or kickoff.
+- **Purpose**: Create ASI-compliant skills with deterministic governance and explicit gates.
+- **Output**: `.asi/creator/kickoff/KICKOFF.md`, `.asi/creator/plan/PLAN.md`, `.asi/creator/plan/TODO.md`, `.asi/creator/exec/RECEIPT.md`
+- **Does not**: Serve as a general project planning skill.
 
 ## Pipeline Invariants
 
-- **`asi-plan` must not produce PLAN/TODO without an approved `KICKOFF.md`.**
-- **No `asi-exec` without an approved `PLAN.md`.**
-- **Only `asi-exec` is authorized to implement.**
+- **`asi-creator` must not produce PLAN/TODO without an approved `KICKOFF.md`.**
+- **`asi-creator` must not execute without an approved `PLAN.md`.**
+- **Only `asi-creator` is authorized to implement.**
 
 ## When to Use Which
 
 - Use **`asi-onboard`** when you want to build context (docs/spec discovery) without creating planning artifacts (recommended, not required).
-- Use **`asi-plan`** when you want to converge on kickoff + plan artifacts (it will run kickoff first if needed).
-- Use **`asi-kickoff`** when you explicitly want the kickoff phase only (optional/legacy entrypoint).
-- Use **`asi-exec`** when you're ready to implement in a controlled way, with traceability and receipts.
+- Use **`asi-creator`** when you want to create or evolve an ASI-compliant skill with deterministic governance.

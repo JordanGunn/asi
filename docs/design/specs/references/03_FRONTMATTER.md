@@ -61,7 +61,7 @@ index:
 ### Using `description`
 
 - Treat `description` as a concise, human-readable purpose string for the reference.
-- Prefer using it in reporting (for example: “loaded 06_PROCEDURE.md — Canonical execution path for the skill”) rather than as a logic input.
+- Prefer using it in reporting (for example: “loaded 04_PROCEDURE.md — Canonical execution path for the skill”) rather than as a logic input.
 
 ### Using `index`
 

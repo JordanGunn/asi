@@ -5,6 +5,7 @@
 A useful invariant:
 
 * **Scripts determine reality.**
+* **The CLI is the deterministic boundary for skill execution.**
 * **Skills govern choice.**
 * **Judgment is allowed only after deterministic surface reduction.**
 * **Judgment must be constrained and inspectable.**

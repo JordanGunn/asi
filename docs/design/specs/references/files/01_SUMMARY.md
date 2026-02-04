@@ -1,4 +1,4 @@
-# 01_SUMMARY.md — What this skill *is*
+# 01_SUMMARY.md — What this skill is
 
 **Purpose**:
 
@@ -10,7 +10,7 @@
 * What the skill does
 * What problems it is meant to solve
 * What it is *not* meant to do
-* High-level constraints (language-agnostic, deterministic-first, etc.)
+* High-level constraints (deterministic-first, scope limits, etc.)
 * Invocation shape (primary user prompt) and any additional explicit scope inputs
 
 **Constraints**:

@@ -16,9 +16,7 @@ Skip the theory. Invoke the skills directly:
 
 ```text
 /asi-onboard   → (Optional, recommended) Build repo context (produces NOTES.md + SOURCES.md)
-/asi-kickoff   → Design a new skill (produces KICKOFF.md)
-/asi-plan      → Kickoff + plan (produces KICKOFF.md, then PLAN.md + TODO.md)
-/asi-exec      → Execute with receipts (produces RECEIPT.md)
+/asi-creator   → Create ASI-compliant skills with deterministic governance (kickoff + plan + controlled exec)
 ```
 
 Or point your agent at the spec:
@@ -93,7 +91,7 @@ This table of contents is a suggested order for first-time readers.
 2. `docs/design/model/.INDEX.md` — Execution model and boundary semantics
 3. `docs/design/principles/.INDEX.md` — Core design principles
 4. `docs/design/specs/.INDEX.md` — Canonical specifications for skill files
-5. `examples/` — Small illustrations
+5. `skills/README.md` — Reference skills and wrappers
 
 When implementing or auditing an ASI layer, start with `docs/design/specs/.INDEX.md`.
 

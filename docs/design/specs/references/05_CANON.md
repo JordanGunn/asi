@@ -1,19 +1,16 @@
-# Canonical minimal reference file set
+# Canonical Reference File Set (V2)
 
-Repositories that adopt this convention typically maintain a minimal reference file set:
+ASI V2 defines a smaller, deterministic reference canon. `00_ROUTER.md` is optional and used only for complex routing or idempotent lifecycle behavior.
 
 ```text
 references/
-├── 00_ROUTER.md
+├── 00_ROUTER.md           # optional
 ├── 01_SUMMARY.md
-├── 02_CONTRACTS.md
-├── 03_TRIGGERS.md
-├── 04_NEVER.md
-├── 05_ALWAYS.md
-├── 06_PROCEDURE.md
-└── 07_FAILURES.md
+├── 02_INTENT.md
+├── 03_POLICIES.md
+└── 04_PROCEDURE.md
 ```
 
 ## File Specifications
 
-See [`files/.INDEX.md`](files/.INDEX.md) directory for file specifications.
+See `files/.INDEX.md` for file specifications.
