@@ -26,5 +26,6 @@ Use the links below as the recommended progressive disclosure entrypoints.
 - [README](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/README.md): Overview, execution model, and quick start.
 - [Manifesto](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/docs/manifesto/.INDEX.md): Narrative framing—*why* ASI exists.
 - [Design Documentation](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/docs/design/.INDEX.md): Execution model, principles, and specifications.
+- [Implementation Documentation](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/docs/implementation/.INDEX.md): Maintainer-facing implementation invariants, rationale, and migration guidance.
 - [Skills](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/docs/SKILLS.md): The skill design pipeline.
 - [Glossary](https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/docs/GLOSSARY.md): Key terms and definitions.

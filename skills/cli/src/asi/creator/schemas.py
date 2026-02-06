@@ -12,7 +12,7 @@ from asi.util.validate import (
 )
 
 
-def emit_creator_schema() -> dict[str, Any]:
+def emit_creator_run_schema() -> dict[str, Any]:
     """JSON Schema for `asi creator run --stdin` plan input."""
     return {
         "type": "object",
@@ -33,6 +33,86 @@ def emit_creator_schema() -> dict[str, Any]:
         "required": ["goal"],
         "additionalProperties": False,
     }
+
+
+def emit_creator_suggest_schema() -> dict[str, Any]:
+    """JSON Schema for `asi creator suggest --stdin` input."""
+    option_schema = {
+        "type": "object",
+        "properties": {
+            "label": {"type": "string", "minLength": 1, "maxLength": 80},
+            "value": {"type": "string", "minLength": 1, "maxLength": 200},
+            "description": {"type": "string", "minLength": 1, "maxLength": 180},
+            "impact": {"type": "string", "minLength": 1, "maxLength": 180},
+        },
+        "required": ["label", "value", "description", "impact"],
+        "additionalProperties": False,
+    }
+    suggestion_schema = {
+        "type": "object",
+        "properties": {
+            "question_id": {"type": "string", "minLength": 1, "maxLength": 120},
+            "options": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": option_schema,
+            },
+            "recommended": {"type": "integer", "minimum": 1, "maximum": 3},
+            "rationale": {"type": "object"},
+        },
+        "required": ["question_id", "options", "recommended"],
+        "additionalProperties": False,
+    }
+    return {
+        "type": "object",
+        "properties": {
+            "iteration_id": {"type": "string", "minLength": 1, "maxLength": 200},
+            "suggestions": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 3,
+                "items": suggestion_schema,
+            },
+        },
+        "required": ["iteration_id", "suggestions"],
+        "additionalProperties": False,
+    }
+
+
+def emit_creator_apply_schema() -> dict[str, Any]:
+    """JSON Schema for `asi creator apply --stdin` input."""
+    answer_schema = {
+        "type": "object",
+        "properties": {
+            "question_id": {"type": "string", "minLength": 1, "maxLength": 120},
+            "selection": {"type": "integer", "minimum": 1, "maximum": 4},
+            "alternative_text": {"type": "string", "minLength": 1, "maxLength": 500},
+            "user_confirmation": {"type": "boolean"},
+        },
+        "required": ["question_id", "selection"],
+        "additionalProperties": False,
+    }
+    return {
+        "type": "object",
+        "properties": {
+            "ask_set_id": {"type": "string", "minLength": 1, "maxLength": 200},
+            "answers": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 3,
+                "items": answer_schema,
+            },
+            "notes": {"type": "string", "minLength": 1, "maxLength": 2000},
+        },
+        "required": ["ask_set_id", "answers"],
+        "additionalProperties": False,
+    }
+
+
+def emit_creator_schema() -> dict[str, Any]:
+    """Compatibility alias for run schema emission."""
+    return emit_creator_run_schema()
 
 
 def parse_creator_run_plan(raw: str) -> dict[str, Any]:
@@ -64,7 +144,7 @@ def parse_suggestion_request(raw: str) -> dict[str, Any]:
         s = _require_object(item, context=f"suggestions[{i}]")
         question_id = require_str(s, "question_id", min_length=1, max_length=120)
         options = require_list(s, "options", min_length=3, max_length=3)
-        recommended = require_int(s, "recommended", min_value=1, max_value=1)
+        recommended = require_int(s, "recommended", min_value=1, max_value=3)
 
         rationale = s.get("rationale", {})
         if rationale is None:
@@ -137,4 +217,3 @@ def parse_apply_request(raw: str) -> dict[str, Any]:
     if notes:
         out["notes"] = notes
     return out
-

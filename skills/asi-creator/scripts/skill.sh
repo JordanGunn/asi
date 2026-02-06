@@ -10,7 +10,7 @@ Commands:
   help                         Show this help message
   init                         Emit all skill reference docs (concatenated)
   validate                     Verify the skill is runnable (read-only)
-  schema                       Emit JSON schema for plan input
+  schema [run|suggest|apply]   Emit JSON schema (default: run)
   run --stdin                  Execute creator via plan JSON
   next                         Emit next questions (interactive loop)
   suggest --stdin              Validate agent suggestions
@@ -26,14 +26,28 @@ cmd_init() {
 
 cmd_validate() {
     if ! command -v asi &>/dev/null; then
-        echo "error: asi CLI not found. Install from cli/." >&2
+        echo "error: asi CLI not found. Install from skills/cli/." >&2
         return 1
     fi
     asi doctor
 }
 
 cmd_schema() {
-    asi creator --schema
+    case "${1:-run}" in
+        run)
+            asi creator --schema
+            ;;
+        suggest)
+            asi creator suggest --schema
+            ;;
+        apply)
+            asi creator apply --schema
+            ;;
+        *)
+            echo "error: unknown schema target '$1' (expected: run|suggest|apply)" >&2
+            return 1
+            ;;
+    esac
 }
 
 cmd_run() {
@@ -56,7 +70,7 @@ case "${1:-help}" in
     help) cmd_help ;;
     init) cmd_init ;;
     validate) cmd_validate ;;
-    schema) cmd_schema ;;
+    schema) shift; cmd_schema "${1:-run}" ;;
     run) cmd_run ;;
     next) cmd_next ;;
     suggest) cmd_suggest ;;

@@ -23,7 +23,7 @@ cmd_init() {
 
 cmd_validate() {
     if ! command -v asi &>/dev/null; then
-        echo "error: asi CLI not found. Install from cli/." >&2
+        echo "error: asi CLI not found. Install from skills/cli/." >&2
         return 1
     fi
     asi doctor

@@ -25,7 +25,7 @@ function Invoke-Init {
 
 function Invoke-Validate {
     if (-not (Get-Command asi -ErrorAction SilentlyContinue)) {
-        Write-Error "error: asi CLI not found. Install from cli/."
+        Write-Error "error: asi CLI not found. Install from skills/cli/."
         exit 1
     }
     & asi doctor

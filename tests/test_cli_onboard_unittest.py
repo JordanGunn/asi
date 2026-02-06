@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PYTHON = sys.executable
 ENV_BASE = os.environ.copy()
-ENV_BASE["PYTHONPATH"] = str(ROOT / "cli" / "src")
+ENV_BASE["PYTHONPATH"] = str(ROOT / "skills" / "cli" / "src")
 
 
 def run_cli(args, *, cwd: Path, stdin: str | None = None):

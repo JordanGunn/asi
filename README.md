@@ -27,7 +27,7 @@ Fetch https://raw.githubusercontent.com/JordanGunn/asi/refs/heads/master/llms.tx
 
 ### 📖 Understand It
 
-Read the [Manifesto](docs/manifesto/.INDEX.md) to understand *why* ASI exists, then the [Design Documentation](docs/design/.INDEX.md) for *how* it works.
+Read the [Manifesto](docs/manifesto/.INDEX.md) to understand *why* ASI exists, then the [Design Documentation](docs/design/.INDEX.md) for normative *what/how* contracts, then [Implementation Documentation](docs/implementation/.INDEX.md) for maintainer-facing implementation guidance and rationale.
 
 ---
 
@@ -91,7 +91,8 @@ This table of contents is a suggested order for first-time readers.
 2. `docs/design/model/.INDEX.md` — Execution model and boundary semantics
 3. `docs/design/principles/.INDEX.md` — Core design principles
 4. `docs/design/specs/.INDEX.md` — Canonical specifications for skill files
-5. `skills/README.md` — Reference skills and wrappers
+5. `docs/implementation/.INDEX.md` — Implementation invariants, rationale, and migration guidance
+6. `skills/README.md` — Reference skills and wrappers
 
 When implementing or auditing an ASI layer, start with `docs/design/specs/.INDEX.md`.
 

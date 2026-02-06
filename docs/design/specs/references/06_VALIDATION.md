@@ -13,3 +13,6 @@
 - [ ] Optional routing:
   - [ ] 00_ROUTER.md exists only when routing is required and declares which references to load.
 - [ ] **Routing observability**: routes and preconditions make it easy to report effective scope, what was read, and precondition validation status.
+- [ ] **Deterministic init path**: wrapper `init` can load references in one deterministic flow (ordinal or router-selected).
+- [ ] **Anti-pattern check**: no unnecessary reference fragmentation beyond the canonical set without explicit justification.
+- [ ] **Anti-pattern check**: if `00_ROUTER.md` exists, route branching is justified by lifecycle/routing needs and not used for avoidable complexity.

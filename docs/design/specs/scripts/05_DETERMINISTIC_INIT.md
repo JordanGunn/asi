@@ -2,6 +2,8 @@
 
 Wrapper scripts must implement a deterministic `init` command that loads references in a fixed order.
 
+Implementation rationale and benchmark-backed supporting evidence are documented in `docs/implementation/03_BENCHMARK_RATIONALE.md`.
+
 ## Requirements
 
 - `init` concatenates references in ordinal order unless a router is present.

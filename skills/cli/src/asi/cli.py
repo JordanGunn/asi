@@ -54,9 +54,11 @@ def create_parser() -> argparse.ArgumentParser:
     creator_next = creator_sub.add_parser("next", help="Emit next questions")
     creator_next.set_defaults(func=cmd_creator_next)
     creator_suggest = creator_sub.add_parser("suggest", help="Validate suggestions")
+    creator_suggest.add_argument("--schema", action="store_true")
     creator_suggest.add_argument("--stdin", action="store_true")
     creator_suggest.set_defaults(func=cmd_creator_suggest)
     creator_apply = creator_sub.add_parser("apply", help="Apply answers")
+    creator_apply.add_argument("--schema", action="store_true")
     creator_apply.add_argument("--stdin", action="store_true")
     creator_apply.set_defaults(func=cmd_creator_apply)
     creator_migrate = creator_sub.add_parser("migrate", help="Migrate legacy artifacts")
@@ -124,6 +126,9 @@ def cmd_creator_next(_args: argparse.Namespace) -> int:
 
 
 def cmd_creator_suggest(args: argparse.Namespace) -> int:
+    if args.schema:
+        print(json.dumps(creator.emit_suggest_schema(), indent=2))
+        return 0
     if not args.stdin:
         print("error: creator suggest requires --stdin", file=sys.stderr)
         return 1
@@ -138,6 +143,9 @@ def cmd_creator_suggest(args: argparse.Namespace) -> int:
 
 
 def cmd_creator_apply(args: argparse.Namespace) -> int:
+    if args.schema:
+        print(json.dumps(creator.emit_apply_schema(), indent=2))
+        return 0
     if not args.stdin:
         print("error: creator apply requires --stdin", file=sys.stderr)
         return 1

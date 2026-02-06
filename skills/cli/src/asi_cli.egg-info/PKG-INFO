@@ -1,0 +1,34 @@
+Metadata-Version: 2.4
+Name: asi-cli
+Version: 0.1.0
+Summary: ASI agent-owned CLI (deterministic skills boundary)
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+
+# ASI CLI
+
+Agent-owned CLI for ASI skills.
+
+## Install (uv)
+
+```bash
+uv tool install -e .
+```
+
+## Install (pip)
+
+```bash
+python3 -m pip install -e .
+```
+
+## Run
+
+```bash
+asi --help
+```
+
+## Dev Run (No Install)
+
+```bash
+PYTHONPATH=./src python3 -m asi.cli --help
+```

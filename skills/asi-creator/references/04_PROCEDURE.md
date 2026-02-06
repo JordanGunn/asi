@@ -26,6 +26,46 @@ CLI (apply)    → Persist decisions + advance phase
 4. Apply answers with `asi creator apply --stdin`.
 5. Repeat until `status: ready`, then proceed to phase execution via `asi creator run`.
 
+### Schema Discoverability
+
+Use schema emission before first invocation:
+
+- `asi creator --schema` (run plan input)
+- `asi creator suggest --schema` (suggest input)
+- `asi creator apply --schema` (apply input)
+
+### `suggest --stdin` input shape
+
+```json
+{
+  "iteration_id": "<id-from-next>",
+  "suggestions": [
+    {
+      "question_id": "creator.skill_name",
+      "options": [
+        {"label": "Option A", "value": "skill-a", "description": "Short rationale", "impact": "Low risk"},
+        {"label": "Option B", "value": "skill-b", "description": "Alternative", "impact": "Medium risk"},
+        {"label": "Option C", "value": "skill-c", "description": "Aggressive", "impact": "Higher risk"}
+      ],
+      "recommended": 1,
+      "rationale": {"reasoning": "Why option 1 is preferred"}
+    }
+  ]
+}
+```
+
+### `apply --stdin` input shape
+
+```json
+{
+  "ask_set_id": "<id-from-suggest>",
+  "answers": [
+    {"question_id": "creator.skill_name", "selection": 1, "user_confirmation": true}
+  ],
+  "notes": "Optional operator notes"
+}
+```
+
 ## Output
 
 Artifacts live under `.asi/creator/`:

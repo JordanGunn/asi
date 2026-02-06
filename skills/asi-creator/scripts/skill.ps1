@@ -10,7 +10,7 @@ Commands:
   help                         Show this help message
   init                         Emit all skill reference docs (concatenated)
   validate                     Verify the skill is runnable (read-only)
-  schema                       Emit JSON schema for plan input
+  schema [run|suggest|apply]   Emit JSON schema (default: run)
   run --stdin                  Execute creator via plan JSON
   next                         Emit next questions (interactive loop)
   suggest --stdin              Validate agent suggestions
@@ -28,14 +28,26 @@ function Invoke-Init {
 
 function Invoke-Validate {
     if (-not (Get-Command asi -ErrorAction SilentlyContinue)) {
-        Write-Error "error: asi CLI not found. Install from cli/."
+        Write-Error "error: asi CLI not found. Install from skills/cli/."
         exit 1
     }
     & asi doctor
 }
 
 function Invoke-Schema {
-    & asi creator --schema
+    param(
+        [string]$Target = "run"
+    )
+
+    switch ($Target) {
+        "run" { & asi creator --schema }
+        "suggest" { & asi creator suggest --schema }
+        "apply" { & asi creator apply --schema }
+        default {
+            Write-Error "error: unknown schema target '$Target' (expected: run|suggest|apply)"
+            exit 1
+        }
+    }
 }
 
 function Invoke-Run {
@@ -60,7 +72,10 @@ switch ($command) {
     "help" { Show-Help }
     "init" { Invoke-Init }
     "validate" { Invoke-Validate }
-    "schema" { Invoke-Schema }
+    "schema" {
+        $target = if ($args.Count -gt 1) { $args[1] } else { "run" }
+        Invoke-Schema -Target $target
+    }
     "run" { Invoke-Run }
     "next" { Invoke-Next }
     "suggest" { Invoke-Suggest }

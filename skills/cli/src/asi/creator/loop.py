@@ -83,7 +83,7 @@ def cmd_next() -> dict[str, Any]:
         "requirements": {
             "max_questions": 3,
             "options_per_question": 4,
-            "recommended_option": 1,
+            "recommended_option_range": [1, 3],
             "option_4_label": "Respond with an alternative",
         },
     }
@@ -136,7 +136,7 @@ def cmd_suggest(raw: str) -> dict[str, Any]:
                 "prompt": q["prompt"],
                 "context": q["context"],
                 "options": options,
-                "recommended": 1,
+                "recommended": suggestion["recommended"],
             }
         )
 

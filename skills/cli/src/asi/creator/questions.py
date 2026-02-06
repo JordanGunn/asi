@@ -76,9 +76,12 @@ def question_skeletons(decisions: dict[str, Any], max_questions: int = 3) -> lis
             "answer_kind": q.answer_kind,
             "value_constraints": q.value_constraints,
             "option_constraints": {
+                "required_fields": ["label", "value", "description", "impact"],
                 "max_label_chars": 80,
+                "max_value_chars": 200,
                 "max_description_chars": 180,
-                "required_tradeoff_field": True,
+                "max_impact_chars": 180,
+                "required_impact_field": True,
                 "must_include_risk": False,
             },
             "fixed_option_4": {

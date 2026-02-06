@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PYTHON = sys.executable
 ENV_BASE = os.environ.copy()
-ENV_BASE["PYTHONPATH"] = str(ROOT / "cli" / "src")
+ENV_BASE["PYTHONPATH"] = str(ROOT / "skills" / "cli" / "src")
 
 
 def run_cli(args, *, cwd: Path, stdin: str | None = None):
@@ -48,6 +48,57 @@ class TestAsiCreatorCli(unittest.TestCase):
             code2, out2, err2 = run_cli(["creator", "--schema"], cwd=cwd)
             self.assertEqual(code2, 0, err2)
             self.assertEqual(json.loads(out1), json.loads(out2))
+
+    def test_creator_suggest_schema(self):
+        with tempfile.TemporaryDirectory() as td:
+            cwd = Path(td)
+            (cwd / ".git").mkdir()
+            code, out, err = run_cli(["creator", "suggest", "--schema"], cwd=cwd)
+            self.assertEqual(code, 0, err)
+            data = json.loads(out)
+            self.assertEqual(data.get("type"), "object")
+            self.assertIn("suggestions", data.get("properties", {}))
+            suggestions = data["properties"]["suggestions"]
+            item = suggestions["items"]
+            self.assertIn("recommended", item["properties"])
+            options_item = item["properties"]["options"]["items"]
+            self.assertEqual(
+                options_item.get("required"),
+                ["label", "value", "description", "impact"],
+            )
+
+    def test_creator_apply_schema(self):
+        with tempfile.TemporaryDirectory() as td:
+            cwd = Path(td)
+            (cwd / ".git").mkdir()
+            code, out, err = run_cli(["creator", "apply", "--schema"], cwd=cwd)
+            self.assertEqual(code, 0, err)
+            data = json.loads(out)
+            self.assertEqual(data.get("type"), "object")
+            self.assertIn("ask_set_id", data.get("properties", {}))
+            self.assertIn("answers", data.get("properties", {}))
+            answer_item = data["properties"]["answers"]["items"]
+            self.assertEqual(answer_item.get("required"), ["question_id", "selection"])
+
+    def test_creator_next_option_constraints_are_complete(self):
+        with tempfile.TemporaryDirectory() as td:
+            cwd = Path(td)
+            (cwd / ".git").mkdir()
+            code, out, err = run_cli(["creator", "next"], cwd=cwd)
+            self.assertEqual(code, 0, err)
+            payload = json.loads(out)
+            self.assertEqual(payload["status"], "need_suggestions")
+            question = payload["questions"][0]
+            oc = question["option_constraints"]
+            self.assertEqual(
+                oc["required_fields"], ["label", "value", "description", "impact"]
+            )
+            self.assertEqual(oc["max_label_chars"], 80)
+            self.assertEqual(oc["max_value_chars"], 200)
+            self.assertEqual(oc["max_description_chars"], 180)
+            self.assertEqual(oc["max_impact_chars"], 180)
+            self.assertTrue(oc["required_impact_field"])
+            self.assertNotIn("required_tradeoff_field", oc)
 
     def test_creator_loop_happy_path(self):
         with tempfile.TemporaryDirectory() as td:
@@ -121,6 +172,58 @@ class TestAsiCreatorCli(unittest.TestCase):
             final_payload = json.loads(out)
             self.assertIn(final_payload["status"], ("ready", "need_suggestions"))
             self.assertIn("reflection", final_payload)
+
+    def test_creator_suggest_allows_recommended_1_to_3(self):
+        with tempfile.TemporaryDirectory() as td:
+            cwd = Path(td)
+            (cwd / ".git").mkdir()
+
+            code, out, err = run_cli(["creator", "next"], cwd=cwd)
+            self.assertEqual(code, 0, err)
+            payload = json.loads(out)
+            questions = payload["questions"]
+            iteration_id = payload["iteration_id"]
+
+            suggestions = []
+            for idx, q in enumerate(questions, start=1):
+                suggestions.append(
+                    {
+                        "question_id": q["id"],
+                        "options": [
+                            {
+                                "label": f"Option {idx}.1",
+                                "value": f"value-{idx}-1",
+                                "description": "Recommended approach",
+                                "impact": "Lowest risk",
+                            },
+                            {
+                                "label": f"Option {idx}.2",
+                                "value": f"value-{idx}-2",
+                                "description": "Alternative approach",
+                                "impact": "Medium risk",
+                            },
+                            {
+                                "label": f"Option {idx}.3",
+                                "value": f"value-{idx}-3",
+                                "description": "Aggressive approach",
+                                "impact": "Higher risk",
+                            },
+                        ],
+                        "recommended": 3,
+                        "rationale": {},
+                    }
+                )
+
+            code, out, err = run_cli(
+                ["creator", "suggest", "--stdin"],
+                cwd=cwd,
+                stdin=json.dumps({"iteration_id": iteration_id, "suggestions": suggestions}),
+            )
+            self.assertEqual(code, 0, err)
+            ask_payload = json.loads(out)
+            self.assertEqual(ask_payload["status"], "need_answers")
+            for q in ask_payload["questions"]:
+                self.assertEqual(q["recommended"], 3)
 
     def test_creator_loop_allows_alternative_value(self):
         with tempfile.TemporaryDirectory() as td:
@@ -311,6 +414,56 @@ class TestAsiCreatorCli(unittest.TestCase):
                 ["creator", "suggest", "--stdin"],
                 cwd=cwd,
                 stdin=json.dumps({"iteration_id": "not-the-current-iteration", "suggestions": suggestions}),
+            )
+            self.assertNotEqual(code, 0, out + err)
+            payload = json.loads(out)
+            self.assertIn("error", payload)
+
+    def test_creator_suggest_rejects_recommended_out_of_range(self):
+        with tempfile.TemporaryDirectory() as td:
+            cwd = Path(td)
+            (cwd / ".git").mkdir()
+
+            code, out, err = run_cli(["creator", "next"], cwd=cwd)
+            self.assertEqual(code, 0, err)
+            payload = json.loads(out)
+            questions = payload["questions"]
+            iteration_id = payload["iteration_id"]
+
+            suggestions = []
+            for idx, q in enumerate(questions, start=1):
+                suggestions.append(
+                    {
+                        "question_id": q["id"],
+                        "options": [
+                            {
+                                "label": f"Option {idx}.1",
+                                "value": f"value-{idx}-1",
+                                "description": "Recommended approach",
+                                "impact": "Lowest risk",
+                            },
+                            {
+                                "label": f"Option {idx}.2",
+                                "value": f"value-{idx}-2",
+                                "description": "Alternative approach",
+                                "impact": "Medium risk",
+                            },
+                            {
+                                "label": f"Option {idx}.3",
+                                "value": f"value-{idx}-3",
+                                "description": "Aggressive approach",
+                                "impact": "Higher risk",
+                            },
+                        ],
+                        "recommended": 4,
+                        "rationale": {},
+                    }
+                )
+
+            code, out, err = run_cli(
+                ["creator", "suggest", "--stdin"],
+                cwd=cwd,
+                stdin=json.dumps({"iteration_id": iteration_id, "suggestions": suggestions}),
             )
             self.assertNotEqual(code, 0, out + err)
             payload = json.loads(out)
