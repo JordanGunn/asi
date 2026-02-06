@@ -10,12 +10,14 @@ from asi.util.validate import (
     require_list,
     require_str,
 )
+from asi.creator.state import artifact_model
 
 
 def emit_creator_run_schema() -> dict[str, Any]:
     """JSON Schema for `asi creator run --stdin` plan input."""
     return {
         "type": "object",
+        "x-artifact-model": artifact_model(),
         "properties": {
             "goal": {
                 "type": "string",
@@ -27,7 +29,7 @@ def emit_creator_run_schema() -> dict[str, Any]:
                 "type": "string",
                 "enum": ["kickoff", "plan", "exec", "auto"],
                 "default": "auto",
-                "description": "Phase to run (auto selects based on state)",
+                "description": "Legacy phase hint (deprecated). Creator runtime is session-loop driven.",
             },
         },
         "required": ["goal"],
@@ -97,6 +99,7 @@ def emit_creator_apply_schema() -> dict[str, Any]:
         "type": "object",
         "properties": {
             "ask_set_id": {"type": "string", "minLength": 1, "maxLength": 200},
+            "confirmed": {"type": "boolean"},
             "answers": {
                 "type": "array",
                 "minItems": 1,
@@ -178,6 +181,7 @@ def parse_suggestion_request(raw: str) -> dict[str, Any]:
 def parse_apply_request(raw: str) -> dict[str, Any]:
     data = load_json(raw)
     ask_set_id = require_str(data, "ask_set_id", min_length=1, max_length=200)
+    confirmed = require_bool(data, "confirmed", default=False, allow_missing=True)
     answers = require_list(data, "answers", min_length=1, max_length=3)
     notes = require_str(data, "notes", min_length=1, max_length=2000, allow_missing=True)
 
@@ -194,7 +198,7 @@ def parse_apply_request(raw: str) -> dict[str, Any]:
             max_length=500,
             allow_missing=True,
         )
-        confirmed = require_bool(
+        answer_confirmed = require_bool(
             a,
             "user_confirmation",
             default=False,
@@ -209,11 +213,15 @@ def parse_apply_request(raw: str) -> dict[str, Any]:
                 "question_id": question_id,
                 "selection": selection,
                 "alternative_text": alternative_text,
-                "user_confirmation": confirmed,
+                "user_confirmation": answer_confirmed,
             }
         )
 
-    out: dict[str, Any] = {"ask_set_id": ask_set_id, "answers": parsed_answers}
+    out: dict[str, Any] = {
+        "ask_set_id": ask_set_id,
+        "confirmed": confirmed,
+        "answers": parsed_answers,
+    }
     if notes:
         out["notes"] = notes
     return out

@@ -9,7 +9,7 @@ index:
 
 ## Compilation
 
-`/asi-creator <prompt>` is treated as intent. The agent compiles it into a plan matching the CLI schema.
+`/asi-creator <prompt>` is treated as intent. The agent compiles it into a creator run request matching the CLI schema.
 
 **Source of truth:** `asi creator --schema`
 
@@ -18,4 +18,4 @@ index:
 - This skill is for ASI skill creation only. Reject generic project planning.
 - All decisions must be explicit or confirmed by the user.
 - Use the interactive decision loop for open questions.
-- Plan and execution phases are gated by explicit approval.
+- Persist decision and receipt evidence in canonical session artifacts.

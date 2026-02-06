@@ -35,7 +35,7 @@ def emit_apply_schema() -> dict:
 
 def cmd_run(raw: str) -> dict:
     plan = parse_creator_run_plan(raw)
-    # Run currently returns the same output as `next` for interactive flow.
+    # Run currently seeds the same interactive loop response as `next`.
     result = cmd_next()
     result["plan"] = plan
     result["run_id"] = stable_hash(plan)

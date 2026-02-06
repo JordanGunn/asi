@@ -11,7 +11,7 @@ Commands:
   init                         Emit all skill reference docs (concatenated)
   validate                     Verify the skill is runnable (read-only)
   schema [run|suggest|apply]   Emit JSON schema (default: run)
-  run --stdin                  Execute creator via plan JSON
+  run --stdin                  Start creator session loop from goal JSON
   next                         Emit next questions (interactive loop)
   suggest --stdin              Validate agent suggestions
   apply --stdin                Apply user answers

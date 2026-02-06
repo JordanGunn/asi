@@ -9,6 +9,13 @@ from asi import __version__
 from asi.commands import creator, doctor, onboard, skill
 
 
+def _print_json_error(message: str, schema_cmd: str | None = None) -> None:
+    payload = {"error": message}
+    if schema_cmd:
+        payload["schema_cmd"] = schema_cmd
+    print(json.dumps(payload, indent=2))
+
+
 def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="asi",
@@ -48,7 +55,7 @@ def create_parser() -> argparse.ArgumentParser:
     creator_parser = subparsers.add_parser("creator", help="Creator skill")
     creator_parser.add_argument("--schema", action="store_true")
     creator_sub = creator_parser.add_subparsers(dest="creator_cmd", metavar="<subcommand>")
-    creator_run = creator_sub.add_parser("run", help="Run creator via plan")
+    creator_run = creator_sub.add_parser("run", help="Run creator via session goal")
     creator_run.add_argument("--stdin", action="store_true")
     creator_run.set_defaults(func=cmd_creator_run)
     creator_next = creator_sub.add_parser("next", help="Emit next questions")
@@ -136,7 +143,7 @@ def cmd_creator_suggest(args: argparse.Namespace) -> int:
     try:
         result = creator.cmd_suggest_json(raw)
     except ValueError as exc:
-        print(json.dumps({"error": str(exc)}, indent=2))
+        _print_json_error(str(exc), "asi creator suggest --schema")
         return 1
     print(json.dumps(result, indent=2))
     return 0
@@ -153,7 +160,7 @@ def cmd_creator_apply(args: argparse.Namespace) -> int:
     try:
         result = creator.cmd_apply_json(raw)
     except ValueError as exc:
-        print(json.dumps({"error": str(exc)}, indent=2))
+        _print_json_error(str(exc), "asi creator apply --schema")
         return 1
     print(json.dumps(result, indent=2))
     return 0

@@ -16,10 +16,10 @@ metadata:
     - scripts/skill.sh
     - scripts/skill.ps1
   artifacts:
-    - .asi/creator/kickoff/KICKOFF.md
-    - .asi/creator/plan/PLAN.md
-    - .asi/creator/plan/TODO.md
-    - .asi/creator/exec/RECEIPT.md
+    - .asi/creator/state.json
+    - .asi/creator/ask_sets/*.json
+    - .asi/creator/decisions.log.jsonl
+    - .asi/creator/receipts/*.json
   keywords:
     - creator
     - skill

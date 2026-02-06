@@ -16,13 +16,13 @@ index:
 
 It performs:
 
-- kickoff (intent + deterministic surface + judgment remainder)
-- planning (PLAN.md + TODO.md)
-- controlled execution (single task at a time, with receipts)
+- interactive decision loop (`next -> suggest -> apply`)
+- deterministic session-state persistence and receipts
+- skill creation under explicit user-confirmed decisions
 
 ## Constraints
 
-- Deterministic gates before every phase
+- Deterministic validation before state mutation
 - Explicit user confirmation for decisions
 - CLI-owned schema emission and validation
-- Read-only until gated execution
+- Session artifacts are canonical under `.asi/creator/`

@@ -7,7 +7,16 @@ from typing import Any
 
 from asi.creator.questions import missing_decision_ids, question_skeletons
 from asi.creator.schemas import parse_apply_request, parse_suggestion_request
-from asi.creator.state import load_state, save_state, stable_hash
+from asi.creator.state import (
+    append_decision_event,
+    artifact_model,
+    legacy_warnings,
+    load_state,
+    save_state,
+    stable_hash,
+    write_ask_set_snapshot,
+    write_receipt,
+)
 
 
 def _hash_value(value: Any) -> str:
@@ -78,6 +87,12 @@ def cmd_next() -> dict[str, Any]:
     return {
         "status": status,
         "iteration_id": iteration_id,
+        "artifact_model": artifact_model(),
+        "schemas": {
+            "suggest": "asi creator suggest --schema",
+            "apply": "asi creator apply --schema",
+        },
+        "warnings": legacy_warnings(),
         "questions": questions,
         "reflection": build_reflection(decisions),
         "requirements": {
@@ -110,7 +125,7 @@ def cmd_suggest(raw: str) -> dict[str, Any]:
         raise ValueError("Suggestions must cover all questions in this iteration.")
 
     ask_questions = []
-    for q in expected["questions"]:
+    for i, q in enumerate(expected["questions"]):
         suggestion = next(s for s in request["suggestions"] if s["question_id"] == q["id"])
         options = [
             {
@@ -122,8 +137,13 @@ def cmd_suggest(raw: str) -> dict[str, Any]:
             for opt in suggestion["options"]
         ]
 
-        for opt in options:
-            _validate_value(q, opt["value"])
+        for j, opt in enumerate(options):
+            try:
+                _validate_value(q, opt["value"])
+            except ValueError as exc:
+                raise ValueError(
+                    f"suggestions[{i}].options[{j}] ({q['id']}): {exc}"
+                ) from exc
 
         options.append(q["fixed_option_4"])
 
@@ -152,10 +172,13 @@ def cmd_suggest(raw: str) -> dict[str, Any]:
         "ask_set": ask_set,
     }
     save_state(state)
+    ask_set_path = write_ask_set_snapshot(ask_set_id, ask_set)
 
     return {
         "status": "need_answers",
         "ask_set_id": ask_set_id,
+        "artifacts": {"ask_set_path": str(ask_set_path)},
+        "warnings": legacy_warnings(),
         "questions": ask_questions,
         "reflection": expected["reflection"],
     }
@@ -176,21 +199,22 @@ def cmd_apply(raw: str) -> dict[str, Any]:
     if sorted(answer_ids) != sorted(questions.keys()):
         raise ValueError("Answers must cover all questions in the latest ask set.")
 
+    global_confirmed = bool(request.get("confirmed", False))
+
     for answer in request["answers"]:
         if answer["question_id"] not in questions:
             raise ValueError(f"Unknown question_id: {answer['question_id']}")
         if answer["selection"] == 4 and not answer.get("alternative_text"):
             raise ValueError("alternative_text is required when selection is 4.")
-        if not answer.get("user_confirmation", False):
-            return {
-                "status": "need_answers",
-                "message": "User confirmation required before applying decisions.",
-                "reflection": build_reflection(state.get("decisions", {})),
-                "ask_set_id": request["ask_set_id"],
-                "questions": list(questions.values()),
-            }
+        if not global_confirmed and not answer.get("user_confirmation", False):
+            qid = answer["question_id"]
+            raise ValueError(
+                f"user_confirmation must be true for answer '{qid}'. "
+                "Set user_confirmation: true per answer, or set top-level confirmed: true."
+            )
 
     decisions: dict[str, Any] = state.get("decisions", {})
+    decision_log_path = None
     for answer in request["answers"]:
         question = questions[answer["question_id"]]
         if answer["selection"] in (1, 2, 3):
@@ -217,28 +241,41 @@ def cmd_apply(raw: str) -> dict[str, Any]:
             "ask_set_id": request["ask_set_id"],
         }
 
-        state["decision_log"].append(
-            {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-                "question_id": answer["question_id"],
-                "selection": answer["selection"],
-                "decision_key": decision_key,
-                "ask_set_id": request["ask_set_id"],
-                "value": chosen_value,
-                "value_label": chosen_label,
-                "value_hash": _hash_value(chosen_value),
-                "confirmed": answer.get("user_confirmation", False),
-            }
-        )
+        event = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "question_id": answer["question_id"],
+            "selection": answer["selection"],
+            "decision_key": decision_key,
+            "ask_set_id": request["ask_set_id"],
+            "value": chosen_value,
+            "value_label": chosen_label,
+            "value_hash": _hash_value(chosen_value),
+            "confirmed": global_confirmed or answer.get("user_confirmation", False),
+        }
+        state["decision_log"].append(event)
+        decision_log_path = append_decision_event(event)
 
     state["decisions"] = decisions
     state["last_ask_set"] = {}
     save_state(state)
+    receipt_path = write_receipt(
+        {
+            "ask_set_id": request["ask_set_id"],
+            "applied_at": datetime.now(timezone.utc).isoformat(),
+            "answers": request["answers"],
+            "decisions": decisions,
+        }
+    )
 
     next_state = cmd_next()
     return {
         "status": next_state["status"],
         "next_action": "continue_loop" if next_state["status"] != "ready" else "execute_phase",
+        "artifacts": {
+            "decision_log_path": str(decision_log_path) if decision_log_path else "",
+            "receipt_path": str(receipt_path),
+        },
+        "warnings": legacy_warnings(),
         "reflection": next_state["reflection"],
     }
 

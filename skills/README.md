@@ -23,37 +23,37 @@ They exist to make agent work reviewable and controllable:
 
 - **`asi-creator/`**
   - **What it does**
-    - Unified kickoff, planning, and controlled execution for ASI skill creation.
+    - Interactive `next -> suggest -> apply` loop for ASI skill creation.
   - **What it’s for**
-    - Building ASI-compliant skills with deterministic governance and explicit gates.
+    - Building ASI-compliant skills with deterministic governance and explicit user confirmation.
   - **What it does not do**
     - It is not a general project planning skill.
   - **Primary outputs**
-    - `.asi/creator/kickoff/KICKOFF.md`
-    - `.asi/creator/plan/PLAN.md`
-    - `.asi/creator/plan/TODO.md`
-    - `.asi/creator/exec/RECEIPT.md`
+    - `.asi/creator/state.json`
+    - `.asi/creator/ask_sets/*.json`
+    - `.asi/creator/decisions.log.jsonl`
+    - `.asi/creator/receipts/*.json`
 
 ## The pipeline (and the gate)
 
 ```text
 asi-onboard (optional) → asi-creator
-        │                │          │
-        ▼                ▼          ▼
-   NOTES.md        KICKOFF.md  PLAN/TODO/RECEIPT
+        │                │
+        ▼                ▼
+   NOTES.md      state + ask_sets + logs + receipts
 ```
 
 The intended invariant is simple:
 
-- **`asi-creator` must not produce PLAN/TODO without an approved `KICKOFF.md`.**
-- **`asi-creator` must not execute without an approved `PLAN.md`.**
-- **Only `asi-creator` is authorized to implement.**
+- **`asi-creator` must not mutate decisions without explicit confirmation.**
+- **`asi-creator` must validate all interactive inputs against CLI-emitted schemas.**
+- **`asi-creator` must persist append-only decision evidence for auditability.**
 
 ## When to use which
 
 - Use `asi-onboard` when you want to build context (docs/spec discovery) without creating planning artifacts (recommended, not required).
 
-- Use `asi-creator` when you want to create or evolve an ASI-compliant skill. It covers kickoff, planning, and controlled execution behind explicit gates.
+- Use `asi-creator` when you want to create or evolve an ASI-compliant skill through deterministic, schema-driven interaction loops.
 
 ## How to run them
 

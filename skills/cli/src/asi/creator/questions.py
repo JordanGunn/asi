@@ -82,6 +82,7 @@ def question_skeletons(decisions: dict[str, Any], max_questions: int = 3) -> lis
                 "max_description_chars": 180,
                 "max_impact_chars": 180,
                 "required_impact_field": True,
+                "value_must_satisfy": "value_constraints",
                 "must_include_risk": False,
             },
             "fixed_option_4": {

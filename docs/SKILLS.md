@@ -8,7 +8,7 @@ This repository includes reference skills that help design, plan, and implement 
 
 ```text
 /asi-onboard   → "(Optional, recommended) Help me build context on this repo/topic"
-/asi-creator   → "Create an ASI-compliant skill for X (kickoff + plan + controlled execution)"
+/asi-creator   → "Create an ASI-compliant skill for X (interactive next/suggest/apply loop)"
 ```
 
 That's it. The skills enforce ASI principles automatically.
@@ -17,18 +17,14 @@ That's it. The skills enforce ASI principles automatically.
 
 ## Skill Design Pipeline
 
-The `asi-*` skills implement a gated workflow:
+The `asi-*` skills implement a deterministic workflow:
 
 ```text
 asi-onboard (optional) → asi-creator
-        │                │          │
-        ▼                ▼          ▼
-   NOTES.md          KICKOFF.md  Implementation
-   SOURCES.md        QUESTIONS.md RECEIPT.md
-                         │
-                         ▼
-                      PLAN.md
-                      TODO.md
+        │                │
+        ▼                ▼
+   NOTES.md        state.json + ask_sets + decisions.log.jsonl + receipts
+   SOURCES.md
 ```
 
 ## Pipeline Guarantees
@@ -36,17 +32,17 @@ asi-onboard (optional) → asi-creator
 | Stage | Artifact | Guarantee |
 | ----- | -------- | --------- |
 | **asi-onboard** | `NOTES.md`, `SOURCES.md` | Context capture only. No kickoff/plan/exec artifacts. |
-| **asi-creator** | `KICKOFF.md`, `PLAN.md`, `TODO.md`, `RECEIPT.md` | Unified kickoff+plan+exec entrypoint. Must not produce PLAN/TODO until kickoff is approved. Must not execute until plan is approved. |
+| **asi-creator** | `state.json`, `ask_sets/*.json`, `decisions.log.jsonl`, `receipts/*.json` | Session-loop entrypoint for skill creation. Uses explicit user-confirmed decisions and deterministic validation. |
 
 ## Why This Matters
 
 Most agent failures stem from premature action—jumping to code before understanding scope, silently drifting from requirements, or making decisions that should have been human-gated.
 
-This pipeline enforces **deliberate progression**:
+This pipeline enforces **deterministic progression**:
 
-- **Design before planning** — Surface ambiguity early, not during implementation
-- **Plan before execution** — Decompose work into traceable, reviewable tasks
-- **Execute with receipts** — Every change is logged, every task is checkpointed
+- **Context before decision** — Surface ambiguity early, not during implementation
+- **Constrained looping** — Every mutation passes schema + validation gates
+- **Receipts and logs** — Decisions are append-only and replayable
 
 ## Available Skills
 
@@ -61,17 +57,11 @@ Establishes disk-backed repo context by reading ASI documentation entrypoints an
 
 ### asi-creator
 
-Unified kickoff + planning + controlled execution entrypoint.
+Unified interactive skill-creation entrypoint.
 
-- **Purpose**: Create ASI-compliant skills with deterministic governance and explicit gates.
-- **Output**: `.asi/creator/kickoff/KICKOFF.md`, `.asi/creator/plan/PLAN.md`, `.asi/creator/plan/TODO.md`, `.asi/creator/exec/RECEIPT.md`
+- **Purpose**: Create ASI-compliant skills with deterministic governance and explicit user-confirmed decisions.
+- **Output**: `.asi/creator/state.json`, `.asi/creator/ask_sets/*.json`, `.asi/creator/decisions.log.jsonl`, `.asi/creator/receipts/*.json`
 - **Does not**: Serve as a general project planning skill.
-
-## Pipeline Invariants
-
-- **`asi-creator` must not produce PLAN/TODO without an approved `KICKOFF.md`.**
-- **`asi-creator` must not execute without an approved `PLAN.md`.**
-- **Only `asi-creator` is authorized to implement.**
 
 ## When to Use Which
 

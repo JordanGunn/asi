@@ -36,6 +36,7 @@ class TestAsiCreatorCli(unittest.TestCase):
             self.assertIn("properties", data)
             self.assertIn("goal", data["properties"])
             self.assertIn("phase", data["properties"])
+            self.assertIn("x-artifact-model", data)
             self.assertEqual(data.get("type"), "object")
             self.assertEqual(data.get("additionalProperties"), False)
 
@@ -88,6 +89,12 @@ class TestAsiCreatorCli(unittest.TestCase):
             self.assertEqual(code, 0, err)
             payload = json.loads(out)
             self.assertEqual(payload["status"], "need_suggestions")
+            self.assertEqual(
+                payload["schemas"]["suggest"], "asi creator suggest --schema"
+            )
+            self.assertEqual(
+                payload["schemas"]["apply"], "asi creator apply --schema"
+            )
             question = payload["questions"][0]
             oc = question["option_constraints"]
             self.assertEqual(
@@ -98,6 +105,7 @@ class TestAsiCreatorCli(unittest.TestCase):
             self.assertEqual(oc["max_description_chars"], 180)
             self.assertEqual(oc["max_impact_chars"], 180)
             self.assertTrue(oc["required_impact_field"])
+            self.assertEqual(oc["value_must_satisfy"], "value_constraints")
             self.assertNotIn("required_tradeoff_field", oc)
 
     def test_creator_loop_happy_path(self):
@@ -153,6 +161,8 @@ class TestAsiCreatorCli(unittest.TestCase):
             ask_payload = json.loads(out)
             self.assertEqual(ask_payload["status"], "need_answers")
             self.assertIn("ask_set_id", ask_payload)
+            ask_set_path = Path(ask_payload["artifacts"]["ask_set_path"])
+            self.assertTrue(ask_set_path.exists())
             for q in ask_payload["questions"]:
                 self.assertEqual(len(q["options"]), 4)
                 # Option 4 is always the fixed alternative label
@@ -172,6 +182,10 @@ class TestAsiCreatorCli(unittest.TestCase):
             final_payload = json.loads(out)
             self.assertIn(final_payload["status"], ("ready", "need_suggestions"))
             self.assertIn("reflection", final_payload)
+            decision_log_path = Path(final_payload["artifacts"]["decision_log_path"])
+            receipt_path = Path(final_payload["artifacts"]["receipt_path"])
+            self.assertTrue(decision_log_path.exists())
+            self.assertTrue(receipt_path.exists())
 
     def test_creator_suggest_allows_recommended_1_to_3(self):
         with tempfile.TemporaryDirectory() as td:
@@ -365,10 +379,166 @@ class TestAsiCreatorCli(unittest.TestCase):
                 cwd=cwd,
                 stdin=json.dumps({"ask_set_id": ask_payload["ask_set_id"], "answers": answers}),
             )
+            self.assertNotEqual(code, 0, out + err)
+            result = json.loads(out)
+            self.assertIn("error", result)
+            self.assertIn("user_confirmation", result["error"])
+            self.assertEqual(result.get("schema_cmd"), "asi creator apply --schema")
+
+    def test_creator_apply_allows_top_level_confirmed(self):
+        with tempfile.TemporaryDirectory() as td:
+            cwd = Path(td)
+            (cwd / ".git").mkdir()
+
+            _, out, _ = run_cli(["creator", "next"], cwd=cwd)
+            payload = json.loads(out)
+            questions = payload["questions"]
+            iteration_id = payload["iteration_id"]
+
+            suggestions = []
+            for idx, q in enumerate(questions, start=1):
+                suggestions.append(
+                    {
+                        "question_id": q["id"],
+                        "options": [
+                            {
+                                "label": f"Option {idx}.1",
+                                "value": f"value-{idx}-1",
+                                "description": "Recommended approach",
+                                "impact": "Lowest risk",
+                            },
+                            {
+                                "label": f"Option {idx}.2",
+                                "value": f"value-{idx}-2",
+                                "description": "Alternative approach",
+                                "impact": "Medium risk",
+                            },
+                            {
+                                "label": f"Option {idx}.3",
+                                "value": f"value-{idx}-3",
+                                "description": "Aggressive approach",
+                                "impact": "Higher risk",
+                            },
+                        ],
+                        "recommended": 1,
+                        "rationale": {},
+                    }
+                )
+
+            _, out, _ = run_cli(
+                ["creator", "suggest", "--stdin"],
+                cwd=cwd,
+                stdin=json.dumps({"iteration_id": iteration_id, "suggestions": suggestions}),
+            )
+            ask_payload = json.loads(out)
+
+            answers = [{"question_id": q["id"], "selection": 1} for q in ask_payload["questions"]]
+
+            code, out, err = run_cli(
+                ["creator", "apply", "--stdin"],
+                cwd=cwd,
+                stdin=json.dumps(
+                    {
+                        "ask_set_id": ask_payload["ask_set_id"],
+                        "confirmed": True,
+                        "answers": answers,
+                    }
+                ),
+            )
             self.assertEqual(code, 0, err)
             result = json.loads(out)
-            self.assertEqual(result["status"], "need_answers")
-            self.assertIn("User confirmation required", result.get("message", ""))
+            self.assertIn(result["status"], ("ready", "need_suggestions"))
+
+    def test_creator_suggest_value_error_includes_context(self):
+        with tempfile.TemporaryDirectory() as td:
+            cwd = Path(td)
+            (cwd / ".git").mkdir()
+
+            code, out, err = run_cli(["creator", "next"], cwd=cwd)
+            self.assertEqual(code, 0, err)
+            payload = json.loads(out)
+            questions = payload["questions"]
+            iteration_id = payload["iteration_id"]
+
+            suggestions = []
+            for idx, q in enumerate(questions, start=1):
+                value = f"value-{idx}-1"
+                if q["id"] == "creator.skill_name":
+                    value = "Invalid Name"
+                suggestions.append(
+                    {
+                        "question_id": q["id"],
+                        "options": [
+                            {
+                                "label": f"Option {idx}.1",
+                                "value": value,
+                                "description": "Recommended approach",
+                                "impact": "Lowest risk",
+                            },
+                            {
+                                "label": f"Option {idx}.2",
+                                "value": f"value-{idx}-2",
+                                "description": "Alternative approach",
+                                "impact": "Medium risk",
+                            },
+                            {
+                                "label": f"Option {idx}.3",
+                                "value": f"value-{idx}-3",
+                                "description": "Aggressive approach",
+                                "impact": "Higher risk",
+                            },
+                        ],
+                        "recommended": 1,
+                        "rationale": {},
+                    }
+                )
+
+            code, out, err = run_cli(
+                ["creator", "suggest", "--stdin"],
+                cwd=cwd,
+                stdin=json.dumps({"iteration_id": iteration_id, "suggestions": suggestions}),
+            )
+            self.assertNotEqual(code, 0, out + err)
+            payload = json.loads(out)
+            self.assertIn("error", payload)
+            self.assertIn("suggestions[", payload["error"])
+            self.assertIn("creator.skill_name", payload["error"])
+            self.assertEqual(payload.get("schema_cmd"), "asi creator suggest --schema")
+
+    def test_creator_apply_missing_selection_includes_schema_hint(self):
+        with tempfile.TemporaryDirectory() as td:
+            cwd = Path(td)
+            (cwd / ".git").mkdir()
+
+            code, out, err = run_cli(
+                ["creator", "apply", "--stdin"],
+                cwd=cwd,
+                stdin=json.dumps(
+                    {
+                        "ask_set_id": "x",
+                        "answers": [{"question_id": "creator.skill_name"}],
+                    }
+                ),
+            )
+            self.assertNotEqual(code, 0, out + err)
+            payload = json.loads(out)
+            self.assertIn("Missing required field: selection", payload["error"])
+            self.assertEqual(payload.get("schema_cmd"), "asi creator apply --schema")
+
+    def test_creator_next_emits_legacy_warning_when_legacy_artifacts_exist(self):
+        with tempfile.TemporaryDirectory() as td:
+            cwd = Path(td)
+            (cwd / ".git").mkdir()
+            (cwd / ".asi" / "creator" / "kickoff").mkdir(parents=True)
+
+            code, out, err = run_cli(["creator", "next"], cwd=cwd)
+            self.assertEqual(code, 0, err)
+            payload = json.loads(out)
+            self.assertIn("warnings", payload)
+            self.assertTrue(payload["warnings"])
+            self.assertEqual(
+                payload["warnings"][0]["code"], "creator_legacy_artifacts_detected"
+            )
 
     def test_creator_suggest_rejects_iteration_mismatch(self):
         with tempfile.TemporaryDirectory() as td:
