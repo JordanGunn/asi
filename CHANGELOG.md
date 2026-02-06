@@ -2,6 +2,40 @@
 
 All notable changes to this specification will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- Added `docs/implementation/` documentation suite:
+  - implementation invariants, decision records, benchmark rationale, maintainer compliance checklist, legacy migration playbook
+  - claims/evidence matrix, threat model + non-goals, and measurement protocol
+- Added `docs/tutorial/` step-by-step tutorial suite for designing a grep-style ASI skill interface surface
+- Added `skills/install.sh` and `skills/install.ps1` installer scripts for the ASI CLI
+- Added creator schema discoverability endpoints:
+  - `asi creator suggest --schema`
+  - `asi creator apply --schema`
+
+### Changed
+
+- Relocated active ASI CLI source from `cli/` to `skills/cli/`
+- Updated `asi-creator` wrappers to support schema targets:
+  - `schema` (default run)
+  - `schema suggest`
+  - `schema apply`
+- Expanded `asi creator next` `option_constraints` with complete required field and length metadata
+- Clarified creator loop requirements by exposing `recommended_option_range: [1, 3]`
+- Updated creator procedure reference to include concrete JSON input shapes for `suggest --stdin` and `apply --stdin`
+- Updated README/design/llms cross-links to include implementation documentation entrypoints
+
+### Fixed
+
+- Fixed mismatch between emitted `option_constraints` and validated suggestion payload fields:
+  - replaced incorrect `required_tradeoff_field`
+  - added correct `required_impact_field` and full required field set
+- Fixed creator suggestion validation to allow meaningful recommendations (`recommended` now supports `1..3`)
+- Fixed creator suggest response to preserve provided `recommended` value instead of hardcoding `1`
+- Fixed creator CLI test pathing to use `skills/cli/src` for PYTHONPATH
+
 ## 0.3.0
 
 ### Documentation
@@ -108,4 +142,3 @@ Refactored to enforce deterministic-first execution and proper plan ingestion:
 ## 0.1.0
 
 - Initial draft of the ASI manifesto and design specifications.
-
