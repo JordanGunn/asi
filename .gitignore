@@ -1,7 +1,23 @@
+### IDEs
 .windsurf/
+.idea/
+.vscode/
+.cursor/
+
+### Agents
+.codex/
+.claude/
+.copilot/
+
+### Artifacts
 .asi/
 .asi-*.lock
+dewey/
+presentation/
+
+### Python
 __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
+
